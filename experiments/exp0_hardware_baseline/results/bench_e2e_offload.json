@@ -1,0 +1,165 @@
+{
+  "e2e_benchmarks": [
+    {
+      "config": "Llama-7B_bs1_seq256",
+      "desc": "Llama-2-7B, batch=1, 256 tokens, 1 layer KV",
+      "size_bytes": 4194304,
+      "warm_gpu_dram": {
+        "offload_d2h_us": 189.3,
+        "reload_h2d_us": 181.7,
+        "offload_bw_gbps": 22.155,
+        "reload_bw_gbps": 23.086
+      },
+      "cold_evict": {
+        "d2h_us": 201.9,
+        "disk_write_us": 2113.8,
+        "total_us": 2315.7,
+        "total_bw_gbps": 1.811
+      },
+      "cold_load": {
+        "disk_read_us": 986.8,
+        "h2d_us": 302.0,
+        "total_us": 1288.8,
+        "total_bw_gbps": 3.255
+      }
+    },
+    {
+      "config": "Llama-7B_bs1_seq2048",
+      "desc": "Llama-2-7B, batch=1, 2048 tokens, 1 layer KV",
+      "size_bytes": 33554432,
+      "warm_gpu_dram": {
+        "offload_d2h_us": 1478.6,
+        "reload_h2d_us": 1338.9,
+        "offload_bw_gbps": 22.693,
+        "reload_bw_gbps": 25.062
+      },
+      "cold_evict": {
+        "d2h_us": 1514.3,
+        "disk_write_us": 35593.3,
+        "total_us": 37107.6,
+        "total_bw_gbps": 0.904
+      },
+      "cold_load": {
+        "disk_read_us": 44551.4,
+        "h2d_us": 2837.3,
+        "total_us": 47388.7,
+        "total_bw_gbps": 0.708
+      }
+    },
+    {
+      "config": "Llama-7B_bs1_seq4096",
+      "desc": "Llama-2-7B, batch=1, 4096 tokens, 1 layer KV",
+      "size_bytes": 67108864,
+      "warm_gpu_dram": {
+        "offload_d2h_us": 2933.5,
+        "reload_h2d_us": 2659.4,
+        "offload_bw_gbps": 22.877,
+        "reload_bw_gbps": 25.234
+      },
+      "cold_evict": {
+        "d2h_us": 3119.7,
+        "disk_write_us": 79274.8,
+        "total_us": 82394.5,
+        "total_bw_gbps": 0.814
+      },
+      "cold_load": {
+        "disk_read_us": 93244.7,
+        "h2d_us": 3544.0,
+        "total_us": 96788.7,
+        "total_bw_gbps": 0.693
+      }
+    },
+    {
+      "config": "Llama-70B_bs1_seq256",
+      "desc": "Llama-2-70B, batch=1, 256 tokens, 1 layer KV (GQA=8)",
+      "size_bytes": 1048576,
+      "warm_gpu_dram": {
+        "offload_d2h_us": 58.9,
+        "reload_h2d_us": 57.7,
+        "offload_bw_gbps": 17.806,
+        "reload_bw_gbps": 18.183
+      },
+      "cold_evict": {
+        "d2h_us": 69.7,
+        "disk_write_us": 458.4,
+        "total_us": 528.1,
+        "total_bw_gbps": 1.985
+      },
+      "cold_load": {
+        "disk_read_us": 279.0,
+        "h2d_us": 100.3,
+        "total_us": 379.3,
+        "total_bw_gbps": 2.765
+      }
+    },
+    {
+      "config": "Llama-70B_bs1_seq2048",
+      "desc": "Llama-2-70B, batch=1, 2048 tokens, 1 layer KV (GQA=8)",
+      "size_bytes": 8388608,
+      "warm_gpu_dram": {
+        "offload_d2h_us": 362.9,
+        "reload_h2d_us": 347.2,
+        "offload_bw_gbps": 23.119,
+        "reload_bw_gbps": 24.159
+      },
+      "cold_evict": {
+        "d2h_us": 377.8,
+        "disk_write_us": 3675.1,
+        "total_us": 4052.9,
+        "total_bw_gbps": 2.07
+      },
+      "cold_load": {
+        "disk_read_us": 1958.0,
+        "h2d_us": 525.3,
+        "total_us": 2483.3,
+        "total_bw_gbps": 3.378
+      }
+    },
+    {
+      "config": "vLLM_block_16tok",
+      "desc": "vLLM default block (16 tokens), MHA-32, 1 layer",
+      "size_bytes": 262144,
+      "warm_gpu_dram": {
+        "offload_d2h_us": 26.0,
+        "reload_h2d_us": 26.1,
+        "offload_bw_gbps": 10.065,
+        "reload_bw_gbps": 10.047
+      },
+      "cold_evict": {
+        "d2h_us": 30.4,
+        "disk_write_us": 178.2,
+        "total_us": 208.6,
+        "total_bw_gbps": 1.257
+      },
+      "cold_load": {
+        "disk_read_us": 73.1,
+        "h2d_us": 35.4,
+        "total_us": 108.5,
+        "total_bw_gbps": 2.416
+      }
+    },
+    {
+      "config": "vLLM_block_64tok",
+      "desc": "vLLM block (64 tokens), MHA-32, 1 layer",
+      "size_bytes": 1048576,
+      "warm_gpu_dram": {
+        "offload_d2h_us": 58.7,
+        "reload_h2d_us": 57.5,
+        "offload_bw_gbps": 17.869,
+        "reload_bw_gbps": 18.234
+      },
+      "cold_evict": {
+        "d2h_us": 70.4,
+        "disk_write_us": 802.8,
+        "total_us": 873.2,
+        "total_bw_gbps": 1.201
+      },
+      "cold_load": {
+        "disk_read_us": 298.7,
+        "h2d_us": 99.2,
+        "total_us": 397.9,
+        "total_bw_gbps": 2.635
+      }
+    }
+  ]
+}

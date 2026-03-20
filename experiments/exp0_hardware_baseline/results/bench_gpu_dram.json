@@ -1,0 +1,497 @@
+{
+  "gpu": "NVIDIA A100-SXM4-80GB",
+  "cuda_version": "12.1",
+  "pytorch_version": "2.5.1+cu121",
+  "benchmarks": [
+    {
+      "direction": "D2H (GPU->CPU) pageable",
+      "config": "1-token_1head",
+      "size_bytes": 512,
+      "latency_us": 32.77,
+      "bandwidth_gbps": 0.016
+    },
+    {
+      "direction": "D2H (GPU->CPU) pageable",
+      "config": "64tok_GQA8",
+      "size_bytes": 262144,
+      "latency_us": 44.24,
+      "bandwidth_gbps": 5.926
+    },
+    {
+      "direction": "D2H (GPU->CPU) pageable",
+      "config": "64tok_MHA32",
+      "size_bytes": 1048576,
+      "latency_us": 127.61,
+      "bandwidth_gbps": 8.217
+    },
+    {
+      "direction": "D2H (GPU->CPU) pageable",
+      "config": "256tok_MHA32",
+      "size_bytes": 4194304,
+      "latency_us": 345.79,
+      "bandwidth_gbps": 12.13
+    },
+    {
+      "direction": "D2H (GPU->CPU) pageable",
+      "config": "1024tok_MHA32",
+      "size_bytes": 16777216,
+      "latency_us": 1180.53,
+      "bandwidth_gbps": 14.212
+    },
+    {
+      "direction": "D2H (GPU->CPU) pageable",
+      "config": "4096tok_MHA32",
+      "size_bytes": 67108864,
+      "latency_us": 4526.76,
+      "bandwidth_gbps": 14.825
+    },
+    {
+      "direction": "D2H (GPU->CPU) pageable",
+      "config": "16K_tok_MHA32",
+      "size_bytes": 268435456,
+      "latency_us": 18137.66,
+      "bandwidth_gbps": 14.8
+    },
+    {
+      "direction": "D2H (GPU->CPU) pageable",
+      "config": "32MB_flat",
+      "size_bytes": 33554432,
+      "latency_us": 2293.21,
+      "bandwidth_gbps": 14.632
+    },
+    {
+      "direction": "D2H (GPU->CPU) pageable",
+      "config": "128MB_flat",
+      "size_bytes": 134217728,
+      "latency_us": 8925.01,
+      "bandwidth_gbps": 15.038
+    },
+    {
+      "direction": "D2H (GPU->CPU) pageable",
+      "config": "512MB_flat",
+      "size_bytes": 536870912,
+      "latency_us": 36064.02,
+      "bandwidth_gbps": 14.887
+    },
+    {
+      "direction": "H2D (CPU->GPU) pageable",
+      "config": "1-token_1head",
+      "size_bytes": 512,
+      "latency_us": 14.87,
+      "bandwidth_gbps": 0.034
+    },
+    {
+      "direction": "H2D (CPU->GPU) pageable",
+      "config": "64tok_GQA8",
+      "size_bytes": 262144,
+      "latency_us": 43.09,
+      "bandwidth_gbps": 6.083
+    },
+    {
+      "direction": "H2D (CPU->GPU) pageable",
+      "config": "64tok_MHA32",
+      "size_bytes": 1048576,
+      "latency_us": 119.2,
+      "bandwidth_gbps": 8.797
+    },
+    {
+      "direction": "H2D (CPU->GPU) pageable",
+      "config": "256tok_MHA32",
+      "size_bytes": 4194304,
+      "latency_us": 358.73,
+      "bandwidth_gbps": 11.692
+    },
+    {
+      "direction": "H2D (CPU->GPU) pageable",
+      "config": "1024tok_MHA32",
+      "size_bytes": 16777216,
+      "latency_us": 1199.78,
+      "bandwidth_gbps": 13.984
+    },
+    {
+      "direction": "H2D (CPU->GPU) pageable",
+      "config": "4096tok_MHA32",
+      "size_bytes": 67108864,
+      "latency_us": 5675.76,
+      "bandwidth_gbps": 11.824
+    },
+    {
+      "direction": "H2D (CPU->GPU) pageable",
+      "config": "16K_tok_MHA32",
+      "size_bytes": 268435456,
+      "latency_us": 28350.94,
+      "bandwidth_gbps": 9.468
+    },
+    {
+      "direction": "H2D (CPU->GPU) pageable",
+      "config": "32MB_flat",
+      "size_bytes": 33554432,
+      "latency_us": 2339.41,
+      "bandwidth_gbps": 14.343
+    },
+    {
+      "direction": "H2D (CPU->GPU) pageable",
+      "config": "128MB_flat",
+      "size_bytes": 134217728,
+      "latency_us": 13181.09,
+      "bandwidth_gbps": 10.183
+    },
+    {
+      "direction": "H2D (CPU->GPU) pageable",
+      "config": "512MB_flat",
+      "size_bytes": 536870912,
+      "latency_us": 57896.78,
+      "bandwidth_gbps": 9.273
+    },
+    {
+      "direction": "D2H (GPU->CPU) pinned",
+      "config": "1-token_1head",
+      "size_bytes": 512,
+      "latency_us": 14.72,
+      "bandwidth_gbps": 0.035
+    },
+    {
+      "direction": "D2H (GPU->CPU) pinned",
+      "config": "64tok_GQA8",
+      "size_bytes": 262144,
+      "latency_us": 25.69,
+      "bandwidth_gbps": 10.203
+    },
+    {
+      "direction": "D2H (GPU->CPU) pinned",
+      "config": "64tok_MHA32",
+      "size_bytes": 1048576,
+      "latency_us": 58.11,
+      "bandwidth_gbps": 18.044
+    },
+    {
+      "direction": "D2H (GPU->CPU) pinned",
+      "config": "256tok_MHA32",
+      "size_bytes": 4194304,
+      "latency_us": 188.51,
+      "bandwidth_gbps": 22.25
+    },
+    {
+      "direction": "D2H (GPU->CPU) pinned",
+      "config": "1024tok_MHA32",
+      "size_bytes": 16777216,
+      "latency_us": 743.37,
+      "bandwidth_gbps": 22.569
+    },
+    {
+      "direction": "D2H (GPU->CPU) pinned",
+      "config": "4096tok_MHA32",
+      "size_bytes": 67108864,
+      "latency_us": 2942.96,
+      "bandwidth_gbps": 22.803
+    },
+    {
+      "direction": "D2H (GPU->CPU) pinned",
+      "config": "16K_tok_MHA32",
+      "size_bytes": 268435456,
+      "latency_us": 11573.1,
+      "bandwidth_gbps": 23.195
+    },
+    {
+      "direction": "D2H (GPU->CPU) pinned",
+      "config": "32MB_flat",
+      "size_bytes": 33554432,
+      "latency_us": 1453.69,
+      "bandwidth_gbps": 23.082
+    },
+    {
+      "direction": "D2H (GPU->CPU) pinned",
+      "config": "128MB_flat",
+      "size_bytes": 134217728,
+      "latency_us": 5684.19,
+      "bandwidth_gbps": 23.612
+    },
+    {
+      "direction": "D2H (GPU->CPU) pinned",
+      "config": "512MB_flat",
+      "size_bytes": 536870912,
+      "latency_us": 22557.92,
+      "bandwidth_gbps": 23.8
+    },
+    {
+      "direction": "H2D (CPU->GPU) pinned",
+      "config": "1-token_1head",
+      "size_bytes": 512,
+      "latency_us": 14.87,
+      "bandwidth_gbps": 0.034
+    },
+    {
+      "direction": "H2D (CPU->GPU) pinned",
+      "config": "64tok_GQA8",
+      "size_bytes": 262144,
+      "latency_us": 26.41,
+      "bandwidth_gbps": 9.926
+    },
+    {
+      "direction": "H2D (CPU->GPU) pinned",
+      "config": "64tok_MHA32",
+      "size_bytes": 1048576,
+      "latency_us": 57.87,
+      "bandwidth_gbps": 18.12
+    },
+    {
+      "direction": "H2D (CPU->GPU) pinned",
+      "config": "256tok_MHA32",
+      "size_bytes": 4194304,
+      "latency_us": 181.04,
+      "bandwidth_gbps": 23.168
+    },
+    {
+      "direction": "H2D (CPU->GPU) pinned",
+      "config": "1024tok_MHA32",
+      "size_bytes": 16777216,
+      "latency_us": 678.7,
+      "bandwidth_gbps": 24.72
+    },
+    {
+      "direction": "H2D (CPU->GPU) pinned",
+      "config": "4096tok_MHA32",
+      "size_bytes": 67108864,
+      "latency_us": 2657.11,
+      "bandwidth_gbps": 25.256
+    },
+    {
+      "direction": "H2D (CPU->GPU) pinned",
+      "config": "16K_tok_MHA32",
+      "size_bytes": 268435456,
+      "latency_us": 10601.0,
+      "bandwidth_gbps": 25.322
+    },
+    {
+      "direction": "H2D (CPU->GPU) pinned",
+      "config": "32MB_flat",
+      "size_bytes": 33554432,
+      "latency_us": 1342.48,
+      "bandwidth_gbps": 24.994
+    },
+    {
+      "direction": "H2D (CPU->GPU) pinned",
+      "config": "128MB_flat",
+      "size_bytes": 134217728,
+      "latency_us": 5330.41,
+      "bandwidth_gbps": 25.18
+    },
+    {
+      "direction": "H2D (CPU->GPU) pinned",
+      "config": "512MB_flat",
+      "size_bytes": 536870912,
+      "latency_us": 21289.47,
+      "bandwidth_gbps": 25.218
+    },
+    {
+      "direction": "D2H (GPU->CPU) async+pin",
+      "config": "1-token_1head",
+      "size_bytes": 512,
+      "latency_us": 16.06,
+      "bandwidth_gbps": 0.032
+    },
+    {
+      "direction": "D2H (GPU->CPU) async+pin",
+      "config": "64tok_GQA8",
+      "size_bytes": 262144,
+      "latency_us": 25.09,
+      "bandwidth_gbps": 10.447
+    },
+    {
+      "direction": "D2H (GPU->CPU) async+pin",
+      "config": "64tok_MHA32",
+      "size_bytes": 1048576,
+      "latency_us": 57.68,
+      "bandwidth_gbps": 18.18
+    },
+    {
+      "direction": "D2H (GPU->CPU) async+pin",
+      "config": "256tok_MHA32",
+      "size_bytes": 4194304,
+      "latency_us": 187.81,
+      "bandwidth_gbps": 22.333
+    },
+    {
+      "direction": "D2H (GPU->CPU) async+pin",
+      "config": "1024tok_MHA32",
+      "size_bytes": 16777216,
+      "latency_us": 740.94,
+      "bandwidth_gbps": 22.643
+    },
+    {
+      "direction": "D2H (GPU->CPU) async+pin",
+      "config": "4096tok_MHA32",
+      "size_bytes": 67108864,
+      "latency_us": 2941.54,
+      "bandwidth_gbps": 22.814
+    },
+    {
+      "direction": "D2H (GPU->CPU) async+pin",
+      "config": "16K_tok_MHA32",
+      "size_bytes": 268435456,
+      "latency_us": 11572.17,
+      "bandwidth_gbps": 23.197
+    },
+    {
+      "direction": "D2H (GPU->CPU) async+pin",
+      "config": "32MB_flat",
+      "size_bytes": 33554432,
+      "latency_us": 1452.72,
+      "bandwidth_gbps": 23.098
+    },
+    {
+      "direction": "D2H (GPU->CPU) async+pin",
+      "config": "128MB_flat",
+      "size_bytes": 134217728,
+      "latency_us": 5683.67,
+      "bandwidth_gbps": 23.615
+    },
+    {
+      "direction": "D2H (GPU->CPU) async+pin",
+      "config": "512MB_flat",
+      "size_bytes": 536870912,
+      "latency_us": 22553.89,
+      "bandwidth_gbps": 23.804
+    },
+    {
+      "direction": "H2D (CPU->GPU) async+pin",
+      "config": "1-token_1head",
+      "size_bytes": 512,
+      "latency_us": 16.16,
+      "bandwidth_gbps": 0.032
+    },
+    {
+      "direction": "H2D (CPU->GPU) async+pin",
+      "config": "64tok_GQA8",
+      "size_bytes": 262144,
+      "latency_us": 25.64,
+      "bandwidth_gbps": 10.225
+    },
+    {
+      "direction": "H2D (CPU->GPU) async+pin",
+      "config": "64tok_MHA32",
+      "size_bytes": 1048576,
+      "latency_us": 57.43,
+      "bandwidth_gbps": 18.258
+    },
+    {
+      "direction": "H2D (CPU->GPU) async+pin",
+      "config": "256tok_MHA32",
+      "size_bytes": 4194304,
+      "latency_us": 180.36,
+      "bandwidth_gbps": 23.255
+    },
+    {
+      "direction": "H2D (CPU->GPU) async+pin",
+      "config": "1024tok_MHA32",
+      "size_bytes": 16777216,
+      "latency_us": 677.54,
+      "bandwidth_gbps": 24.762
+    },
+    {
+      "direction": "H2D (CPU->GPU) async+pin",
+      "config": "4096tok_MHA32",
+      "size_bytes": 67108864,
+      "latency_us": 2655.39,
+      "bandwidth_gbps": 25.273
+    },
+    {
+      "direction": "H2D (CPU->GPU) async+pin",
+      "config": "16K_tok_MHA32",
+      "size_bytes": 268435456,
+      "latency_us": 10598.65,
+      "bandwidth_gbps": 25.327
+    },
+    {
+      "direction": "H2D (CPU->GPU) async+pin",
+      "config": "32MB_flat",
+      "size_bytes": 33554432,
+      "latency_us": 1341.0,
+      "bandwidth_gbps": 25.022
+    },
+    {
+      "direction": "H2D (CPU->GPU) async+pin",
+      "config": "128MB_flat",
+      "size_bytes": 134217728,
+      "latency_us": 5328.31,
+      "bandwidth_gbps": 25.19
+    },
+    {
+      "direction": "H2D (CPU->GPU) async+pin",
+      "config": "512MB_flat",
+      "size_bytes": 536870912,
+      "latency_us": 21286.45,
+      "bandwidth_gbps": 25.221
+    },
+    {
+      "direction": "D2D (GPU->GPU) baseline",
+      "config": "1-token_1head",
+      "size_bytes": 512,
+      "latency_us": 12.02,
+      "bandwidth_gbps": 0.043
+    },
+    {
+      "direction": "D2D (GPU->GPU) baseline",
+      "config": "64tok_GQA8",
+      "size_bytes": 262144,
+      "latency_us": 12.01,
+      "bandwidth_gbps": 21.827
+    },
+    {
+      "direction": "D2D (GPU->GPU) baseline",
+      "config": "64tok_MHA32",
+      "size_bytes": 1048576,
+      "latency_us": 12.5,
+      "bandwidth_gbps": 83.901
+    },
+    {
+      "direction": "D2D (GPU->GPU) baseline",
+      "config": "256tok_MHA32",
+      "size_bytes": 4194304,
+      "latency_us": 15.15,
+      "bandwidth_gbps": 276.908
+    },
+    {
+      "direction": "D2D (GPU->GPU) baseline",
+      "config": "1024tok_MHA32",
+      "size_bytes": 16777216,
+      "latency_us": 28.77,
+      "bandwidth_gbps": 583.183
+    },
+    {
+      "direction": "D2D (GPU->GPU) baseline",
+      "config": "4096tok_MHA32",
+      "size_bytes": 67108864,
+      "latency_us": 96.89,
+      "bandwidth_gbps": 692.66
+    },
+    {
+      "direction": "D2D (GPU->GPU) baseline",
+      "config": "16K_tok_MHA32",
+      "size_bytes": 268435456,
+      "latency_us": 350.24,
+      "bandwidth_gbps": 766.44
+    },
+    {
+      "direction": "D2D (GPU->GPU) baseline",
+      "config": "32MB_flat",
+      "size_bytes": 33554432,
+      "latency_us": 54.51,
+      "bandwidth_gbps": 615.567
+    },
+    {
+      "direction": "D2D (GPU->GPU) baseline",
+      "config": "128MB_flat",
+      "size_bytes": 134217728,
+      "latency_us": 181.67,
+      "bandwidth_gbps": 738.799
+    },
+    {
+      "direction": "D2D (GPU->GPU) baseline",
+      "config": "512MB_flat",
+      "size_bytes": 536870912,
+      "latency_us": 694.26,
+      "bandwidth_gbps": 773.3
+    }
+  ]
+}

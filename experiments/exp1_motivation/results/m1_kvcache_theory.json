@@ -1,0 +1,1554 @@
+{
+  "part_a_size_vs_seqlen": [
+    {
+      "model": "LLaMA-2-7B",
+      "seq_len": 512,
+      "kv_cache_GB": 0.25,
+      "weight_GB": 14.0,
+      "kv_weight_ratio_pct": 1.79,
+      "per_token_MB": 0.5
+    },
+    {
+      "model": "LLaMA-2-7B",
+      "seq_len": 1024,
+      "kv_cache_GB": 0.5,
+      "weight_GB": 14.0,
+      "kv_weight_ratio_pct": 3.57,
+      "per_token_MB": 0.5
+    },
+    {
+      "model": "LLaMA-2-7B",
+      "seq_len": 2048,
+      "kv_cache_GB": 1.0,
+      "weight_GB": 14.0,
+      "kv_weight_ratio_pct": 7.14,
+      "per_token_MB": 0.5
+    },
+    {
+      "model": "LLaMA-2-7B",
+      "seq_len": 4096,
+      "kv_cache_GB": 2.0,
+      "weight_GB": 14.0,
+      "kv_weight_ratio_pct": 14.29,
+      "per_token_MB": 0.5
+    },
+    {
+      "model": "LLaMA-2-7B",
+      "seq_len": 8192,
+      "kv_cache_GB": 4.0,
+      "weight_GB": 14.0,
+      "kv_weight_ratio_pct": 28.57,
+      "per_token_MB": 0.5
+    },
+    {
+      "model": "LLaMA-2-7B",
+      "seq_len": 16384,
+      "kv_cache_GB": 8.0,
+      "weight_GB": 14.0,
+      "kv_weight_ratio_pct": 57.14,
+      "per_token_MB": 0.5
+    },
+    {
+      "model": "LLaMA-2-7B",
+      "seq_len": 32768,
+      "kv_cache_GB": 16.0,
+      "weight_GB": 14.0,
+      "kv_weight_ratio_pct": 114.29,
+      "per_token_MB": 0.5
+    },
+    {
+      "model": "LLaMA-2-7B",
+      "seq_len": 65536,
+      "kv_cache_GB": 32.0,
+      "weight_GB": 14.0,
+      "kv_weight_ratio_pct": 228.57,
+      "per_token_MB": 0.5
+    },
+    {
+      "model": "LLaMA-2-7B",
+      "seq_len": 131072,
+      "kv_cache_GB": 64.0,
+      "weight_GB": 14.0,
+      "kv_weight_ratio_pct": 457.14,
+      "per_token_MB": 0.5
+    },
+    {
+      "model": "LLaMA-2-13B",
+      "seq_len": 512,
+      "kv_cache_GB": 0.3906,
+      "weight_GB": 26.0,
+      "kv_weight_ratio_pct": 1.5,
+      "per_token_MB": 0.7812
+    },
+    {
+      "model": "LLaMA-2-13B",
+      "seq_len": 1024,
+      "kv_cache_GB": 0.7812,
+      "weight_GB": 26.0,
+      "kv_weight_ratio_pct": 3.0,
+      "per_token_MB": 0.7812
+    },
+    {
+      "model": "LLaMA-2-13B",
+      "seq_len": 2048,
+      "kv_cache_GB": 1.5625,
+      "weight_GB": 26.0,
+      "kv_weight_ratio_pct": 6.01,
+      "per_token_MB": 0.7812
+    },
+    {
+      "model": "LLaMA-2-13B",
+      "seq_len": 4096,
+      "kv_cache_GB": 3.125,
+      "weight_GB": 26.0,
+      "kv_weight_ratio_pct": 12.02,
+      "per_token_MB": 0.7812
+    },
+    {
+      "model": "LLaMA-2-13B",
+      "seq_len": 8192,
+      "kv_cache_GB": 6.25,
+      "weight_GB": 26.0,
+      "kv_weight_ratio_pct": 24.04,
+      "per_token_MB": 0.7812
+    },
+    {
+      "model": "LLaMA-2-13B",
+      "seq_len": 16384,
+      "kv_cache_GB": 12.5,
+      "weight_GB": 26.0,
+      "kv_weight_ratio_pct": 48.08,
+      "per_token_MB": 0.7812
+    },
+    {
+      "model": "LLaMA-2-13B",
+      "seq_len": 32768,
+      "kv_cache_GB": 25.0,
+      "weight_GB": 26.0,
+      "kv_weight_ratio_pct": 96.15,
+      "per_token_MB": 0.7812
+    },
+    {
+      "model": "LLaMA-2-13B",
+      "seq_len": 65536,
+      "kv_cache_GB": 50.0,
+      "weight_GB": 26.0,
+      "kv_weight_ratio_pct": 192.31,
+      "per_token_MB": 0.7812
+    },
+    {
+      "model": "LLaMA-2-13B",
+      "seq_len": 131072,
+      "kv_cache_GB": 100.0,
+      "weight_GB": 26.0,
+      "kv_weight_ratio_pct": 384.62,
+      "per_token_MB": 0.7812
+    },
+    {
+      "model": "LLaMA-2-70B",
+      "seq_len": 512,
+      "kv_cache_GB": 0.1562,
+      "weight_GB": 140.0,
+      "kv_weight_ratio_pct": 0.11,
+      "per_token_MB": 0.3125
+    },
+    {
+      "model": "LLaMA-2-70B",
+      "seq_len": 1024,
+      "kv_cache_GB": 0.3125,
+      "weight_GB": 140.0,
+      "kv_weight_ratio_pct": 0.22,
+      "per_token_MB": 0.3125
+    },
+    {
+      "model": "LLaMA-2-70B",
+      "seq_len": 2048,
+      "kv_cache_GB": 0.625,
+      "weight_GB": 140.0,
+      "kv_weight_ratio_pct": 0.45,
+      "per_token_MB": 0.3125
+    },
+    {
+      "model": "LLaMA-2-70B",
+      "seq_len": 4096,
+      "kv_cache_GB": 1.25,
+      "weight_GB": 140.0,
+      "kv_weight_ratio_pct": 0.89,
+      "per_token_MB": 0.3125
+    },
+    {
+      "model": "LLaMA-2-70B",
+      "seq_len": 8192,
+      "kv_cache_GB": 2.5,
+      "weight_GB": 140.0,
+      "kv_weight_ratio_pct": 1.79,
+      "per_token_MB": 0.3125
+    },
+    {
+      "model": "LLaMA-2-70B",
+      "seq_len": 16384,
+      "kv_cache_GB": 5.0,
+      "weight_GB": 140.0,
+      "kv_weight_ratio_pct": 3.57,
+      "per_token_MB": 0.3125
+    },
+    {
+      "model": "LLaMA-2-70B",
+      "seq_len": 32768,
+      "kv_cache_GB": 10.0,
+      "weight_GB": 140.0,
+      "kv_weight_ratio_pct": 7.14,
+      "per_token_MB": 0.3125
+    },
+    {
+      "model": "LLaMA-2-70B",
+      "seq_len": 65536,
+      "kv_cache_GB": 20.0,
+      "weight_GB": 140.0,
+      "kv_weight_ratio_pct": 14.29,
+      "per_token_MB": 0.3125
+    },
+    {
+      "model": "LLaMA-2-70B",
+      "seq_len": 131072,
+      "kv_cache_GB": 40.0,
+      "weight_GB": 140.0,
+      "kv_weight_ratio_pct": 28.57,
+      "per_token_MB": 0.3125
+    },
+    {
+      "model": "LLaMA-3-8B",
+      "seq_len": 512,
+      "kv_cache_GB": 0.0625,
+      "weight_GB": 16.0,
+      "kv_weight_ratio_pct": 0.39,
+      "per_token_MB": 0.125
+    },
+    {
+      "model": "LLaMA-3-8B",
+      "seq_len": 1024,
+      "kv_cache_GB": 0.125,
+      "weight_GB": 16.0,
+      "kv_weight_ratio_pct": 0.78,
+      "per_token_MB": 0.125
+    },
+    {
+      "model": "LLaMA-3-8B",
+      "seq_len": 2048,
+      "kv_cache_GB": 0.25,
+      "weight_GB": 16.0,
+      "kv_weight_ratio_pct": 1.56,
+      "per_token_MB": 0.125
+    },
+    {
+      "model": "LLaMA-3-8B",
+      "seq_len": 4096,
+      "kv_cache_GB": 0.5,
+      "weight_GB": 16.0,
+      "kv_weight_ratio_pct": 3.12,
+      "per_token_MB": 0.125
+    },
+    {
+      "model": "LLaMA-3-8B",
+      "seq_len": 8192,
+      "kv_cache_GB": 1.0,
+      "weight_GB": 16.0,
+      "kv_weight_ratio_pct": 6.25,
+      "per_token_MB": 0.125
+    },
+    {
+      "model": "LLaMA-3-8B",
+      "seq_len": 16384,
+      "kv_cache_GB": 2.0,
+      "weight_GB": 16.0,
+      "kv_weight_ratio_pct": 12.5,
+      "per_token_MB": 0.125
+    },
+    {
+      "model": "LLaMA-3-8B",
+      "seq_len": 32768,
+      "kv_cache_GB": 4.0,
+      "weight_GB": 16.0,
+      "kv_weight_ratio_pct": 25.0,
+      "per_token_MB": 0.125
+    },
+    {
+      "model": "LLaMA-3-8B",
+      "seq_len": 65536,
+      "kv_cache_GB": 8.0,
+      "weight_GB": 16.0,
+      "kv_weight_ratio_pct": 50.0,
+      "per_token_MB": 0.125
+    },
+    {
+      "model": "LLaMA-3-8B",
+      "seq_len": 131072,
+      "kv_cache_GB": 16.0,
+      "weight_GB": 16.0,
+      "kv_weight_ratio_pct": 100.0,
+      "per_token_MB": 0.125
+    },
+    {
+      "model": "LLaMA-3-70B",
+      "seq_len": 512,
+      "kv_cache_GB": 0.1562,
+      "weight_GB": 140.0,
+      "kv_weight_ratio_pct": 0.11,
+      "per_token_MB": 0.3125
+    },
+    {
+      "model": "LLaMA-3-70B",
+      "seq_len": 1024,
+      "kv_cache_GB": 0.3125,
+      "weight_GB": 140.0,
+      "kv_weight_ratio_pct": 0.22,
+      "per_token_MB": 0.3125
+    },
+    {
+      "model": "LLaMA-3-70B",
+      "seq_len": 2048,
+      "kv_cache_GB": 0.625,
+      "weight_GB": 140.0,
+      "kv_weight_ratio_pct": 0.45,
+      "per_token_MB": 0.3125
+    },
+    {
+      "model": "LLaMA-3-70B",
+      "seq_len": 4096,
+      "kv_cache_GB": 1.25,
+      "weight_GB": 140.0,
+      "kv_weight_ratio_pct": 0.89,
+      "per_token_MB": 0.3125
+    },
+    {
+      "model": "LLaMA-3-70B",
+      "seq_len": 8192,
+      "kv_cache_GB": 2.5,
+      "weight_GB": 140.0,
+      "kv_weight_ratio_pct": 1.79,
+      "per_token_MB": 0.3125
+    },
+    {
+      "model": "LLaMA-3-70B",
+      "seq_len": 16384,
+      "kv_cache_GB": 5.0,
+      "weight_GB": 140.0,
+      "kv_weight_ratio_pct": 3.57,
+      "per_token_MB": 0.3125
+    },
+    {
+      "model": "LLaMA-3-70B",
+      "seq_len": 32768,
+      "kv_cache_GB": 10.0,
+      "weight_GB": 140.0,
+      "kv_weight_ratio_pct": 7.14,
+      "per_token_MB": 0.3125
+    },
+    {
+      "model": "LLaMA-3-70B",
+      "seq_len": 65536,
+      "kv_cache_GB": 20.0,
+      "weight_GB": 140.0,
+      "kv_weight_ratio_pct": 14.29,
+      "per_token_MB": 0.3125
+    },
+    {
+      "model": "LLaMA-3-70B",
+      "seq_len": 131072,
+      "kv_cache_GB": 40.0,
+      "weight_GB": 140.0,
+      "kv_weight_ratio_pct": 28.57,
+      "per_token_MB": 0.3125
+    },
+    {
+      "model": "Mistral-7B",
+      "seq_len": 512,
+      "kv_cache_GB": 0.0625,
+      "weight_GB": 14.6,
+      "kv_weight_ratio_pct": 0.43,
+      "per_token_MB": 0.125
+    },
+    {
+      "model": "Mistral-7B",
+      "seq_len": 1024,
+      "kv_cache_GB": 0.125,
+      "weight_GB": 14.6,
+      "kv_weight_ratio_pct": 0.86,
+      "per_token_MB": 0.125
+    },
+    {
+      "model": "Mistral-7B",
+      "seq_len": 2048,
+      "kv_cache_GB": 0.25,
+      "weight_GB": 14.6,
+      "kv_weight_ratio_pct": 1.71,
+      "per_token_MB": 0.125
+    },
+    {
+      "model": "Mistral-7B",
+      "seq_len": 4096,
+      "kv_cache_GB": 0.5,
+      "weight_GB": 14.6,
+      "kv_weight_ratio_pct": 3.42,
+      "per_token_MB": 0.125
+    },
+    {
+      "model": "Mistral-7B",
+      "seq_len": 8192,
+      "kv_cache_GB": 1.0,
+      "weight_GB": 14.6,
+      "kv_weight_ratio_pct": 6.85,
+      "per_token_MB": 0.125
+    },
+    {
+      "model": "Mistral-7B",
+      "seq_len": 16384,
+      "kv_cache_GB": 2.0,
+      "weight_GB": 14.6,
+      "kv_weight_ratio_pct": 13.7,
+      "per_token_MB": 0.125
+    },
+    {
+      "model": "Mistral-7B",
+      "seq_len": 32768,
+      "kv_cache_GB": 4.0,
+      "weight_GB": 14.6,
+      "kv_weight_ratio_pct": 27.4,
+      "per_token_MB": 0.125
+    },
+    {
+      "model": "Mistral-7B",
+      "seq_len": 65536,
+      "kv_cache_GB": 8.0,
+      "weight_GB": 14.6,
+      "kv_weight_ratio_pct": 54.79,
+      "per_token_MB": 0.125
+    },
+    {
+      "model": "Mistral-7B",
+      "seq_len": 131072,
+      "kv_cache_GB": 16.0,
+      "weight_GB": 14.6,
+      "kv_weight_ratio_pct": 109.59,
+      "per_token_MB": 0.125
+    },
+    {
+      "model": "Qwen2-7B",
+      "seq_len": 512,
+      "kv_cache_GB": 0.0273,
+      "weight_GB": 15.2,
+      "kv_weight_ratio_pct": 0.18,
+      "per_token_MB": 0.0547
+    },
+    {
+      "model": "Qwen2-7B",
+      "seq_len": 1024,
+      "kv_cache_GB": 0.0547,
+      "weight_GB": 15.2,
+      "kv_weight_ratio_pct": 0.36,
+      "per_token_MB": 0.0547
+    },
+    {
+      "model": "Qwen2-7B",
+      "seq_len": 2048,
+      "kv_cache_GB": 0.1094,
+      "weight_GB": 15.2,
+      "kv_weight_ratio_pct": 0.72,
+      "per_token_MB": 0.0547
+    },
+    {
+      "model": "Qwen2-7B",
+      "seq_len": 4096,
+      "kv_cache_GB": 0.2188,
+      "weight_GB": 15.2,
+      "kv_weight_ratio_pct": 1.44,
+      "per_token_MB": 0.0547
+    },
+    {
+      "model": "Qwen2-7B",
+      "seq_len": 8192,
+      "kv_cache_GB": 0.4375,
+      "weight_GB": 15.2,
+      "kv_weight_ratio_pct": 2.88,
+      "per_token_MB": 0.0547
+    },
+    {
+      "model": "Qwen2-7B",
+      "seq_len": 16384,
+      "kv_cache_GB": 0.875,
+      "weight_GB": 15.2,
+      "kv_weight_ratio_pct": 5.76,
+      "per_token_MB": 0.0547
+    },
+    {
+      "model": "Qwen2-7B",
+      "seq_len": 32768,
+      "kv_cache_GB": 1.75,
+      "weight_GB": 15.2,
+      "kv_weight_ratio_pct": 11.51,
+      "per_token_MB": 0.0547
+    },
+    {
+      "model": "Qwen2-7B",
+      "seq_len": 65536,
+      "kv_cache_GB": 3.5,
+      "weight_GB": 15.2,
+      "kv_weight_ratio_pct": 23.03,
+      "per_token_MB": 0.0547
+    },
+    {
+      "model": "Qwen2-7B",
+      "seq_len": 131072,
+      "kv_cache_GB": 7.0,
+      "weight_GB": 15.2,
+      "kv_weight_ratio_pct": 46.05,
+      "per_token_MB": 0.0547
+    },
+    {
+      "model": "Qwen2-72B",
+      "seq_len": 512,
+      "kv_cache_GB": 0.1562,
+      "weight_GB": 144.0,
+      "kv_weight_ratio_pct": 0.11,
+      "per_token_MB": 0.3125
+    },
+    {
+      "model": "Qwen2-72B",
+      "seq_len": 1024,
+      "kv_cache_GB": 0.3125,
+      "weight_GB": 144.0,
+      "kv_weight_ratio_pct": 0.22,
+      "per_token_MB": 0.3125
+    },
+    {
+      "model": "Qwen2-72B",
+      "seq_len": 2048,
+      "kv_cache_GB": 0.625,
+      "weight_GB": 144.0,
+      "kv_weight_ratio_pct": 0.43,
+      "per_token_MB": 0.3125
+    },
+    {
+      "model": "Qwen2-72B",
+      "seq_len": 4096,
+      "kv_cache_GB": 1.25,
+      "weight_GB": 144.0,
+      "kv_weight_ratio_pct": 0.87,
+      "per_token_MB": 0.3125
+    },
+    {
+      "model": "Qwen2-72B",
+      "seq_len": 8192,
+      "kv_cache_GB": 2.5,
+      "weight_GB": 144.0,
+      "kv_weight_ratio_pct": 1.74,
+      "per_token_MB": 0.3125
+    },
+    {
+      "model": "Qwen2-72B",
+      "seq_len": 16384,
+      "kv_cache_GB": 5.0,
+      "weight_GB": 144.0,
+      "kv_weight_ratio_pct": 3.47,
+      "per_token_MB": 0.3125
+    },
+    {
+      "model": "Qwen2-72B",
+      "seq_len": 32768,
+      "kv_cache_GB": 10.0,
+      "weight_GB": 144.0,
+      "kv_weight_ratio_pct": 6.94,
+      "per_token_MB": 0.3125
+    },
+    {
+      "model": "Qwen2-72B",
+      "seq_len": 65536,
+      "kv_cache_GB": 20.0,
+      "weight_GB": 144.0,
+      "kv_weight_ratio_pct": 13.89,
+      "per_token_MB": 0.3125
+    },
+    {
+      "model": "Qwen2-72B",
+      "seq_len": 131072,
+      "kv_cache_GB": 40.0,
+      "weight_GB": 144.0,
+      "kv_weight_ratio_pct": 27.78,
+      "per_token_MB": 0.3125
+    }
+  ],
+  "part_b_batch_scaling": [
+    {
+      "model": "LLaMA-2-7B",
+      "batch_size": 1,
+      "seq_len": 4096,
+      "kv_cache_GB": 2.0,
+      "weight_GB": 14.0,
+      "total_GB": 16.0,
+      "fits_A100_80G": true
+    },
+    {
+      "model": "LLaMA-2-7B",
+      "batch_size": 2,
+      "seq_len": 4096,
+      "kv_cache_GB": 4.0,
+      "weight_GB": 14.0,
+      "total_GB": 18.0,
+      "fits_A100_80G": true
+    },
+    {
+      "model": "LLaMA-2-7B",
+      "batch_size": 4,
+      "seq_len": 4096,
+      "kv_cache_GB": 8.0,
+      "weight_GB": 14.0,
+      "total_GB": 22.0,
+      "fits_A100_80G": true
+    },
+    {
+      "model": "LLaMA-2-7B",
+      "batch_size": 8,
+      "seq_len": 4096,
+      "kv_cache_GB": 16.0,
+      "weight_GB": 14.0,
+      "total_GB": 30.0,
+      "fits_A100_80G": true
+    },
+    {
+      "model": "LLaMA-2-7B",
+      "batch_size": 16,
+      "seq_len": 4096,
+      "kv_cache_GB": 32.0,
+      "weight_GB": 14.0,
+      "total_GB": 46.0,
+      "fits_A100_80G": true
+    },
+    {
+      "model": "LLaMA-2-7B",
+      "batch_size": 32,
+      "seq_len": 4096,
+      "kv_cache_GB": 64.0,
+      "weight_GB": 14.0,
+      "total_GB": 78.0,
+      "fits_A100_80G": true
+    },
+    {
+      "model": "LLaMA-2-7B",
+      "batch_size": 64,
+      "seq_len": 4096,
+      "kv_cache_GB": 128.0,
+      "weight_GB": 14.0,
+      "total_GB": 142.0,
+      "fits_A100_80G": false
+    },
+    {
+      "model": "LLaMA-2-7B",
+      "batch_size": 128,
+      "seq_len": 4096,
+      "kv_cache_GB": 256.0,
+      "weight_GB": 14.0,
+      "total_GB": 270.0,
+      "fits_A100_80G": false
+    },
+    {
+      "model": "LLaMA-2-7B",
+      "batch_size": 256,
+      "seq_len": 4096,
+      "kv_cache_GB": 512.0,
+      "weight_GB": 14.0,
+      "total_GB": 526.0,
+      "fits_A100_80G": false
+    },
+    {
+      "model": "LLaMA-2-13B",
+      "batch_size": 1,
+      "seq_len": 4096,
+      "kv_cache_GB": 3.12,
+      "weight_GB": 26.0,
+      "total_GB": 29.12,
+      "fits_A100_80G": true
+    },
+    {
+      "model": "LLaMA-2-13B",
+      "batch_size": 2,
+      "seq_len": 4096,
+      "kv_cache_GB": 6.25,
+      "weight_GB": 26.0,
+      "total_GB": 32.25,
+      "fits_A100_80G": true
+    },
+    {
+      "model": "LLaMA-2-13B",
+      "batch_size": 4,
+      "seq_len": 4096,
+      "kv_cache_GB": 12.5,
+      "weight_GB": 26.0,
+      "total_GB": 38.5,
+      "fits_A100_80G": true
+    },
+    {
+      "model": "LLaMA-2-13B",
+      "batch_size": 8,
+      "seq_len": 4096,
+      "kv_cache_GB": 25.0,
+      "weight_GB": 26.0,
+      "total_GB": 51.0,
+      "fits_A100_80G": true
+    },
+    {
+      "model": "LLaMA-2-13B",
+      "batch_size": 16,
+      "seq_len": 4096,
+      "kv_cache_GB": 50.0,
+      "weight_GB": 26.0,
+      "total_GB": 76.0,
+      "fits_A100_80G": true
+    },
+    {
+      "model": "LLaMA-2-13B",
+      "batch_size": 32,
+      "seq_len": 4096,
+      "kv_cache_GB": 100.0,
+      "weight_GB": 26.0,
+      "total_GB": 126.0,
+      "fits_A100_80G": false
+    },
+    {
+      "model": "LLaMA-2-13B",
+      "batch_size": 64,
+      "seq_len": 4096,
+      "kv_cache_GB": 200.0,
+      "weight_GB": 26.0,
+      "total_GB": 226.0,
+      "fits_A100_80G": false
+    },
+    {
+      "model": "LLaMA-2-13B",
+      "batch_size": 128,
+      "seq_len": 4096,
+      "kv_cache_GB": 400.0,
+      "weight_GB": 26.0,
+      "total_GB": 426.0,
+      "fits_A100_80G": false
+    },
+    {
+      "model": "LLaMA-2-13B",
+      "batch_size": 256,
+      "seq_len": 4096,
+      "kv_cache_GB": 800.0,
+      "weight_GB": 26.0,
+      "total_GB": 826.0,
+      "fits_A100_80G": false
+    },
+    {
+      "model": "LLaMA-2-70B",
+      "batch_size": 1,
+      "seq_len": 4096,
+      "kv_cache_GB": 1.25,
+      "weight_GB": 140.0,
+      "total_GB": 141.25,
+      "fits_A100_80G": false
+    },
+    {
+      "model": "LLaMA-2-70B",
+      "batch_size": 2,
+      "seq_len": 4096,
+      "kv_cache_GB": 2.5,
+      "weight_GB": 140.0,
+      "total_GB": 142.5,
+      "fits_A100_80G": false
+    },
+    {
+      "model": "LLaMA-2-70B",
+      "batch_size": 4,
+      "seq_len": 4096,
+      "kv_cache_GB": 5.0,
+      "weight_GB": 140.0,
+      "total_GB": 145.0,
+      "fits_A100_80G": false
+    },
+    {
+      "model": "LLaMA-2-70B",
+      "batch_size": 8,
+      "seq_len": 4096,
+      "kv_cache_GB": 10.0,
+      "weight_GB": 140.0,
+      "total_GB": 150.0,
+      "fits_A100_80G": false
+    },
+    {
+      "model": "LLaMA-2-70B",
+      "batch_size": 16,
+      "seq_len": 4096,
+      "kv_cache_GB": 20.0,
+      "weight_GB": 140.0,
+      "total_GB": 160.0,
+      "fits_A100_80G": false
+    },
+    {
+      "model": "LLaMA-2-70B",
+      "batch_size": 32,
+      "seq_len": 4096,
+      "kv_cache_GB": 40.0,
+      "weight_GB": 140.0,
+      "total_GB": 180.0,
+      "fits_A100_80G": false
+    },
+    {
+      "model": "LLaMA-2-70B",
+      "batch_size": 64,
+      "seq_len": 4096,
+      "kv_cache_GB": 80.0,
+      "weight_GB": 140.0,
+      "total_GB": 220.0,
+      "fits_A100_80G": false
+    },
+    {
+      "model": "LLaMA-2-70B",
+      "batch_size": 128,
+      "seq_len": 4096,
+      "kv_cache_GB": 160.0,
+      "weight_GB": 140.0,
+      "total_GB": 300.0,
+      "fits_A100_80G": false
+    },
+    {
+      "model": "LLaMA-2-70B",
+      "batch_size": 256,
+      "seq_len": 4096,
+      "kv_cache_GB": 320.0,
+      "weight_GB": 140.0,
+      "total_GB": 460.0,
+      "fits_A100_80G": false
+    },
+    {
+      "model": "LLaMA-3-8B",
+      "batch_size": 1,
+      "seq_len": 4096,
+      "kv_cache_GB": 0.5,
+      "weight_GB": 16.0,
+      "total_GB": 16.5,
+      "fits_A100_80G": true
+    },
+    {
+      "model": "LLaMA-3-8B",
+      "batch_size": 2,
+      "seq_len": 4096,
+      "kv_cache_GB": 1.0,
+      "weight_GB": 16.0,
+      "total_GB": 17.0,
+      "fits_A100_80G": true
+    },
+    {
+      "model": "LLaMA-3-8B",
+      "batch_size": 4,
+      "seq_len": 4096,
+      "kv_cache_GB": 2.0,
+      "weight_GB": 16.0,
+      "total_GB": 18.0,
+      "fits_A100_80G": true
+    },
+    {
+      "model": "LLaMA-3-8B",
+      "batch_size": 8,
+      "seq_len": 4096,
+      "kv_cache_GB": 4.0,
+      "weight_GB": 16.0,
+      "total_GB": 20.0,
+      "fits_A100_80G": true
+    },
+    {
+      "model": "LLaMA-3-8B",
+      "batch_size": 16,
+      "seq_len": 4096,
+      "kv_cache_GB": 8.0,
+      "weight_GB": 16.0,
+      "total_GB": 24.0,
+      "fits_A100_80G": true
+    },
+    {
+      "model": "LLaMA-3-8B",
+      "batch_size": 32,
+      "seq_len": 4096,
+      "kv_cache_GB": 16.0,
+      "weight_GB": 16.0,
+      "total_GB": 32.0,
+      "fits_A100_80G": true
+    },
+    {
+      "model": "LLaMA-3-8B",
+      "batch_size": 64,
+      "seq_len": 4096,
+      "kv_cache_GB": 32.0,
+      "weight_GB": 16.0,
+      "total_GB": 48.0,
+      "fits_A100_80G": true
+    },
+    {
+      "model": "LLaMA-3-8B",
+      "batch_size": 128,
+      "seq_len": 4096,
+      "kv_cache_GB": 64.0,
+      "weight_GB": 16.0,
+      "total_GB": 80.0,
+      "fits_A100_80G": false
+    },
+    {
+      "model": "LLaMA-3-8B",
+      "batch_size": 256,
+      "seq_len": 4096,
+      "kv_cache_GB": 128.0,
+      "weight_GB": 16.0,
+      "total_GB": 144.0,
+      "fits_A100_80G": false
+    },
+    {
+      "model": "LLaMA-3-70B",
+      "batch_size": 1,
+      "seq_len": 4096,
+      "kv_cache_GB": 1.25,
+      "weight_GB": 140.0,
+      "total_GB": 141.25,
+      "fits_A100_80G": false
+    },
+    {
+      "model": "LLaMA-3-70B",
+      "batch_size": 2,
+      "seq_len": 4096,
+      "kv_cache_GB": 2.5,
+      "weight_GB": 140.0,
+      "total_GB": 142.5,
+      "fits_A100_80G": false
+    },
+    {
+      "model": "LLaMA-3-70B",
+      "batch_size": 4,
+      "seq_len": 4096,
+      "kv_cache_GB": 5.0,
+      "weight_GB": 140.0,
+      "total_GB": 145.0,
+      "fits_A100_80G": false
+    },
+    {
+      "model": "LLaMA-3-70B",
+      "batch_size": 8,
+      "seq_len": 4096,
+      "kv_cache_GB": 10.0,
+      "weight_GB": 140.0,
+      "total_GB": 150.0,
+      "fits_A100_80G": false
+    },
+    {
+      "model": "LLaMA-3-70B",
+      "batch_size": 16,
+      "seq_len": 4096,
+      "kv_cache_GB": 20.0,
+      "weight_GB": 140.0,
+      "total_GB": 160.0,
+      "fits_A100_80G": false
+    },
+    {
+      "model": "LLaMA-3-70B",
+      "batch_size": 32,
+      "seq_len": 4096,
+      "kv_cache_GB": 40.0,
+      "weight_GB": 140.0,
+      "total_GB": 180.0,
+      "fits_A100_80G": false
+    },
+    {
+      "model": "LLaMA-3-70B",
+      "batch_size": 64,
+      "seq_len": 4096,
+      "kv_cache_GB": 80.0,
+      "weight_GB": 140.0,
+      "total_GB": 220.0,
+      "fits_A100_80G": false
+    },
+    {
+      "model": "LLaMA-3-70B",
+      "batch_size": 128,
+      "seq_len": 4096,
+      "kv_cache_GB": 160.0,
+      "weight_GB": 140.0,
+      "total_GB": 300.0,
+      "fits_A100_80G": false
+    },
+    {
+      "model": "LLaMA-3-70B",
+      "batch_size": 256,
+      "seq_len": 4096,
+      "kv_cache_GB": 320.0,
+      "weight_GB": 140.0,
+      "total_GB": 460.0,
+      "fits_A100_80G": false
+    },
+    {
+      "model": "Mistral-7B",
+      "batch_size": 1,
+      "seq_len": 4096,
+      "kv_cache_GB": 0.5,
+      "weight_GB": 14.6,
+      "total_GB": 15.1,
+      "fits_A100_80G": true
+    },
+    {
+      "model": "Mistral-7B",
+      "batch_size": 2,
+      "seq_len": 4096,
+      "kv_cache_GB": 1.0,
+      "weight_GB": 14.6,
+      "total_GB": 15.6,
+      "fits_A100_80G": true
+    },
+    {
+      "model": "Mistral-7B",
+      "batch_size": 4,
+      "seq_len": 4096,
+      "kv_cache_GB": 2.0,
+      "weight_GB": 14.6,
+      "total_GB": 16.6,
+      "fits_A100_80G": true
+    },
+    {
+      "model": "Mistral-7B",
+      "batch_size": 8,
+      "seq_len": 4096,
+      "kv_cache_GB": 4.0,
+      "weight_GB": 14.6,
+      "total_GB": 18.6,
+      "fits_A100_80G": true
+    },
+    {
+      "model": "Mistral-7B",
+      "batch_size": 16,
+      "seq_len": 4096,
+      "kv_cache_GB": 8.0,
+      "weight_GB": 14.6,
+      "total_GB": 22.6,
+      "fits_A100_80G": true
+    },
+    {
+      "model": "Mistral-7B",
+      "batch_size": 32,
+      "seq_len": 4096,
+      "kv_cache_GB": 16.0,
+      "weight_GB": 14.6,
+      "total_GB": 30.6,
+      "fits_A100_80G": true
+    },
+    {
+      "model": "Mistral-7B",
+      "batch_size": 64,
+      "seq_len": 4096,
+      "kv_cache_GB": 32.0,
+      "weight_GB": 14.6,
+      "total_GB": 46.6,
+      "fits_A100_80G": true
+    },
+    {
+      "model": "Mistral-7B",
+      "batch_size": 128,
+      "seq_len": 4096,
+      "kv_cache_GB": 64.0,
+      "weight_GB": 14.6,
+      "total_GB": 78.6,
+      "fits_A100_80G": true
+    },
+    {
+      "model": "Mistral-7B",
+      "batch_size": 256,
+      "seq_len": 4096,
+      "kv_cache_GB": 128.0,
+      "weight_GB": 14.6,
+      "total_GB": 142.6,
+      "fits_A100_80G": false
+    },
+    {
+      "model": "Qwen2-7B",
+      "batch_size": 1,
+      "seq_len": 4096,
+      "kv_cache_GB": 0.22,
+      "weight_GB": 15.2,
+      "total_GB": 15.42,
+      "fits_A100_80G": true
+    },
+    {
+      "model": "Qwen2-7B",
+      "batch_size": 2,
+      "seq_len": 4096,
+      "kv_cache_GB": 0.44,
+      "weight_GB": 15.2,
+      "total_GB": 15.64,
+      "fits_A100_80G": true
+    },
+    {
+      "model": "Qwen2-7B",
+      "batch_size": 4,
+      "seq_len": 4096,
+      "kv_cache_GB": 0.88,
+      "weight_GB": 15.2,
+      "total_GB": 16.07,
+      "fits_A100_80G": true
+    },
+    {
+      "model": "Qwen2-7B",
+      "batch_size": 8,
+      "seq_len": 4096,
+      "kv_cache_GB": 1.75,
+      "weight_GB": 15.2,
+      "total_GB": 16.95,
+      "fits_A100_80G": true
+    },
+    {
+      "model": "Qwen2-7B",
+      "batch_size": 16,
+      "seq_len": 4096,
+      "kv_cache_GB": 3.5,
+      "weight_GB": 15.2,
+      "total_GB": 18.7,
+      "fits_A100_80G": true
+    },
+    {
+      "model": "Qwen2-7B",
+      "batch_size": 32,
+      "seq_len": 4096,
+      "kv_cache_GB": 7.0,
+      "weight_GB": 15.2,
+      "total_GB": 22.2,
+      "fits_A100_80G": true
+    },
+    {
+      "model": "Qwen2-7B",
+      "batch_size": 64,
+      "seq_len": 4096,
+      "kv_cache_GB": 14.0,
+      "weight_GB": 15.2,
+      "total_GB": 29.2,
+      "fits_A100_80G": true
+    },
+    {
+      "model": "Qwen2-7B",
+      "batch_size": 128,
+      "seq_len": 4096,
+      "kv_cache_GB": 28.0,
+      "weight_GB": 15.2,
+      "total_GB": 43.2,
+      "fits_A100_80G": true
+    },
+    {
+      "model": "Qwen2-7B",
+      "batch_size": 256,
+      "seq_len": 4096,
+      "kv_cache_GB": 56.0,
+      "weight_GB": 15.2,
+      "total_GB": 71.2,
+      "fits_A100_80G": true
+    },
+    {
+      "model": "Qwen2-72B",
+      "batch_size": 1,
+      "seq_len": 4096,
+      "kv_cache_GB": 1.25,
+      "weight_GB": 144.0,
+      "total_GB": 145.25,
+      "fits_A100_80G": false
+    },
+    {
+      "model": "Qwen2-72B",
+      "batch_size": 2,
+      "seq_len": 4096,
+      "kv_cache_GB": 2.5,
+      "weight_GB": 144.0,
+      "total_GB": 146.5,
+      "fits_A100_80G": false
+    },
+    {
+      "model": "Qwen2-72B",
+      "batch_size": 4,
+      "seq_len": 4096,
+      "kv_cache_GB": 5.0,
+      "weight_GB": 144.0,
+      "total_GB": 149.0,
+      "fits_A100_80G": false
+    },
+    {
+      "model": "Qwen2-72B",
+      "batch_size": 8,
+      "seq_len": 4096,
+      "kv_cache_GB": 10.0,
+      "weight_GB": 144.0,
+      "total_GB": 154.0,
+      "fits_A100_80G": false
+    },
+    {
+      "model": "Qwen2-72B",
+      "batch_size": 16,
+      "seq_len": 4096,
+      "kv_cache_GB": 20.0,
+      "weight_GB": 144.0,
+      "total_GB": 164.0,
+      "fits_A100_80G": false
+    },
+    {
+      "model": "Qwen2-72B",
+      "batch_size": 32,
+      "seq_len": 4096,
+      "kv_cache_GB": 40.0,
+      "weight_GB": 144.0,
+      "total_GB": 184.0,
+      "fits_A100_80G": false
+    },
+    {
+      "model": "Qwen2-72B",
+      "batch_size": 64,
+      "seq_len": 4096,
+      "kv_cache_GB": 80.0,
+      "weight_GB": 144.0,
+      "total_GB": 224.0,
+      "fits_A100_80G": false
+    },
+    {
+      "model": "Qwen2-72B",
+      "batch_size": 128,
+      "seq_len": 4096,
+      "kv_cache_GB": 160.0,
+      "weight_GB": 144.0,
+      "total_GB": 304.0,
+      "fits_A100_80G": false
+    },
+    {
+      "model": "Qwen2-72B",
+      "batch_size": 256,
+      "seq_len": 4096,
+      "kv_cache_GB": 320.0,
+      "weight_GB": 144.0,
+      "total_GB": 464.0,
+      "fits_A100_80G": false
+    }
+  ],
+  "part_c_max_batch": [
+    {
+      "model": "LLaMA-2-7B",
+      "gpu": "A100-80GB",
+      "seq_len": 2048,
+      "max_batch_size": 64
+    },
+    {
+      "model": "LLaMA-2-7B",
+      "gpu": "A100-80GB",
+      "seq_len": 4096,
+      "max_batch_size": 32
+    },
+    {
+      "model": "LLaMA-2-7B",
+      "gpu": "A100-80GB",
+      "seq_len": 8192,
+      "max_batch_size": 16
+    },
+    {
+      "model": "LLaMA-2-7B",
+      "gpu": "A100-80GB",
+      "seq_len": 16384,
+      "max_batch_size": 8
+    },
+    {
+      "model": "LLaMA-2-7B",
+      "gpu": "A100-80GB",
+      "seq_len": 32768,
+      "max_batch_size": 4
+    },
+    {
+      "model": "LLaMA-2-7B",
+      "gpu": "A100-80GB",
+      "seq_len": 131072,
+      "max_batch_size": 1
+    },
+    {
+      "model": "LLaMA-2-13B",
+      "gpu": "A100-80GB",
+      "seq_len": 2048,
+      "max_batch_size": 33
+    },
+    {
+      "model": "LLaMA-2-13B",
+      "gpu": "A100-80GB",
+      "seq_len": 4096,
+      "max_batch_size": 16
+    },
+    {
+      "model": "LLaMA-2-13B",
+      "gpu": "A100-80GB",
+      "seq_len": 8192,
+      "max_batch_size": 8
+    },
+    {
+      "model": "LLaMA-2-13B",
+      "gpu": "A100-80GB",
+      "seq_len": 16384,
+      "max_batch_size": 4
+    },
+    {
+      "model": "LLaMA-2-13B",
+      "gpu": "A100-80GB",
+      "seq_len": 32768,
+      "max_batch_size": 2
+    },
+    {
+      "model": "LLaMA-2-13B",
+      "gpu": "A100-80GB",
+      "seq_len": 131072,
+      "max_batch_size": 0
+    },
+    {
+      "model": "LLaMA-2-70B",
+      "gpu": "A100-80GB",
+      "seq_len": 2048,
+      "max_batch_size": 0
+    },
+    {
+      "model": "LLaMA-2-70B",
+      "gpu": "A100-80GB",
+      "seq_len": 4096,
+      "max_batch_size": 0
+    },
+    {
+      "model": "LLaMA-2-70B",
+      "gpu": "A100-80GB",
+      "seq_len": 8192,
+      "max_batch_size": 0
+    },
+    {
+      "model": "LLaMA-2-70B",
+      "gpu": "A100-80GB",
+      "seq_len": 16384,
+      "max_batch_size": 0
+    },
+    {
+      "model": "LLaMA-2-70B",
+      "gpu": "A100-80GB",
+      "seq_len": 32768,
+      "max_batch_size": 0
+    },
+    {
+      "model": "LLaMA-2-70B",
+      "gpu": "A100-80GB",
+      "seq_len": 131072,
+      "max_batch_size": 0
+    },
+    {
+      "model": "LLaMA-3-8B",
+      "gpu": "A100-80GB",
+      "seq_len": 2048,
+      "max_batch_size": 248
+    },
+    {
+      "model": "LLaMA-3-8B",
+      "gpu": "A100-80GB",
+      "seq_len": 4096,
+      "max_batch_size": 124
+    },
+    {
+      "model": "LLaMA-3-8B",
+      "gpu": "A100-80GB",
+      "seq_len": 8192,
+      "max_batch_size": 62
+    },
+    {
+      "model": "LLaMA-3-8B",
+      "gpu": "A100-80GB",
+      "seq_len": 16384,
+      "max_batch_size": 31
+    },
+    {
+      "model": "LLaMA-3-8B",
+      "gpu": "A100-80GB",
+      "seq_len": 32768,
+      "max_batch_size": 15
+    },
+    {
+      "model": "LLaMA-3-8B",
+      "gpu": "A100-80GB",
+      "seq_len": 131072,
+      "max_batch_size": 3
+    },
+    {
+      "model": "LLaMA-3-70B",
+      "gpu": "A100-80GB",
+      "seq_len": 2048,
+      "max_batch_size": 0
+    },
+    {
+      "model": "LLaMA-3-70B",
+      "gpu": "A100-80GB",
+      "seq_len": 4096,
+      "max_batch_size": 0
+    },
+    {
+      "model": "LLaMA-3-70B",
+      "gpu": "A100-80GB",
+      "seq_len": 8192,
+      "max_batch_size": 0
+    },
+    {
+      "model": "LLaMA-3-70B",
+      "gpu": "A100-80GB",
+      "seq_len": 16384,
+      "max_batch_size": 0
+    },
+    {
+      "model": "LLaMA-3-70B",
+      "gpu": "A100-80GB",
+      "seq_len": 32768,
+      "max_batch_size": 0
+    },
+    {
+      "model": "LLaMA-3-70B",
+      "gpu": "A100-80GB",
+      "seq_len": 131072,
+      "max_batch_size": 0
+    },
+    {
+      "model": "Mistral-7B",
+      "gpu": "A100-80GB",
+      "seq_len": 2048,
+      "max_batch_size": 253
+    },
+    {
+      "model": "Mistral-7B",
+      "gpu": "A100-80GB",
+      "seq_len": 4096,
+      "max_batch_size": 126
+    },
+    {
+      "model": "Mistral-7B",
+      "gpu": "A100-80GB",
+      "seq_len": 8192,
+      "max_batch_size": 63
+    },
+    {
+      "model": "Mistral-7B",
+      "gpu": "A100-80GB",
+      "seq_len": 16384,
+      "max_batch_size": 31
+    },
+    {
+      "model": "Mistral-7B",
+      "gpu": "A100-80GB",
+      "seq_len": 32768,
+      "max_batch_size": 15
+    },
+    {
+      "model": "Mistral-7B",
+      "gpu": "A100-80GB",
+      "seq_len": 131072,
+      "max_batch_size": 3
+    },
+    {
+      "model": "Qwen2-7B",
+      "gpu": "A100-80GB",
+      "seq_len": 2048,
+      "max_batch_size": 574
+    },
+    {
+      "model": "Qwen2-7B",
+      "gpu": "A100-80GB",
+      "seq_len": 4096,
+      "max_batch_size": 287
+    },
+    {
+      "model": "Qwen2-7B",
+      "gpu": "A100-80GB",
+      "seq_len": 8192,
+      "max_batch_size": 143
+    },
+    {
+      "model": "Qwen2-7B",
+      "gpu": "A100-80GB",
+      "seq_len": 16384,
+      "max_batch_size": 71
+    },
+    {
+      "model": "Qwen2-7B",
+      "gpu": "A100-80GB",
+      "seq_len": 32768,
+      "max_batch_size": 35
+    },
+    {
+      "model": "Qwen2-7B",
+      "gpu": "A100-80GB",
+      "seq_len": 131072,
+      "max_batch_size": 8
+    },
+    {
+      "model": "Qwen2-72B",
+      "gpu": "A100-80GB",
+      "seq_len": 2048,
+      "max_batch_size": 0
+    },
+    {
+      "model": "Qwen2-72B",
+      "gpu": "A100-80GB",
+      "seq_len": 4096,
+      "max_batch_size": 0
+    },
+    {
+      "model": "Qwen2-72B",
+      "gpu": "A100-80GB",
+      "seq_len": 8192,
+      "max_batch_size": 0
+    },
+    {
+      "model": "Qwen2-72B",
+      "gpu": "A100-80GB",
+      "seq_len": 16384,
+      "max_batch_size": 0
+    },
+    {
+      "model": "Qwen2-72B",
+      "gpu": "A100-80GB",
+      "seq_len": 32768,
+      "max_batch_size": 0
+    },
+    {
+      "model": "Qwen2-72B",
+      "gpu": "A100-80GB",
+      "seq_len": 131072,
+      "max_batch_size": 0
+    }
+  ],
+  "part_d_crossover": [
+    {
+      "model": "LLaMA-2-7B",
+      "crossover_seq_len": 28672
+    },
+    {
+      "model": "LLaMA-2-13B",
+      "crossover_seq_len": 34304
+    },
+    {
+      "model": "LLaMA-2-70B",
+      "crossover_seq_len": null
+    },
+    {
+      "model": "LLaMA-3-8B",
+      "crossover_seq_len": 131072
+    },
+    {
+      "model": "LLaMA-3-70B",
+      "crossover_seq_len": null
+    },
+    {
+      "model": "Mistral-7B",
+      "crossover_seq_len": 119808
+    },
+    {
+      "model": "Qwen2-7B",
+      "crossover_seq_len": null
+    },
+    {
+      "model": "Qwen2-72B",
+      "crossover_seq_len": null
+    }
+  ]
+}

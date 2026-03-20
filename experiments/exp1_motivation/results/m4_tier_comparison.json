@@ -1,0 +1,170 @@
+[
+  {
+    "size_label": "64KB",
+    "size_bytes": 65536,
+    "gpu_d2d": {
+      "lat_us": 11.0,
+      "bw_gbps": 5.96
+    },
+    "d2h_pinned": {
+      "lat_us": 17.4,
+      "bw_gbps": 3.77
+    },
+    "h2d_pinned": {
+      "lat_us": 18.2,
+      "bw_gbps": 3.59
+    },
+    "dram_copy": {
+      "lat_us": 2.6,
+      "bw_gbps": 24.78
+    },
+    "ssd_write": {
+      "lat_us": 99.5,
+      "bw_gbps": 0.66
+    },
+    "ssd_read": {
+      "lat_us": 9.6,
+      "bw_gbps": 6.85
+    }
+  },
+  {
+    "size_label": "256KB",
+    "size_bytes": 262144,
+    "gpu_d2d": {
+      "lat_us": 11.4,
+      "bw_gbps": 22.98
+    },
+    "d2h_pinned": {
+      "lat_us": 25.9,
+      "bw_gbps": 10.14
+    },
+    "h2d_pinned": {
+      "lat_us": 26.5,
+      "bw_gbps": 9.89
+    },
+    "dram_copy": {
+      "lat_us": 16.9,
+      "bw_gbps": 15.53
+    },
+    "ssd_write": {
+      "lat_us": 146.7,
+      "bw_gbps": 1.79
+    },
+    "ssd_read": {
+      "lat_us": 14.9,
+      "bw_gbps": 17.63
+    }
+  },
+  {
+    "size_label": "1MB",
+    "size_bytes": 1048576,
+    "gpu_d2d": {
+      "lat_us": 12.6,
+      "bw_gbps": 82.89
+    },
+    "d2h_pinned": {
+      "lat_us": 58.5,
+      "bw_gbps": 17.91
+    },
+    "h2d_pinned": {
+      "lat_us": 58.2,
+      "bw_gbps": 18.02
+    },
+    "dram_copy": {
+      "lat_us": 17.6,
+      "bw_gbps": 59.59
+    },
+    "ssd_write": {
+      "lat_us": 520.3,
+      "bw_gbps": 2.02
+    },
+    "ssd_read": {
+      "lat_us": 57.0,
+      "bw_gbps": 18.41
+    }
+  },
+  {
+    "size_label": "4MB",
+    "size_bytes": 4194304,
+    "gpu_d2d": {
+      "lat_us": 15.3,
+      "bw_gbps": 274.38
+    },
+    "d2h_pinned": {
+      "lat_us": 188.5,
+      "bw_gbps": 22.25
+    },
+    "h2d_pinned": {
+      "lat_us": 181.4,
+      "bw_gbps": 23.13
+    },
+    "dram_copy": {
+      "lat_us": 18.5,
+      "bw_gbps": 226.11
+    },
+    "ssd_write": {
+      "lat_us": 1359.1,
+      "bw_gbps": 3.09
+    },
+    "ssd_read": {
+      "lat_us": 349.7,
+      "bw_gbps": 11.99
+    }
+  },
+  {
+    "size_label": "16MB",
+    "size_bytes": 16777216,
+    "gpu_d2d": {
+      "lat_us": 29.0,
+      "bw_gbps": 579.07
+    },
+    "d2h_pinned": {
+      "lat_us": 749.1,
+      "bw_gbps": 22.4
+    },
+    "h2d_pinned": {
+      "lat_us": 677.7,
+      "bw_gbps": 24.76
+    },
+    "dram_copy": {
+      "lat_us": 29.6,
+      "bw_gbps": 566.09
+    },
+    "ssd_write": {
+      "lat_us": 4980.3,
+      "bw_gbps": 3.37
+    },
+    "ssd_read": {
+      "lat_us": 1365.7,
+      "bw_gbps": 12.28
+    }
+  },
+  {
+    "size_label": "64MB",
+    "size_bytes": 67108864,
+    "gpu_d2d": {
+      "lat_us": 96.7,
+      "bw_gbps": 693.94
+    },
+    "d2h_pinned": {
+      "lat_us": 2932.9,
+      "bw_gbps": 22.88
+    },
+    "h2d_pinned": {
+      "lat_us": 2659.1,
+      "bw_gbps": 25.24
+    },
+    "dram_copy": {
+      "lat_us": 246.9,
+      "bw_gbps": 271.85
+    },
+    "ssd_write": {
+      "lat_us": 26521.2,
+      "bw_gbps": 2.53
+    },
+    "ssd_read": {
+      "lat_us": 36884.6,
+      "bw_gbps": 1.82
+    }
+  }
+]

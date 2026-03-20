@@ -1,0 +1,325 @@
+{
+  "ssd_benchmarks": [
+    {
+      "disk": "root_nvme (KIOXIA)",
+      "path": "/tmp/orchkv_bench",
+      "tests": {
+        "seq_write_buffered_4K": {
+          "bw_gbps": 0.959,
+          "lat_us": 4.3
+        },
+        "seq_write_buffered_16K": {
+          "bw_gbps": 1.33,
+          "lat_us": 12.3
+        },
+        "seq_write_buffered_64K": {
+          "bw_gbps": 1.372,
+          "lat_us": 47.8
+        },
+        "seq_write_buffered_256K": {
+          "bw_gbps": 1.4,
+          "lat_us": 187.3
+        },
+        "seq_write_buffered_1M": {
+          "bw_gbps": 1.335,
+          "lat_us": 785.2
+        },
+        "seq_write_buffered_4M": {
+          "bw_gbps": 1.288,
+          "lat_us": 3257.1
+        },
+        "seq_write_buffered_16M": {
+          "bw_gbps": 1.299,
+          "lat_us": 12917.2
+        },
+        "seq_read_buffered_4K": {
+          "bw_gbps": 3.477,
+          "lat_us": 1.2
+        },
+        "seq_read_buffered_16K": {
+          "bw_gbps": 4.973,
+          "lat_us": 3.3
+        },
+        "seq_read_buffered_64K": {
+          "bw_gbps": 5.505,
+          "lat_us": 11.9
+        },
+        "seq_read_buffered_256K": {
+          "bw_gbps": 5.755,
+          "lat_us": 45.6
+        },
+        "seq_read_buffered_1M": {
+          "bw_gbps": 5.571,
+          "lat_us": 188.2
+        },
+        "seq_read_buffered_4M": {
+          "bw_gbps": 5.507,
+          "lat_us": 761.6
+        },
+        "seq_read_buffered_16M": {
+          "bw_gbps": 5.136,
+          "lat_us": 3266.8
+        },
+        "fsync_4k": {
+          "avg_us": 407.8,
+          "p50_us": 412.0,
+          "p99_us": 483.9
+        },
+        "fio_seq_write_1M_direct": {
+          "bw_gbps": 6.79,
+          "iops": 6475.2,
+          "lat_us": 4939.92
+        },
+        "fio_seq_read_1M_direct": {
+          "bw_gbps": 7.297,
+          "iops": 6959.4,
+          "lat_us": 4594.4
+        },
+        "fio_rand_write_4k_direct": {
+          "bw_gbps": 0.922,
+          "iops": 225002.3,
+          "lat_us": 141.9
+        },
+        "fio_rand_read_4k_direct": {
+          "bw_gbps": 1.131,
+          "iops": 276107.7,
+          "lat_us": 115.61
+        },
+        "fio_rand_write_64k_direct": {
+          "bw_gbps": 1.504,
+          "iops": 22953.1,
+          "lat_us": 1393.64
+        },
+        "fio_rand_read_64k_direct": {
+          "bw_gbps": 7.11,
+          "iops": 108483.4,
+          "lat_us": 294.52
+        },
+        "fio_rand_write_1M_direct": {
+          "bw_gbps": 6.449,
+          "iops": 6150.3,
+          "lat_us": 5201.15
+        },
+        "fio_rand_read_1M_direct": {
+          "bw_gbps": 7.434,
+          "iops": 7089.9,
+          "lat_us": 4509.3
+        }
+      }
+    },
+    {
+      "disk": "raid0_samsung",
+      "path": "/raid/orchkv_bench",
+      "tests": {
+        "seq_write_buffered_4K": {
+          "bw_gbps": 1.147,
+          "lat_us": 3.6
+        },
+        "seq_write_buffered_16K": {
+          "bw_gbps": 1.867,
+          "lat_us": 8.8
+        },
+        "seq_write_buffered_64K": {
+          "bw_gbps": 2.289,
+          "lat_us": 28.6
+        },
+        "seq_write_buffered_256K": {
+          "bw_gbps": 2.886,
+          "lat_us": 90.8
+        },
+        "seq_write_buffered_1M": {
+          "bw_gbps": 2.873,
+          "lat_us": 365.0
+        },
+        "seq_write_buffered_4M": {
+          "bw_gbps": 2.237,
+          "lat_us": 1874.8
+        },
+        "seq_write_buffered_16M": {
+          "bw_gbps": 2.181,
+          "lat_us": 7693.1
+        },
+        "seq_read_buffered_4K": {
+          "bw_gbps": 4.483,
+          "lat_us": 0.9
+        },
+        "seq_read_buffered_16K": {
+          "bw_gbps": 7.082,
+          "lat_us": 2.3
+        },
+        "seq_read_buffered_64K": {
+          "bw_gbps": 8.341,
+          "lat_us": 7.9
+        },
+        "seq_read_buffered_256K": {
+          "bw_gbps": 8.798,
+          "lat_us": 29.8
+        },
+        "seq_read_buffered_1M": {
+          "bw_gbps": 7.744,
+          "lat_us": 135.4
+        },
+        "seq_read_buffered_4M": {
+          "bw_gbps": 7.363,
+          "lat_us": 569.7
+        },
+        "seq_read_buffered_16M": {
+          "bw_gbps": 6.742,
+          "lat_us": 2488.4
+        },
+        "fsync_4k": {
+          "avg_us": 53.4,
+          "p50_us": 52.5,
+          "p99_us": 70.2
+        },
+        "fio_seq_write_1M_direct": {
+          "bw_gbps": 5.261,
+          "iops": 5017.7,
+          "lat_us": 6374.63
+        },
+        "fio_seq_read_1M_direct": {
+          "bw_gbps": 17.797,
+          "iops": 16972.9,
+          "lat_us": 1883.33
+        },
+        "fio_rand_write_4k_direct": {
+          "bw_gbps": 0.137,
+          "iops": 33353.0,
+          "lat_us": 958.47
+        },
+        "fio_rand_read_4k_direct": {
+          "bw_gbps": 0.826,
+          "iops": 201775.5,
+          "lat_us": 158.08
+        },
+        "fio_rand_write_64k_direct": {
+          "bw_gbps": 3.996,
+          "iops": 60969.3,
+          "lat_us": 524.07
+        },
+        "fio_rand_read_64k_direct": {
+          "bw_gbps": 8.354,
+          "iops": 127478.3,
+          "lat_us": 250.5
+        },
+        "fio_rand_write_1M_direct": {
+          "bw_gbps": 5.576,
+          "iops": 5317.5,
+          "lat_us": 6015.55
+        },
+        "fio_rand_read_1M_direct": {
+          "bw_gbps": 17.186,
+          "iops": 16390.3,
+          "lat_us": 1950.05
+        }
+      }
+    },
+    {
+      "disk": "sata_samsung",
+      "path": "/public/orchkv_bench",
+      "tests": {
+        "seq_write_buffered_4K": {
+          "bw_gbps": 0.389,
+          "lat_us": 10.5
+        },
+        "seq_write_buffered_16K": {
+          "bw_gbps": 0.423,
+          "lat_us": 38.7
+        },
+        "seq_write_buffered_64K": {
+          "bw_gbps": 0.432,
+          "lat_us": 151.7
+        },
+        "seq_write_buffered_256K": {
+          "bw_gbps": 0.433,
+          "lat_us": 605.3
+        },
+        "seq_write_buffered_1M": {
+          "bw_gbps": 0.429,
+          "lat_us": 2441.7
+        },
+        "seq_write_buffered_4M": {
+          "bw_gbps": 0.427,
+          "lat_us": 9815.3
+        },
+        "seq_write_buffered_16M": {
+          "bw_gbps": 0.427,
+          "lat_us": 39319.1
+        },
+        "seq_read_buffered_4K": {
+          "bw_gbps": 3.716,
+          "lat_us": 1.1
+        },
+        "seq_read_buffered_16K": {
+          "bw_gbps": 5.183,
+          "lat_us": 3.2
+        },
+        "seq_read_buffered_64K": {
+          "bw_gbps": 5.732,
+          "lat_us": 11.4
+        },
+        "seq_read_buffered_256K": {
+          "bw_gbps": 6.04,
+          "lat_us": 43.4
+        },
+        "seq_read_buffered_1M": {
+          "bw_gbps": 5.753,
+          "lat_us": 182.3
+        },
+        "seq_read_buffered_4M": {
+          "bw_gbps": 5.562,
+          "lat_us": 754.1
+        },
+        "seq_read_buffered_16M": {
+          "bw_gbps": 5.171,
+          "lat_us": 3244.3
+        },
+        "fsync_4k": {
+          "avg_us": 219.4,
+          "p50_us": 218.7,
+          "p99_us": 234.8
+        },
+        "fio_seq_write_1M_direct": {
+          "bw_gbps": 0.536,
+          "iops": 510.8,
+          "lat_us": 62621.98
+        },
+        "fio_seq_read_1M_direct": {
+          "bw_gbps": 0.567,
+          "iops": 540.4,
+          "lat_us": 59148.34
+        },
+        "fio_rand_write_4k_direct": {
+          "bw_gbps": 0.3,
+          "iops": 73282.6,
+          "lat_us": 436.22
+        },
+        "fio_rand_read_4k_direct": {
+          "bw_gbps": 0.39,
+          "iops": 95216.1,
+          "lat_us": 335.72
+        },
+        "fio_rand_write_64k_direct": {
+          "bw_gbps": 0.521,
+          "iops": 7942.4,
+          "lat_us": 4028.28
+        },
+        "fio_rand_read_64k_direct": {
+          "bw_gbps": 0.554,
+          "iops": 8449.1,
+          "lat_us": 3786.38
+        },
+        "fio_rand_write_1M_direct": {
+          "bw_gbps": 0.536,
+          "iops": 511.4,
+          "lat_us": 62546.22
+        },
+        "fio_rand_read_1M_direct": {
+          "bw_gbps": 0.567,
+          "iops": 540.5,
+          "lat_us": 59151.01
+        }
+      }
+    }
+  ]
+}

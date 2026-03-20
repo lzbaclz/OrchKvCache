@@ -1,0 +1,100 @@
+{
+  "model": "/raid/models/Qwen/Qwen2___5-1___5B",
+  "model_weight_MB": 2944.4,
+  "model_config": {
+    "n_layers": 28,
+    "n_kv_heads": 2,
+    "d_head": 128
+  },
+  "seq_len_scaling": [
+    {
+      "seq_len": 256,
+      "kv_theory_MB": 7.0,
+      "kv_actual_MB": 89.31,
+      "kv_tensor_MB": 7.0,
+      "actual_vs_theory_ratio": 12.759,
+      "model_weight_MB": 2944.4,
+      "kv_weight_ratio_pct": 3.03
+    },
+    {
+      "seq_len": 512,
+      "kv_theory_MB": 14.0,
+      "kv_actual_MB": 162.38,
+      "kv_tensor_MB": 14.0,
+      "actual_vs_theory_ratio": 11.598,
+      "model_weight_MB": 2944.4,
+      "kv_weight_ratio_pct": 5.51
+    },
+    {
+      "seq_len": 1024,
+      "kv_theory_MB": 28.0,
+      "kv_actual_MB": 324.75,
+      "kv_tensor_MB": 28.0,
+      "actual_vs_theory_ratio": 11.598,
+      "model_weight_MB": 2944.4,
+      "kv_weight_ratio_pct": 11.03
+    },
+    {
+      "seq_len": 2048,
+      "kv_theory_MB": 56.0,
+      "kv_actual_MB": 650.0,
+      "kv_tensor_MB": 56.0,
+      "actual_vs_theory_ratio": 11.607,
+      "model_weight_MB": 2944.4,
+      "kv_weight_ratio_pct": 22.08
+    },
+    {
+      "seq_len": 4096,
+      "kv_theory_MB": 112.0,
+      "kv_actual_MB": 1300.0,
+      "kv_tensor_MB": 112.0,
+      "actual_vs_theory_ratio": 11.607,
+      "model_weight_MB": 2944.4,
+      "kv_weight_ratio_pct": 44.15
+    }
+  ],
+  "batch_size_scaling": [
+    {
+      "batch_size": 1,
+      "seq_len": 2048,
+      "kv_cache_MB": 650.0,
+      "total_GPU_MB": 3606.5,
+      "kv_total_pct": 18.0
+    },
+    {
+      "batch_size": 2,
+      "seq_len": 2048,
+      "kv_cache_MB": 1300.0,
+      "total_GPU_MB": 4256.6,
+      "kv_total_pct": 30.5
+    },
+    {
+      "batch_size": 4,
+      "seq_len": 2048,
+      "kv_cache_MB": 2598.0,
+      "total_GPU_MB": 5554.6,
+      "kv_total_pct": 46.8
+    },
+    {
+      "batch_size": 8,
+      "seq_len": 2048,
+      "kv_cache_MB": 5196.0,
+      "total_GPU_MB": 8152.7,
+      "kv_total_pct": 63.7
+    },
+    {
+      "batch_size": 16,
+      "seq_len": 2048,
+      "kv_cache_MB": 10392.0,
+      "total_GPU_MB": 13348.8,
+      "kv_total_pct": 77.8
+    },
+    {
+      "batch_size": 32,
+      "seq_len": 2048,
+      "kv_cache_MB": 20784.0,
+      "total_GPU_MB": 23741.0,
+      "kv_total_pct": 87.5
+    }
+  ]
+}

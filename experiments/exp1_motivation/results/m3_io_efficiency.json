@@ -1,0 +1,170 @@
+[
+  {
+    "config": "vLLM_blk16_1layer",
+    "block_bytes": 65536,
+    "n_layers": 1,
+    "total_MB": 0.06,
+    "naive_evict": {
+      "lat_us": 291,
+      "bw_gbps": 0.2255,
+      "util_pct": 4.3
+    },
+    "batched_evict": {
+      "lat_us": 140,
+      "bw_gbps": 0.4696,
+      "util_pct": 8.9
+    },
+    "naive_reload": {
+      "lat_us": 43,
+      "bw_gbps": 1.5366,
+      "util_pct": 8.6
+    }
+  },
+  {
+    "config": "vLLM_blk16_8layer",
+    "block_bytes": 65536,
+    "n_layers": 8,
+    "total_MB": 0.5,
+    "naive_evict": {
+      "lat_us": 1072,
+      "bw_gbps": 0.4889,
+      "util_pct": 9.2
+    },
+    "batched_evict": {
+      "lat_us": 423,
+      "bw_gbps": 1.2395,
+      "util_pct": 23.4
+    },
+    "naive_reload": {
+      "lat_us": 321,
+      "bw_gbps": 1.6342,
+      "util_pct": 9.2
+    }
+  },
+  {
+    "config": "vLLM_blk16_32layer",
+    "block_bytes": 65536,
+    "n_layers": 32,
+    "total_MB": 2.0,
+    "naive_evict": {
+      "lat_us": 4334,
+      "bw_gbps": 0.4838,
+      "util_pct": 9.1
+    },
+    "batched_evict": {
+      "lat_us": 1216,
+      "bw_gbps": 1.7244,
+      "util_pct": 32.5
+    },
+    "naive_reload": {
+      "lat_us": 1329,
+      "bw_gbps": 1.5777,
+      "util_pct": 8.9
+    }
+  },
+  {
+    "config": "blk64_1layer",
+    "block_bytes": 262144,
+    "n_layers": 1,
+    "total_MB": 0.25,
+    "naive_evict": {
+      "lat_us": 229,
+      "bw_gbps": 1.1466,
+      "util_pct": 21.6
+    },
+    "batched_evict": {
+      "lat_us": 215,
+      "bw_gbps": 1.2179,
+      "util_pct": 23.0
+    },
+    "naive_reload": {
+      "lat_us": 105,
+      "bw_gbps": 2.5014,
+      "util_pct": 14.1
+    }
+  },
+  {
+    "config": "blk64_8layer",
+    "block_bytes": 262144,
+    "n_layers": 8,
+    "total_MB": 2.0,
+    "naive_evict": {
+      "lat_us": 1814,
+      "bw_gbps": 1.1564,
+      "util_pct": 21.8
+    },
+    "batched_evict": {
+      "lat_us": 953,
+      "bw_gbps": 2.2013,
+      "util_pct": 41.5
+    },
+    "naive_reload": {
+      "lat_us": 763,
+      "bw_gbps": 2.7474,
+      "util_pct": 15.4
+    }
+  },
+  {
+    "config": "blk64_32layer",
+    "block_bytes": 262144,
+    "n_layers": 32,
+    "total_MB": 8.0,
+    "naive_evict": {
+      "lat_us": 7750,
+      "bw_gbps": 1.0824,
+      "util_pct": 20.4
+    },
+    "batched_evict": {
+      "lat_us": 4974,
+      "bw_gbps": 1.6864,
+      "util_pct": 31.8
+    },
+    "naive_reload": {
+      "lat_us": 3036,
+      "bw_gbps": 2.7629,
+      "util_pct": 15.5
+    }
+  },
+  {
+    "config": "MHA32_blk16_32layer",
+    "block_bytes": 262144,
+    "n_layers": 32,
+    "total_MB": 8.0,
+    "naive_evict": {
+      "lat_us": 7553,
+      "bw_gbps": 1.1106,
+      "util_pct": 21.0
+    },
+    "batched_evict": {
+      "lat_us": 3876,
+      "bw_gbps": 2.164,
+      "util_pct": 40.8
+    },
+    "naive_reload": {
+      "lat_us": 3103,
+      "bw_gbps": 2.7034,
+      "util_pct": 15.2
+    }
+  },
+  {
+    "config": "MHA32_blk64_32layer",
+    "block_bytes": 1048576,
+    "n_layers": 32,
+    "total_MB": 32.0,
+    "naive_evict": {
+      "lat_us": 24080,
+      "bw_gbps": 1.3934,
+      "util_pct": 26.3
+    },
+    "batched_evict": {
+      "lat_us": 37640,
+      "bw_gbps": 0.8915,
+      "util_pct": 16.8
+    },
+    "naive_reload": {
+      "lat_us": 11399,
+      "bw_gbps": 2.9435,
+      "util_pct": 16.5
+    }
+  }
+]
