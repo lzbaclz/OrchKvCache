@@ -1,0 +1,639 @@
+{
+  "batch_eviction": [
+    {
+      "config": "vLLM_blk16_GQA8",
+      "block_bytes": 65536,
+      "n_layers": 1,
+      "total_MB": 0.07,
+      "strategy": "sequential",
+      "bw_gbps": 0.1011,
+      "latency_us": 648.1
+    },
+    {
+      "config": "vLLM_blk16_GQA8",
+      "block_bytes": 65536,
+      "n_layers": 1,
+      "total_MB": 0.07,
+      "strategy": "per_file",
+      "bw_gbps": 0.34,
+      "latency_us": 192.7
+    },
+    {
+      "config": "vLLM_blk16_GQA8",
+      "block_bytes": 65536,
+      "n_layers": 1,
+      "total_MB": 0.07,
+      "strategy": "multi_thread",
+      "bw_gbps": 0.0652,
+      "latency_us": 1004.8
+    },
+    {
+      "config": "vLLM_blk16_GQA8",
+      "block_bytes": 65536,
+      "n_layers": 8,
+      "total_MB": 0.52,
+      "strategy": "sequential",
+      "bw_gbps": 0.9303,
+      "latency_us": 563.6
+    },
+    {
+      "config": "vLLM_blk16_GQA8",
+      "block_bytes": 65536,
+      "n_layers": 8,
+      "total_MB": 0.52,
+      "strategy": "per_file",
+      "bw_gbps": 0.3836,
+      "latency_us": 1366.7
+    },
+    {
+      "config": "vLLM_blk16_GQA8",
+      "block_bytes": 65536,
+      "n_layers": 8,
+      "total_MB": 0.52,
+      "strategy": "multi_thread",
+      "bw_gbps": 0.1694,
+      "latency_us": 3094.8
+    },
+    {
+      "config": "vLLM_blk16_GQA8",
+      "block_bytes": 65536,
+      "n_layers": 32,
+      "total_MB": 2.1,
+      "strategy": "sequential",
+      "bw_gbps": 1.3418,
+      "latency_us": 1562.9
+    },
+    {
+      "config": "vLLM_blk16_GQA8",
+      "block_bytes": 65536,
+      "n_layers": 32,
+      "total_MB": 2.1,
+      "strategy": "per_file",
+      "bw_gbps": 0.4346,
+      "latency_us": 4825.3
+    },
+    {
+      "config": "vLLM_blk16_GQA8",
+      "block_bytes": 65536,
+      "n_layers": 32,
+      "total_MB": 2.1,
+      "strategy": "multi_thread",
+      "bw_gbps": 0.7338,
+      "latency_us": 2857.8
+    },
+    {
+      "config": "vLLM_blk16_MHA32",
+      "block_bytes": 262144,
+      "n_layers": 1,
+      "total_MB": 0.26,
+      "strategy": "sequential",
+      "bw_gbps": 0.845,
+      "latency_us": 310.2
+    },
+    {
+      "config": "vLLM_blk16_MHA32",
+      "block_bytes": 262144,
+      "n_layers": 1,
+      "total_MB": 0.26,
+      "strategy": "per_file",
+      "bw_gbps": 0.9789,
+      "latency_us": 267.8
+    },
+    {
+      "config": "vLLM_blk16_MHA32",
+      "block_bytes": 262144,
+      "n_layers": 1,
+      "total_MB": 0.26,
+      "strategy": "multi_thread",
+      "bw_gbps": 0.3373,
+      "latency_us": 777.2
+    },
+    {
+      "config": "vLLM_blk16_MHA32",
+      "block_bytes": 262144,
+      "n_layers": 8,
+      "total_MB": 2.1,
+      "strategy": "sequential",
+      "bw_gbps": 1.7656,
+      "latency_us": 1187.8
+    },
+    {
+      "config": "vLLM_blk16_MHA32",
+      "block_bytes": 262144,
+      "n_layers": 8,
+      "total_MB": 2.1,
+      "strategy": "per_file",
+      "bw_gbps": 1.1084,
+      "latency_us": 1892.1
+    },
+    {
+      "config": "vLLM_blk16_MHA32",
+      "block_bytes": 262144,
+      "n_layers": 8,
+      "total_MB": 2.1,
+      "strategy": "multi_thread",
+      "bw_gbps": 0.7472,
+      "latency_us": 2806.7
+    },
+    {
+      "config": "vLLM_blk16_MHA32",
+      "block_bytes": 262144,
+      "n_layers": 32,
+      "total_MB": 8.39,
+      "strategy": "sequential",
+      "bw_gbps": 1.7587,
+      "latency_us": 4769.7
+    },
+    {
+      "config": "vLLM_blk16_MHA32",
+      "block_bytes": 262144,
+      "n_layers": 32,
+      "total_MB": 8.39,
+      "strategy": "per_file",
+      "bw_gbps": 1.0758,
+      "latency_us": 7797.8
+    },
+    {
+      "config": "vLLM_blk16_MHA32",
+      "block_bytes": 262144,
+      "n_layers": 32,
+      "total_MB": 8.39,
+      "strategy": "multi_thread",
+      "bw_gbps": 0.3594,
+      "latency_us": 23343.3
+    },
+    {
+      "config": "vLLM_blk64_GQA8",
+      "block_bytes": 262144,
+      "n_layers": 1,
+      "total_MB": 0.26,
+      "strategy": "sequential",
+      "bw_gbps": 0.4819,
+      "latency_us": 544.0
+    },
+    {
+      "config": "vLLM_blk64_GQA8",
+      "block_bytes": 262144,
+      "n_layers": 1,
+      "total_MB": 0.26,
+      "strategy": "per_file",
+      "bw_gbps": 0.964,
+      "latency_us": 271.9
+    },
+    {
+      "config": "vLLM_blk64_GQA8",
+      "block_bytes": 262144,
+      "n_layers": 1,
+      "total_MB": 0.26,
+      "strategy": "multi_thread",
+      "bw_gbps": 0.4586,
+      "latency_us": 571.6
+    },
+    {
+      "config": "vLLM_blk64_GQA8",
+      "block_bytes": 262144,
+      "n_layers": 8,
+      "total_MB": 2.1,
+      "strategy": "sequential",
+      "bw_gbps": 1.9664,
+      "latency_us": 1066.5
+    },
+    {
+      "config": "vLLM_blk64_GQA8",
+      "block_bytes": 262144,
+      "n_layers": 8,
+      "total_MB": 2.1,
+      "strategy": "per_file",
+      "bw_gbps": 1.1157,
+      "latency_us": 1879.6
+    },
+    {
+      "config": "vLLM_blk64_GQA8",
+      "block_bytes": 262144,
+      "n_layers": 8,
+      "total_MB": 2.1,
+      "strategy": "multi_thread",
+      "bw_gbps": 0.8498,
+      "latency_us": 2467.7
+    },
+    {
+      "config": "vLLM_blk64_GQA8",
+      "block_bytes": 262144,
+      "n_layers": 32,
+      "total_MB": 8.39,
+      "strategy": "sequential",
+      "bw_gbps": 1.9189,
+      "latency_us": 4371.5
+    },
+    {
+      "config": "vLLM_blk64_GQA8",
+      "block_bytes": 262144,
+      "n_layers": 32,
+      "total_MB": 8.39,
+      "strategy": "per_file",
+      "bw_gbps": 1.0991,
+      "latency_us": 7632.6
+    },
+    {
+      "config": "vLLM_blk64_GQA8",
+      "block_bytes": 262144,
+      "n_layers": 32,
+      "total_MB": 8.39,
+      "strategy": "multi_thread",
+      "bw_gbps": 1.9443,
+      "latency_us": 4314.4
+    },
+    {
+      "config": "vLLM_blk64_MHA32",
+      "block_bytes": 1048576,
+      "n_layers": 1,
+      "total_MB": 1.05,
+      "strategy": "sequential",
+      "bw_gbps": 1.1095,
+      "latency_us": 945.1
+    },
+    {
+      "config": "vLLM_blk64_MHA32",
+      "block_bytes": 1048576,
+      "n_layers": 1,
+      "total_MB": 1.05,
+      "strategy": "per_file",
+      "bw_gbps": 1.5087,
+      "latency_us": 695.0
+    },
+    {
+      "config": "vLLM_blk64_MHA32",
+      "block_bytes": 1048576,
+      "n_layers": 1,
+      "total_MB": 1.05,
+      "strategy": "multi_thread",
+      "bw_gbps": 0.6608,
+      "latency_us": 1586.8
+    },
+    {
+      "config": "vLLM_blk64_MHA32",
+      "block_bytes": 1048576,
+      "n_layers": 8,
+      "total_MB": 8.39,
+      "strategy": "sequential",
+      "bw_gbps": 1.9741,
+      "latency_us": 4249.4
+    },
+    {
+      "config": "vLLM_blk64_MHA32",
+      "block_bytes": 1048576,
+      "n_layers": 8,
+      "total_MB": 8.39,
+      "strategy": "per_file",
+      "bw_gbps": 1.6774,
+      "latency_us": 5000.9
+    },
+    {
+      "config": "vLLM_blk64_MHA32",
+      "block_bytes": 1048576,
+      "n_layers": 8,
+      "total_MB": 8.39,
+      "strategy": "multi_thread",
+      "bw_gbps": 2.3405,
+      "latency_us": 3584.1
+    },
+    {
+      "config": "vLLM_blk64_MHA32",
+      "block_bytes": 1048576,
+      "n_layers": 32,
+      "total_MB": 33.55,
+      "strategy": "sequential",
+      "bw_gbps": 1.4532,
+      "latency_us": 23090.1
+    },
+    {
+      "config": "vLLM_blk64_MHA32",
+      "block_bytes": 1048576,
+      "n_layers": 32,
+      "total_MB": 33.55,
+      "strategy": "per_file",
+      "bw_gbps": 0.7422,
+      "latency_us": 45209.6
+    },
+    {
+      "config": "vLLM_blk64_MHA32",
+      "block_bytes": 1048576,
+      "n_layers": 32,
+      "total_MB": 33.55,
+      "strategy": "multi_thread",
+      "bw_gbps": 2.1557,
+      "latency_us": 15565.6
+    },
+    {
+      "config": "seq256_7B_1layer",
+      "block_bytes": 4194304,
+      "n_layers": 1,
+      "total_MB": 4.19,
+      "strategy": "sequential",
+      "bw_gbps": 1.6199,
+      "latency_us": 2589.2
+    },
+    {
+      "config": "seq256_7B_1layer",
+      "block_bytes": 4194304,
+      "n_layers": 1,
+      "total_MB": 4.19,
+      "strategy": "per_file",
+      "bw_gbps": 1.8909,
+      "latency_us": 2218.2
+    },
+    {
+      "config": "seq256_7B_1layer",
+      "block_bytes": 4194304,
+      "n_layers": 1,
+      "total_MB": 4.19,
+      "strategy": "multi_thread",
+      "bw_gbps": 0.4777,
+      "latency_us": 8779.5
+    },
+    {
+      "config": "seq256_7B_1layer",
+      "block_bytes": 4194304,
+      "n_layers": 8,
+      "total_MB": 33.55,
+      "strategy": "sequential",
+      "bw_gbps": 1.9374,
+      "latency_us": 17319.1
+    },
+    {
+      "config": "seq256_7B_1layer",
+      "block_bytes": 4194304,
+      "n_layers": 8,
+      "total_MB": 33.55,
+      "strategy": "per_file",
+      "bw_gbps": 1.02,
+      "latency_us": 32897.1
+    },
+    {
+      "config": "seq256_7B_1layer",
+      "block_bytes": 4194304,
+      "n_layers": 8,
+      "total_MB": 33.55,
+      "strategy": "multi_thread",
+      "bw_gbps": 1.7061,
+      "latency_us": 19667.2
+    },
+    {
+      "config": "seq256_7B_1layer",
+      "block_bytes": 4194304,
+      "n_layers": 32,
+      "total_MB": 134.22,
+      "strategy": "sequential",
+      "bw_gbps": 1.7755,
+      "latency_us": 75593.6
+    },
+    {
+      "config": "seq256_7B_1layer",
+      "block_bytes": 4194304,
+      "n_layers": 32,
+      "total_MB": 134.22,
+      "strategy": "per_file",
+      "bw_gbps": 1.2338,
+      "latency_us": 108781.3
+    },
+    {
+      "config": "seq256_7B_1layer",
+      "block_bytes": 4194304,
+      "n_layers": 32,
+      "total_MB": 134.22,
+      "strategy": "multi_thread",
+      "bw_gbps": 3.2523,
+      "latency_us": 41269.1
+    }
+  ],
+  "selective_reload": [
+    {
+      "config": "vLLM_blk16_GQA8",
+      "block_bytes": 65536,
+      "n_total_blocks": 64,
+      "selectivity": 0.1,
+      "n_hot_blocks": 6,
+      "bw_gbps": 3.4456,
+      "latency_us": 114.1
+    },
+    {
+      "config": "vLLM_blk16_GQA8",
+      "block_bytes": 65536,
+      "n_total_blocks": 64,
+      "selectivity": 0.2,
+      "n_hot_blocks": 12,
+      "bw_gbps": 5.2951,
+      "latency_us": 148.5
+    },
+    {
+      "config": "vLLM_blk16_GQA8",
+      "block_bytes": 65536,
+      "n_total_blocks": 64,
+      "selectivity": 0.5,
+      "n_hot_blocks": 32,
+      "bw_gbps": 10.0508,
+      "latency_us": 208.7
+    },
+    {
+      "config": "vLLM_blk16_GQA8",
+      "block_bytes": 65536,
+      "n_total_blocks": 64,
+      "selectivity": 1.0,
+      "n_hot_blocks": 64,
+      "bw_gbps": 10.6532,
+      "latency_us": 393.7
+    },
+    {
+      "config": "vLLM_blk16_MHA32",
+      "block_bytes": 262144,
+      "n_total_blocks": 64,
+      "selectivity": 0.1,
+      "n_hot_blocks": 6,
+      "bw_gbps": 6.3944,
+      "latency_us": 246.0
+    },
+    {
+      "config": "vLLM_blk16_MHA32",
+      "block_bytes": 262144,
+      "n_total_blocks": 64,
+      "selectivity": 0.2,
+      "n_hot_blocks": 12,
+      "bw_gbps": 11.5126,
+      "latency_us": 273.2
+    },
+    {
+      "config": "vLLM_blk16_MHA32",
+      "block_bytes": 262144,
+      "n_total_blocks": 64,
+      "selectivity": 0.5,
+      "n_hot_blocks": 32,
+      "bw_gbps": 13.8901,
+      "latency_us": 603.9
+    },
+    {
+      "config": "vLLM_blk16_MHA32",
+      "block_bytes": 262144,
+      "n_total_blocks": 64,
+      "selectivity": 1.0,
+      "n_hot_blocks": 64,
+      "bw_gbps": 14.2984,
+      "latency_us": 1173.4
+    },
+    {
+      "config": "vLLM_blk64_GQA8",
+      "block_bytes": 262144,
+      "n_total_blocks": 64,
+      "selectivity": 0.1,
+      "n_hot_blocks": 6,
+      "bw_gbps": 10.37,
+      "latency_us": 151.7
+    },
+    {
+      "config": "vLLM_blk64_GQA8",
+      "block_bytes": 262144,
+      "n_total_blocks": 64,
+      "selectivity": 0.2,
+      "n_hot_blocks": 12,
+      "bw_gbps": 12.8125,
+      "latency_us": 245.5
+    },
+    {
+      "config": "vLLM_blk64_GQA8",
+      "block_bytes": 262144,
+      "n_total_blocks": 64,
+      "selectivity": 0.5,
+      "n_hot_blocks": 32,
+      "bw_gbps": 14.0549,
+      "latency_us": 596.8
+    },
+    {
+      "config": "vLLM_blk64_GQA8",
+      "block_bytes": 262144,
+      "n_total_blocks": 64,
+      "selectivity": 1.0,
+      "n_hot_blocks": 64,
+      "bw_gbps": 14.4418,
+      "latency_us": 1161.7
+    }
+  ],
+  "pipeline_overlap": [
+    {
+      "config": "vLLM_blk16_GQA8",
+      "block_bytes": 65536,
+      "n_evict": 32,
+      "n_reload": 16,
+      "reload_time_us": 671.984,
+      "reload_bw_gbps": 1.56,
+      "evict_time_us": 2303.236,
+      "evict_bw_gbps": 0.911,
+      "wall_time_us": 2687.21,
+      "combined_bw_gbps": 1.171
+    },
+    {
+      "config": "vLLM_blk16_MHA32",
+      "block_bytes": 262144,
+      "n_evict": 32,
+      "n_reload": 16,
+      "reload_time_us": 1179.463,
+      "reload_bw_gbps": 3.556,
+      "evict_time_us": 4663.738,
+      "evict_bw_gbps": 1.799,
+      "wall_time_us": 4995.096,
+      "combined_bw_gbps": 2.519
+    },
+    {
+      "config": "vLLM_blk64_GQA8",
+      "block_bytes": 262144,
+      "n_evict": 32,
+      "n_reload": 16,
+      "reload_time_us": 939.211,
+      "reload_bw_gbps": 4.466,
+      "evict_time_us": 3915.585,
+      "evict_bw_gbps": 2.142,
+      "wall_time_us": 4180.203,
+      "combined_bw_gbps": 3.01
+    }
+  ],
+  "fio_iouring_baseline": [
+    {
+      "config": "vLLM_blk16_GQA8",
+      "block_bytes": 65536,
+      "rw": "write",
+      "bw_gbps": 2.4027,
+      "iops": 36661.9,
+      "lat_avg_us": 872.01
+    },
+    {
+      "config": "vLLM_blk16_GQA8",
+      "block_bytes": 65536,
+      "rw": "randread",
+      "bw_gbps": 3.644,
+      "iops": 55602.7,
+      "lat_avg_us": 574.93
+    },
+    {
+      "config": "vLLM_blk16_MHA32",
+      "block_bytes": 262144,
+      "rw": "write",
+      "bw_gbps": 2.9548,
+      "iops": 11271.6,
+      "lat_avg_us": 2838.01
+    },
+    {
+      "config": "vLLM_blk16_MHA32",
+      "block_bytes": 262144,
+      "rw": "randread",
+      "bw_gbps": 3.7293,
+      "iops": 14226.1,
+      "lat_avg_us": 2248.12
+    },
+    {
+      "config": "vLLM_blk64_GQA8",
+      "block_bytes": 262144,
+      "rw": "write",
+      "bw_gbps": 3.0602,
+      "iops": 11673.8,
+      "lat_avg_us": 2740.2
+    },
+    {
+      "config": "vLLM_blk64_GQA8",
+      "block_bytes": 262144,
+      "rw": "randread",
+      "bw_gbps": 3.7337,
+      "iops": 14242.8,
+      "lat_avg_us": 2245.45
+    },
+    {
+      "config": "vLLM_blk64_MHA32",
+      "block_bytes": 1048576,
+      "rw": "write",
+      "bw_gbps": 3.5113,
+      "iops": 3348.7,
+      "lat_avg_us": 9551.78
+    },
+    {
+      "config": "vLLM_blk64_MHA32",
+      "block_bytes": 1048576,
+      "rw": "randread",
+      "bw_gbps": 3.7166,
+      "iops": 3544.4,
+      "lat_avg_us": 9018.26
+    },
+    {
+      "config": "seq256_7B_1layer",
+      "block_bytes": 4194304,
+      "rw": "write",
+      "bw_gbps": 3.7229,
+      "iops": 887.6,
+      "lat_avg_us": 35978.39
+    },
+    {
+      "config": "seq256_7B_1layer",
+      "block_bytes": 4194304,
+      "rw": "randread",
+      "bw_gbps": 3.7521,
+      "iops": 894.6,
+      "lat_avg_us": 35635.7
+    }
+  ]
+}

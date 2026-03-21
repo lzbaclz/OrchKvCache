@@ -1,0 +1,205 @@
+{
+  "nvm_literature": {
+    "optane_seq_read_gbps": 6.6,
+    "optane_seq_write_gbps": 2.3,
+    "optane_rand_read_4k_ns": 305,
+    "optane_rand_write_4k_ns": 94,
+    "optane_rand_read_4k_gbps": 1.7,
+    "optane_rand_write_4k_gbps": 0.5,
+    "optane_idle_lat_ns": 169,
+    "source": "Intel Optane DC PMM Datasheet + Izraelevitz et al. ASPLOS 2019"
+  },
+  "dram_sequential": [
+    {
+      "block_size": 4096,
+      "block_size_label": "4KB",
+      "mode": "read",
+      "bw_gbps": 5.733
+    },
+    {
+      "block_size": 4096,
+      "block_size_label": "4KB",
+      "mode": "write",
+      "bw_gbps": 1.325
+    },
+    {
+      "block_size": 32768,
+      "block_size_label": "32KB",
+      "mode": "read",
+      "bw_gbps": 9.952
+    },
+    {
+      "block_size": 32768,
+      "block_size_label": "32KB",
+      "mode": "write",
+      "bw_gbps": 1.697
+    },
+    {
+      "block_size": 65536,
+      "block_size_label": "64KB",
+      "mode": "read",
+      "bw_gbps": 10.823
+    },
+    {
+      "block_size": 65536,
+      "block_size_label": "64KB",
+      "mode": "write",
+      "bw_gbps": 1.476
+    },
+    {
+      "block_size": 262144,
+      "block_size_label": "256KB",
+      "mode": "read",
+      "bw_gbps": 11.225
+    },
+    {
+      "block_size": 262144,
+      "block_size_label": "256KB",
+      "mode": "write",
+      "bw_gbps": 1.68
+    },
+    {
+      "block_size": 1048576,
+      "block_size_label": "1MB",
+      "mode": "read",
+      "bw_gbps": 10.091
+    },
+    {
+      "block_size": 1048576,
+      "block_size_label": "1MB",
+      "mode": "write",
+      "bw_gbps": 1.371
+    }
+  ],
+  "dram_random_latency": [
+    {
+      "access_size": 256,
+      "access_size_label": "256B",
+      "avg_ns": 460.7,
+      "p50_ns": 449.0,
+      "p99_ns": 661.0,
+      "min_ns": 204.0,
+      "max_ns": 29748.0
+    },
+    {
+      "access_size": 4096,
+      "access_size_label": "4KB",
+      "avg_ns": 1250.2,
+      "p50_ns": 867.0,
+      "p99_ns": 1114.0,
+      "min_ns": 309.0,
+      "max_ns": 9561625.0
+    },
+    {
+      "access_size": 32768,
+      "access_size_label": "32KB",
+      "avg_ns": 3547.1,
+      "p50_ns": 3518.0,
+      "p99_ns": 4100.0,
+      "min_ns": 1231.0,
+      "max_ns": 19362.0
+    },
+    {
+      "access_size": 65536,
+      "access_size_label": "64KB",
+      "avg_ns": 6357.5,
+      "p50_ns": 6284.0,
+      "p99_ns": 8187.2,
+      "min_ns": 2118.0,
+      "max_ns": 34519.0
+    },
+    {
+      "access_size": 262144,
+      "access_size_label": "256KB",
+      "avg_ns": 22794.7,
+      "p50_ns": 22870.0,
+      "p99_ns": 29306.2,
+      "min_ns": 7556.0,
+      "max_ns": 363680.0
+    },
+    {
+      "access_size": 1048576,
+      "access_size_label": "1MB",
+      "avg_ns": 113746.3,
+      "p50_ns": 98059.0,
+      "p99_ns": 140178.1,
+      "min_ns": 46082.0,
+      "max_ns": 25661767.0
+    }
+  ],
+  "nvm_estimated": [
+    {
+      "access_size": 256,
+      "access_size_label": "256B",
+      "estimated_avg_ns": 660.7,
+      "estimated_p50_ns": 649.0,
+      "estimated_p99_ns": 861.0,
+      "nvm_extra_ns": 200,
+      "note": "DRAM latency + estimated NVM penalty (Optane PM typical)"
+    },
+    {
+      "access_size": 4096,
+      "access_size_label": "4KB",
+      "estimated_avg_ns": 1450.2,
+      "estimated_p50_ns": 1067.0,
+      "estimated_p99_ns": 1314.0,
+      "nvm_extra_ns": 200,
+      "note": "DRAM latency + estimated NVM penalty (Optane PM typical)"
+    },
+    {
+      "access_size": 32768,
+      "access_size_label": "32KB",
+      "estimated_avg_ns": 3697.1,
+      "estimated_p50_ns": 3668.0,
+      "estimated_p99_ns": 4250.0,
+      "nvm_extra_ns": 150,
+      "note": "DRAM latency + estimated NVM penalty (Optane PM typical)"
+    },
+    {
+      "access_size": 65536,
+      "access_size_label": "64KB",
+      "estimated_avg_ns": 6507.5,
+      "estimated_p50_ns": 6434.0,
+      "estimated_p99_ns": 8337.2,
+      "nvm_extra_ns": 150,
+      "note": "DRAM latency + estimated NVM penalty (Optane PM typical)"
+    },
+    {
+      "access_size": 262144,
+      "access_size_label": "256KB",
+      "estimated_avg_ns": 22944.7,
+      "estimated_p50_ns": 23020.0,
+      "estimated_p99_ns": 29456.2,
+      "nvm_extra_ns": 150,
+      "note": "DRAM latency + estimated NVM penalty (Optane PM typical)"
+    },
+    {
+      "access_size": 1048576,
+      "access_size_label": "1MB",
+      "estimated_avg_ns": 113896.3,
+      "estimated_p50_ns": 98209.0,
+      "estimated_p99_ns": 140328.1,
+      "nvm_extra_ns": 150,
+      "note": "DRAM latency + estimated NVM penalty (Optane PM typical)"
+    }
+  ],
+  "tier_comparison": [
+    {
+      "access_size": 4096,
+      "dram_ns": 1250.2,
+      "nvm_estimated_ns": 1450.2,
+      "ssd_ns": 158080.0,
+      "nvm_vs_ssd_speedup": 109.0,
+      "dram_vs_ssd_speedup": 126.4,
+      "dram_vs_nvm_speedup": 1.2
+    },
+    {
+      "access_size": 32768,
+      "dram_ns": 3547.1,
+      "nvm_estimated_ns": 3697.1,
+      "ssd_ns": 250500.0,
+      "nvm_vs_ssd_speedup": 67.8,
+      "dram_vs_ssd_speedup": 70.6
+    }
+  ]
+}

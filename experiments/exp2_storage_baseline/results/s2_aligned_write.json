@@ -1,0 +1,162 @@
+[
+  {
+    "disk": "raid0_samsung",
+    "block_size": 4096,
+    "block_size_label": "4KB",
+    "method": "buffered_batch",
+    "bw_gbps": 1.0384,
+    "iterations": 3
+  },
+  {
+    "disk": "raid0_samsung",
+    "block_size": 4096,
+    "block_size_label": "4KB",
+    "method": "buffered_fsync_per_block",
+    "bw_gbps": 0.0554,
+    "iterations": 3
+  },
+  {
+    "disk": "raid0_samsung",
+    "block_size": 32768,
+    "block_size_label": "32KB",
+    "method": "buffered_batch",
+    "bw_gbps": 2.0182,
+    "iterations": 3
+  },
+  {
+    "disk": "raid0_samsung",
+    "block_size": 32768,
+    "block_size_label": "32KB",
+    "method": "buffered_fsync_per_block",
+    "bw_gbps": 0.403,
+    "iterations": 3
+  },
+  {
+    "disk": "raid0_samsung",
+    "block_size": 65536,
+    "block_size_label": "64KB",
+    "method": "buffered_batch",
+    "bw_gbps": 2.1203,
+    "iterations": 3
+  },
+  {
+    "disk": "raid0_samsung",
+    "block_size": 65536,
+    "block_size_label": "64KB",
+    "method": "buffered_fsync_per_block",
+    "bw_gbps": 0.66,
+    "iterations": 3
+  },
+  {
+    "disk": "raid0_samsung",
+    "block_size": 262144,
+    "block_size_label": "256KB",
+    "method": "buffered_batch",
+    "bw_gbps": 2.3258,
+    "iterations": 3
+  },
+  {
+    "disk": "raid0_samsung",
+    "block_size": 262144,
+    "block_size_label": "256KB",
+    "method": "buffered_fsync_per_block",
+    "bw_gbps": 1.2341,
+    "iterations": 3
+  },
+  {
+    "disk": "raid0_samsung",
+    "block_size": 1048576,
+    "block_size_label": "1MB",
+    "method": "buffered_batch",
+    "bw_gbps": 2.1823,
+    "iterations": 3
+  },
+  {
+    "disk": "raid0_samsung",
+    "block_size": 1048576,
+    "block_size_label": "1MB",
+    "method": "buffered_fsync_per_block",
+    "bw_gbps": 1.5819,
+    "iterations": 3
+  },
+  {
+    "disk": "root_nvme",
+    "block_size": 4096,
+    "block_size_label": "4KB",
+    "method": "buffered_batch",
+    "bw_gbps": 1.2024,
+    "iterations": 3
+  },
+  {
+    "disk": "root_nvme",
+    "block_size": 4096,
+    "block_size_label": "4KB",
+    "method": "buffered_fsync_per_block",
+    "bw_gbps": 0.0103,
+    "iterations": 3
+  },
+  {
+    "disk": "root_nvme",
+    "block_size": 32768,
+    "block_size_label": "32KB",
+    "method": "buffered_batch",
+    "bw_gbps": 1.5972,
+    "iterations": 3
+  },
+  {
+    "disk": "root_nvme",
+    "block_size": 32768,
+    "block_size_label": "32KB",
+    "method": "buffered_fsync_per_block",
+    "bw_gbps": 0.0792,
+    "iterations": 3
+  },
+  {
+    "disk": "root_nvme",
+    "block_size": 65536,
+    "block_size_label": "64KB",
+    "method": "buffered_batch",
+    "bw_gbps": 1.6523,
+    "iterations": 3
+  },
+  {
+    "disk": "root_nvme",
+    "block_size": 65536,
+    "block_size_label": "64KB",
+    "method": "buffered_fsync_per_block",
+    "bw_gbps": 0.1419,
+    "iterations": 3
+  },
+  {
+    "disk": "root_nvme",
+    "block_size": 262144,
+    "block_size_label": "256KB",
+    "method": "buffered_batch",
+    "bw_gbps": 1.7126,
+    "iterations": 3
+  },
+  {
+    "disk": "root_nvme",
+    "block_size": 262144,
+    "block_size_label": "256KB",
+    "method": "buffered_fsync_per_block",
+    "bw_gbps": 0.3987,
+    "iterations": 3
+  },
+  {
+    "disk": "root_nvme",
+    "block_size": 1048576,
+    "block_size_label": "1MB",
+    "method": "buffered_batch",
+    "bw_gbps": 1.6307,
+    "iterations": 3
+  },
+  {
+    "disk": "root_nvme",
+    "block_size": 1048576,
+    "block_size_label": "1MB",
+    "method": "buffered_fsync_per_block",
+    "bw_gbps": 0.7938,
+    "iterations": 3
+  }
+]
