@@ -24,6 +24,8 @@ static struct {
     dram_tier_t       dram;
     transfer_engine_t xfer;
     address_map_t     addrmap;
+    orchfs_tier_t     storage;
+    io_worker_pool_t  io_pool;
     size_t            slab_size;
 } g_sys;
 
@@ -64,10 +66,35 @@ int orchkv_init(const orchkv_config_t *config)
         return rc;
     }
 
+    /* Phase B: persistent storage tier + async IO pool */
+    rc = orchfs_tier_init(&g_sys.storage,
+                          config->orchfs_base_dir,
+                          g_sys.slab_size);
+    if (rc != ORCHKV_OK) {
+        address_map_destroy(&g_sys.addrmap);
+        transfer_engine_destroy(&g_sys.xfer);
+        dram_tier_destroy(&g_sys.dram);
+        gpu_tier_destroy(&g_sys.gpu);
+        return rc;
+    }
+
+    rc = io_worker_init(&g_sys.io_pool,
+                        config->orchfs_io_workers, KV_TRANSFER_QUEUE_CAP);
+    if (rc != ORCHKV_OK) {
+        orchfs_tier_destroy(&g_sys.storage);
+        address_map_destroy(&g_sys.addrmap);
+        transfer_engine_destroy(&g_sys.xfer);
+        dram_tier_destroy(&g_sys.dram);
+        gpu_tier_destroy(&g_sys.gpu);
+        return rc;
+    }
+
     g_sys.inited = true;
-    LOG_INFO("orchkv_init OK: slab=%zu B, gpu_slabs=%u, dram_slabs=%u, streams=%d",
+    LOG_INFO("orchkv_init OK: slab=%zu B, gpu_slabs=%u, dram_slabs=%u, "
+             "streams=%d, storage=%s, io_workers=%d",
              g_sys.slab_size, g_sys.gpu.total_slabs, g_sys.dram.total_slabs,
-             g_sys.xfer.num_streams);
+             g_sys.xfer.num_streams, g_sys.storage.base_dir,
+             g_sys.io_pool.num_workers);
     return ORCHKV_OK;
 }
 
@@ -75,6 +102,9 @@ int orchkv_shutdown(void)
 {
     if (!g_sys.inited) return ORCHKV_ERR_INIT;
 
+    io_worker_flush(&g_sys.io_pool);
+    io_worker_destroy(&g_sys.io_pool);
+    orchfs_tier_destroy(&g_sys.storage);
     address_map_destroy(&g_sys.addrmap);
     transfer_engine_destroy(&g_sys.xfer);
     dram_tier_destroy(&g_sys.dram);
@@ -87,10 +117,12 @@ int orchkv_shutdown(void)
 
 bool orchkv_is_initialized(void) { return g_sys.inited; }
 
-gpu_tier_t       *orchkv_gpu_tier(void)         { return &g_sys.gpu;     }
-dram_tier_t      *orchkv_dram_tier(void)        { return &g_sys.dram;    }
-transfer_engine_t *orchkv_transfer_engine(void) { return &g_sys.xfer;    }
-address_map_t    *orchkv_address_map(void)      { return &g_sys.addrmap; }
+gpu_tier_t         *orchkv_gpu_tier(void)         { return &g_sys.gpu;     }
+dram_tier_t        *orchkv_dram_tier(void)        { return &g_sys.dram;    }
+transfer_engine_t  *orchkv_transfer_engine(void)  { return &g_sys.xfer;    }
+address_map_t      *orchkv_address_map(void)      { return &g_sys.addrmap; }
+orchfs_tier_t      *orchkv_orchfs_tier(void)       { return &g_sys.storage; }
+io_worker_pool_t   *orchkv_io_pool(void)           { return &g_sys.io_pool; }
 
 /* ---- Request lifecycle ------------------------------------------------- */
 
@@ -99,14 +131,26 @@ kv_request_ctx_t *orchkv_request_create(uint64_t request_id,
                                         uint32_t n_kv_heads)
 {
     if (!g_sys.inited) return NULL;
-    return kv_request_create(request_id, n_layers, n_kv_heads,
-                             g_sys.cfg.d_head, g_sys.cfg.dtype,
-                             g_sys.cfg.tokens_per_block);
+
+    kv_request_ctx_t *ctx = kv_request_create(
+        request_id, n_layers, n_kv_heads,
+        g_sys.cfg.d_head, g_sys.cfg.dtype,
+        g_sys.cfg.tokens_per_block);
+    if (!ctx) return NULL;
+
+    ctx->orchfs_fctx = orchfs_file_open(
+        &g_sys.storage, request_id,
+        n_layers, n_kv_heads,
+        g_sys.cfg.max_blocks_per_head);
+
+    return ctx;
 }
 
 int orchkv_request_destroy(kv_request_ctx_t *ctx)
 {
     if (!ctx) return ORCHKV_ERR_INVALID;
+
+    io_worker_flush(&g_sys.io_pool);
 
     for (uint32_t l = 0; l < ctx->n_layers; l++) {
         for (uint32_t h = 0; h < ctx->n_kv_heads; h++) {
@@ -128,6 +172,12 @@ int orchkv_request_destroy(kv_request_ctx_t *ctx)
             }
         }
     }
+
+    if (ctx->orchfs_fctx) {
+        orchfs_file_close(&g_sys.storage, ctx->orchfs_fctx);
+        ctx->orchfs_fctx = NULL;
+    }
+
     kv_request_destroy(ctx);
     return ORCHKV_OK;
 }
@@ -280,6 +330,11 @@ int orchkv_get_kv_block(kv_request_ctx_t *ctx,
     kv_block_t *blk = kv_request_get_block(ctx, layer_id, head_id, block_idx);
     if (!blk) return ORCHKV_ERR_NOT_FOUND;
 
+    if (blk->tier == TIER_NVM || blk->tier == TIER_SSD) {
+        int rc = orchkv_promote_from_storage(ctx, layer_id, head_id, block_idx);
+        if (rc != ORCHKV_OK) return rc;
+    }
+
     if (blk->tier == TIER_HOST_DRAM) {
         int rc = orchkv_promote_to_gpu(ctx, layer_id, head_id, block_idx);
         if (rc != ORCHKV_OK) return rc;
@@ -370,6 +425,102 @@ int orchkv_promote_to_gpu(kv_request_ctx_t *ctx,
     ctx->blocks_on_dram--;
     ctx->blocks_on_gpu++;
     return ORCHKV_OK;
+}
+
+/* ---- Evict to storage (DRAM → file) ------------------------------------ */
+
+int orchkv_evict_to_storage(kv_request_ctx_t *ctx,
+                            uint32_t layer_id,
+                            uint32_t head_id,
+                            uint32_t block_idx)
+{
+    if (!g_sys.inited) return ORCHKV_ERR_INIT;
+
+    kv_block_t *blk = kv_request_get_block(ctx, layer_id, head_id, block_idx);
+    if (!blk) return ORCHKV_ERR_NOT_FOUND;
+    if (blk->tier != TIER_HOST_DRAM) return ORCHKV_ERR_STATE;
+    if (kv_block_is_pinned(blk))     return ORCHKV_ERR_LOCKED;
+    if (!ctx->orchfs_fctx)           return ORCHKV_ERR_INIT;
+
+    kv_block_set_state(blk, KV_STATE_MIGRATING);
+
+    int rc = orchfs_tier_write(ctx->orchfs_fctx, layer_id, head_id,
+                               block_idx, blk->data_ptr, g_sys.slab_size);
+    if (rc != ORCHKV_OK) {
+        kv_block_set_state(blk, KV_STATE_WARM);
+        return rc;
+    }
+    orchfs_tier_record_write(&g_sys.storage, g_sys.slab_size);
+
+    void *old_dram = blk->data_ptr;
+    blk->persistent_offset = (uint64_t)orchfs_compute_offset(
+        ctx->orchfs_fctx, layer_id, head_id, block_idx);
+    kv_block_set_location(blk, TIER_NVM, NULL);
+    kv_block_set_state(blk, KV_STATE_COLD);
+
+    dram_tier_free(&g_sys.dram, old_dram);
+
+    ctx->blocks_on_dram--;
+    ctx->blocks_on_storage++;
+    return ORCHKV_OK;
+}
+
+/* ---- Promote from storage (file → DRAM) -------------------------------- */
+
+int orchkv_promote_from_storage(kv_request_ctx_t *ctx,
+                                uint32_t layer_id,
+                                uint32_t head_id,
+                                uint32_t block_idx)
+{
+    if (!g_sys.inited) return ORCHKV_ERR_INIT;
+
+    kv_block_t *blk = kv_request_get_block(ctx, layer_id, head_id, block_idx);
+    if (!blk) return ORCHKV_ERR_NOT_FOUND;
+    if (blk->tier != TIER_NVM && blk->tier != TIER_SSD)
+        return ORCHKV_ERR_STATE;
+    if (!ctx->orchfs_fctx) return ORCHKV_ERR_INIT;
+
+    void *dram_ptr;
+    int rc = dram_tier_alloc(&g_sys.dram, &dram_ptr);
+    if (rc != ORCHKV_OK) return rc;
+
+    kv_block_set_state(blk, KV_STATE_MIGRATING);
+
+    rc = orchfs_tier_read(ctx->orchfs_fctx, layer_id, head_id,
+                          block_idx, dram_ptr, g_sys.slab_size);
+    if (rc != ORCHKV_OK) {
+        dram_tier_free(&g_sys.dram, dram_ptr);
+        kv_block_set_state(blk, KV_STATE_COLD);
+        return rc;
+    }
+    orchfs_tier_record_read(&g_sys.storage, g_sys.slab_size);
+
+    kv_block_set_location(blk, TIER_HOST_DRAM, dram_ptr);
+    kv_block_set_state(blk, KV_STATE_WARM);
+
+    ctx->blocks_on_storage--;
+    ctx->blocks_on_dram++;
+    return ORCHKV_OK;
+}
+
+/* ---- Two-hop: GPU → DRAM → Storage ------------------------------------- */
+
+int orchkv_evict_cold(kv_request_ctx_t *ctx,
+                      uint32_t layer_id,
+                      uint32_t head_id,
+                      uint32_t block_idx)
+{
+    int rc = orchkv_evict_to_dram(ctx, layer_id, head_id, block_idx);
+    if (rc != ORCHKV_OK) return rc;
+    return orchkv_evict_to_storage(ctx, layer_id, head_id, block_idx);
+}
+
+/* ---- Flush async IO ---------------------------------------------------- */
+
+void orchkv_storage_flush(void)
+{
+    if (g_sys.inited)
+        io_worker_flush(&g_sys.io_pool);
 }
 
 /* ---- Stats ------------------------------------------------------------- */

@@ -18,6 +18,19 @@ if(NOT DEFINED ORCHKV_LOG_LEVEL)
 endif()
 add_definitions(-DORCHKV_LOG_LEVEL=${ORCHKV_LOG_LEVEL})
 
+# ---------- OrchFS detection (Phase B) ----------
+set(ORCHFS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/third_party/OrchFS)
+set(ORCHFS_LIB ${ORCHFS_DIR}/build/libOrchFS.so)
+set(ORCHFS_INCLUDE ${ORCHFS_DIR}/LibFS)
+
+if(EXISTS ${ORCHFS_LIB})
+    set(HAS_ORCHFS TRUE)
+    message(STATUS "OrchFS found: ${ORCHFS_LIB}")
+else()
+    set(HAS_ORCHFS FALSE)
+    message(STATUS "OrchFS not found at ${ORCHFS_LIB} — Phase B features disabled")
+endif()
+
 # ---------- Core static library ----------
 add_library(orchkv STATIC
     src/core/kv_block.c
@@ -26,11 +39,25 @@ add_library(orchkv STATIC
     src/tiered_store/dram_tier.cu
     src/tiered_store/gpu_tier.cu
     src/tiered_store/transfer.cu
+    src/tiered_store/orchfs_tier.c
+    src/tiered_store/io_worker.c
     src/api/orchkv_api.cu
 )
 
 target_include_directories(orchkv PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_link_libraries(orchkv PUBLIC CUDA::cudart pthread)
+
+if(HAS_ORCHFS)
+    target_compile_definitions(orchkv PUBLIC ORCHKV_HAS_ORCHFS=1)
+    target_include_directories(orchkv PUBLIC ${ORCHFS_INCLUDE})
+    target_link_libraries(orchkv PUBLIC ${ORCHFS_LIB})
+    find_library(PMEM_LIB pmem)
+    if(PMEM_LIB)
+        target_link_libraries(orchkv PUBLIC ${PMEM_LIB})
+    endif()
+else()
+    target_compile_definitions(orchkv PUBLIC ORCHKV_HAS_ORCHFS=0)
+endif()
 
 set_target_properties(orchkv PROPERTIES
     CUDA_SEPARABLE_COMPILATION ON
@@ -69,3 +96,13 @@ add_executable(test_e2e test/test_e2e.cu)
 target_include_directories(test_e2e PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_link_libraries(test_e2e orchkv)
 add_test(NAME test_e2e COMMAND test_e2e)
+
+add_executable(test_orchfs_tier test/test_orchfs_tier.c)
+target_include_directories(test_orchfs_tier PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+target_link_libraries(test_orchfs_tier orchkv)
+add_test(NAME test_orchfs_tier COMMAND test_orchfs_tier)
+
+add_executable(test_e2e_4tier test/test_e2e_4tier.cu)
+target_include_directories(test_e2e_4tier PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+target_link_libraries(test_e2e_4tier orchkv)
+add_test(NAME test_e2e_4tier COMMAND test_e2e_4tier)

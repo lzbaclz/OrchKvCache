@@ -220,11 +220,14 @@ typedef struct orchkv_config {
     float        dram_hwm;             /* DRAM high water mark (default 0.9) */
     float        dram_lwm;             /* DRAM low water mark  (default 0.7) */
 
-    /* OrchFS (Phase B, ignored in Phase A) */
+    /* OrchFS (Phase B) */
+    const char  *orchfs_base_dir;      /* OrchFS root dir, e.g. "/Or/kvcache" */
     const char  *orchfs_nvm_path;      /* e.g. "/dev/dax0.0" */
     const char  *orchfs_ssd_path;      /* e.g. "/dev/nvme1n1" */
     int          nvm_io_threads;
     int          ssd_io_threads;
+    int          orchfs_io_workers;    /* async IO worker threads (default 4) */
+    uint32_t     max_blocks_per_head;  /* max blocks per head for file layout (default 256) */
 } orchkv_config_t;
 
 /* Fill config with sensible defaults. Always call this before customising. */
@@ -242,10 +245,13 @@ static inline void orchkv_config_default(orchkv_config_t *cfg)
     cfg->gpu_lwm           = 0.7f;
     cfg->dram_hwm          = 0.9f;
     cfg->dram_lwm          = 0.7f;
+    cfg->orchfs_base_dir   = "/dev/shm/orchkv";
     cfg->orchfs_nvm_path   = NULL;
     cfg->orchfs_ssd_path   = NULL;
     cfg->nvm_io_threads    = 4;
     cfg->ssd_io_threads    = 16;
+    cfg->orchfs_io_workers = 4;
+    cfg->max_blocks_per_head = 256;
 }
 
 /* ========================================================================

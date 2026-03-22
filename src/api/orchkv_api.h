@@ -8,18 +8,21 @@
 #include "../tiered_store/gpu_tier.h"
 #include "../tiered_store/dram_tier.h"
 #include "../tiered_store/transfer.h"
+#include "../tiered_store/orchfs_tier.h"
+#include "../tiered_store/io_worker.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /* ========================================================================
- *  OrchKvCache Public API  — Phase A subset
+ *  OrchKvCache Public API  — Phase A + B
  *
  *  Lifecycle:   orchkv_init  →  (use)  →  orchkv_shutdown
  *  Per-request: orchkv_request_create  →  prefill / append / get_kv  →
  *               orchkv_request_destroy
- *  Migration:   orchkv_evict_to_dram / orchkv_promote_to_gpu
+ *  Migration:   orchkv_evict_to_dram / orchkv_promote_to_gpu    (GPU ↔ DRAM)
+ *               orchkv_evict_to_storage / orchkv_promote_from_storage (DRAM ↔ Storage)
  * ======================================================================== */
 
 int  orchkv_init(const orchkv_config_t *config);
@@ -71,7 +74,7 @@ int orchkv_get_kv_block(kv_request_ctx_t *ctx,
                         void **k_out,
                         void **v_out);
 
-/* ---- Migration (Phase A: GPU ↔ DRAM only) ---- */
+/* ---- Migration: GPU ↔ DRAM ---- */
 
 int orchkv_evict_to_dram(kv_request_ctx_t *ctx,
                          uint32_t layer_id,
@@ -83,16 +86,39 @@ int orchkv_promote_to_gpu(kv_request_ctx_t *ctx,
                           uint32_t head_id,
                           uint32_t block_idx);
 
+/* ---- Migration: DRAM ↔ Storage (Phase B) ---- */
+
+int orchkv_evict_to_storage(kv_request_ctx_t *ctx,
+                            uint32_t layer_id,
+                            uint32_t head_id,
+                            uint32_t block_idx);
+
+int orchkv_promote_from_storage(kv_request_ctx_t *ctx,
+                                uint32_t layer_id,
+                                uint32_t head_id,
+                                uint32_t block_idx);
+
+/* Two-hop: GPU → DRAM → Storage */
+int orchkv_evict_cold(kv_request_ctx_t *ctx,
+                      uint32_t layer_id,
+                      uint32_t head_id,
+                      uint32_t block_idx);
+
+/* Flush all pending async IO for a request */
+void orchkv_storage_flush(void);
+
 /* ---- Statistics ---- */
 
 int orchkv_get_stats(orchkv_stats_t *stats);
 
 /* ---- Access global subsystems (for tests / advanced use) ---- */
 
-gpu_tier_t       *orchkv_gpu_tier(void);
-dram_tier_t      *orchkv_dram_tier(void);
-transfer_engine_t *orchkv_transfer_engine(void);
-address_map_t    *orchkv_address_map(void);
+gpu_tier_t         *orchkv_gpu_tier(void);
+dram_tier_t        *orchkv_dram_tier(void);
+transfer_engine_t  *orchkv_transfer_engine(void);
+address_map_t      *orchkv_address_map(void);
+orchfs_tier_t      *orchkv_orchfs_tier(void);
+io_worker_pool_t   *orchkv_io_pool(void);
 
 #ifdef __cplusplus
 }

@@ -3,6 +3,7 @@
 
 #include "kv_types.h"
 #include "kv_block.h"
+#include "../tiered_store/orchfs_tier.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -44,6 +45,10 @@ typedef struct kv_request_ctx {
     uint64_t        total_blocks;
     uint64_t        blocks_on_gpu;
     uint64_t        blocks_on_dram;
+    uint64_t        blocks_on_storage;
+
+    /* Phase B: per-request persistent storage file */
+    orchfs_file_ctx_t *orchfs_fctx;
 
     bool            active;
     pthread_mutex_t lock;

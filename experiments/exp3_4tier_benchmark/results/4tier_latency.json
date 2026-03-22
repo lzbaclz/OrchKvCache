@@ -1,0 +1,37 @@
+{
+  "benchmark": "4tier_latency",
+  "model": "LLaMA-7B-scale",
+  "slab_size": 32768,
+  "results": {
+    "GPU_to_DRAM": {
+      "total_ms": 0.42,
+      "blocks": 32,
+      "us_per_block": 13.3,
+      "note": null
+    },
+    "DRAM_to_Storage": {
+      "total_ms": 0.88,
+      "blocks": 32,
+      "us_per_block": 27.6,
+      "note": null
+    },
+    "Storage_to_DRAM": {
+      "total_ms": 0.31,
+      "blocks": 32,
+      "us_per_block": 9.6,
+      "note": null
+    },
+    "DRAM_to_GPU": {
+      "total_ms": 0.48,
+      "blocks": 32,
+      "us_per_block": 15.1,
+      "note": null
+    },
+    "GPU_to_Storage": {
+      "total_ms": 1.29,
+      "blocks": 32,
+      "us_per_block": 40.2,
+      "note": "two-hop"
+    }
+  }
+}
