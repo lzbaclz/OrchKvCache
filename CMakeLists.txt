@@ -41,6 +41,10 @@ add_library(orchkv STATIC
     src/tiered_store/transfer.cu
     src/tiered_store/orchfs_tier.c
     src/tiered_store/io_worker.c
+    src/scheduler/attention_tracker.c
+    src/scheduler/hotcold_classifier.c
+    src/scheduler/adaptive_threshold.c
+    src/scheduler/eviction_policy.c
     src/api/orchkv_api.cu
 )
 
@@ -106,3 +110,24 @@ add_executable(test_e2e_4tier test/test_e2e_4tier.cu)
 target_include_directories(test_e2e_4tier PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_link_libraries(test_e2e_4tier orchkv)
 add_test(NAME test_e2e_4tier COMMAND test_e2e_4tier)
+
+# Phase C tests
+add_executable(test_attention_tracker test/test_attention_tracker.c)
+target_include_directories(test_attention_tracker PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+target_link_libraries(test_attention_tracker orchkv m)
+add_test(NAME test_attention_tracker COMMAND test_attention_tracker)
+
+add_executable(test_hotcold_classifier test/test_hotcold_classifier.c)
+target_include_directories(test_hotcold_classifier PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+target_link_libraries(test_hotcold_classifier orchkv m)
+add_test(NAME test_hotcold_classifier COMMAND test_hotcold_classifier)
+
+add_executable(test_adaptive_threshold test/test_adaptive_threshold.c)
+target_include_directories(test_adaptive_threshold PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+target_link_libraries(test_adaptive_threshold orchkv m)
+add_test(NAME test_adaptive_threshold COMMAND test_adaptive_threshold)
+
+add_executable(test_eviction_policy test/test_eviction_policy.c)
+target_include_directories(test_eviction_policy PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+target_link_libraries(test_eviction_policy orchkv m)
+add_test(NAME test_eviction_policy COMMAND test_eviction_policy)
