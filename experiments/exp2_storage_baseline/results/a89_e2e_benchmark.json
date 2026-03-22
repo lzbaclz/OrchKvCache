@@ -1,0 +1,60 @@
+{
+    "description": "Phase A E2E benchmark: OrchKvCache full-stack latency (init → prefill → decode → evict → promote)",
+    "hardware": "NVIDIA A100-SXM4-80GB, 376GB DDR4 DRAM, pinned memory enabled",
+    "date": "2026-03-21",
+    "model": "LLaMA-7B-like",
+    "config": {
+        "n_layers": 32,
+        "n_kv_heads": 8,
+        "d_head": 128,
+        "dtype": "fp16",
+        "tokens_per_block": 64,
+        "slab_size_bytes": 32768,
+        "gpu_pool_mb": 128,
+        "dram_pool_mb": 128,
+        "num_cuda_streams": 4
+    },
+    "results": {
+        "prefill": {
+            "tokens": 128,
+            "layers": 32,
+            "total_blocks": 512,
+            "total_ms": 13.144,
+            "per_layer_us": 410.8,
+            "note": "512 blocks × 32KB = 16MB H2D, each block: slab_alloc + cudaMemcpyAsync (K) + sync + cudaMemcpyAsync (V) + sync"
+        },
+        "decode": {
+            "steps": 100,
+            "layers_per_step": 32,
+            "total_ms": 387.071,
+            "per_step_us": 3870.7,
+            "per_layer_us": 120.96,
+            "note": "Per step: 32 layers × 8 heads × 2 transfers (K+V) per head = 512 small cudaMemcpyAsync calls"
+        },
+        "evict_to_dram": {
+            "blocks": 16,
+            "total_ms": 0.173,
+            "per_block_us": 10.8,
+            "note": "32KB D2H per block via async transfer + sync"
+        },
+        "promote_to_gpu": {
+            "blocks": 16,
+            "total_ms": 0.177,
+            "per_block_us": 11.1,
+            "note": "32KB H2D per block via async transfer + sync"
+        },
+        "transfer_stats": {
+            "transfers_d2h": 16,
+            "transfers_h2d": 52240,
+            "bytes_d2h": 524288,
+            "bytes_h2d": 30408704
+        }
+    },
+    "analysis": {
+        "prefill_bandwidth_gbps": 1.24,
+        "decode_overhead_us_per_layer": 120.96,
+        "evict_latency_us": 10.8,
+        "promote_latency_us": 11.1,
+        "conclusion": "Phase A demonstrates functional correctness with sub-ms evict/promote. Decode overhead is dominated by per-head synchronous transfers; Phase B can optimize with batched async transfers."
+    }
+}

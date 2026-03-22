@@ -1,0 +1,19 @@
+{
+  "benchmark": "A5_A6_A7_gpu_dram_transfer",
+    "slab_alloc_10k": {"alloc_total_us": 330.8, "alloc_avg_ns": 33.1, "free_total_us": 287.1, "free_avg_ns": 28.7},
+    "transfer_bw": [
+      {"size": "32KB", "size_bytes": 32768, "h2d_us": 15.4, "h2d_gbps": 2.13, "d2h_us": 10.7, "d2h_gbps": 3.07, "roundtrip_us": 26.1},
+      {"size": "64KB", "size_bytes": 65536, "h2d_us": 13.3, "h2d_gbps": 4.94, "d2h_us": 12.0, "d2h_gbps": 5.48, "roundtrip_us": 25.2},
+      {"size": "256KB", "size_bytes": 262144, "h2d_us": 21.0, "h2d_gbps": 12.47, "d2h_us": 20.0, "d2h_gbps": 13.08, "roundtrip_us": 41.1},
+      {"size": "1MB", "size_bytes": 1048576, "h2d_us": 52.5, "h2d_gbps": 19.98, "d2h_us": 52.6, "d2h_gbps": 19.95, "roundtrip_us": 105.0},
+      {"size": "4MB", "size_bytes": 4194304, "h2d_us": 175.5, "h2d_gbps": 23.90, "d2h_us": 182.9, "d2h_gbps": 22.94, "roundtrip_us": 358.3},
+      {"size": "16MB", "size_bytes": 16777216, "h2d_us": 672.0, "h2d_gbps": 24.97, "d2h_us": 732.2, "d2h_gbps": 22.91, "roundtrip_us": 1404.2},
+      {"size": "64MB", "size_bytes": 67108864, "h2d_us": 2657.5, "h2d_gbps": 25.25, "d2h_us": 2910.5, "d2h_gbps": 23.06, "roundtrip_us": 5568.0}
+    ],
+    "stream_scaling": [
+      {"streams": 1, "block_4MB_h2d_gbps": 24.10, "block_4MB_d2h_gbps": 23.09},
+      {"streams": 2, "block_4MB_h2d_gbps": 23.91, "block_4MB_d2h_gbps": 23.00},
+      {"streams": 4, "block_4MB_h2d_gbps": 23.95, "block_4MB_d2h_gbps": 22.99},
+      {"streams": 8, "block_4MB_h2d_gbps": 23.97, "block_4MB_d2h_gbps": 22.96}
+    ]
+}

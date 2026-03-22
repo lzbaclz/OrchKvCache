@@ -2,7 +2,10 @@
 #define ORCHKV_KV_BLOCK_H
 
 #include "kv_types.h"
+
+#ifndef __CUDACC__
 #include <stdatomic.h>
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -49,7 +52,9 @@ typedef struct kv_block {
 } kv_block_t;
 
 /* ---------------- Global block-ID counter (module-internal) ------------- */
+#ifndef __CUDACC__
 extern atomic_uint_fast64_t g_block_id_counter;
+#endif
 
 /* ---------------- API --------------------------------------------------- */
 

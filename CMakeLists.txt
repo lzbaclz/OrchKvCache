@@ -23,10 +23,10 @@ add_library(orchkv STATIC
     src/core/kv_block.c
     src/core/kv_request.c
     src/core/address_map.c
-    src/tiered_store/dram_tier.c
+    src/tiered_store/dram_tier.cu
     src/tiered_store/gpu_tier.cu
     src/tiered_store/transfer.cu
-    src/api/orchkv_api.c
+    src/api/orchkv_api.cu
 )
 
 target_include_directories(orchkv PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
@@ -59,3 +59,13 @@ add_executable(test_kv_request test/test_kv_request.c)
 target_include_directories(test_kv_request PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_link_libraries(test_kv_request orchkv)
 add_test(NAME test_kv_request COMMAND test_kv_request)
+
+add_executable(test_gpu_dram test/test_gpu_dram.cu)
+target_include_directories(test_gpu_dram PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+target_link_libraries(test_gpu_dram orchkv)
+add_test(NAME test_gpu_dram COMMAND test_gpu_dram)
+
+add_executable(test_e2e test/test_e2e.cu)
+target_include_directories(test_e2e PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+target_link_libraries(test_e2e orchkv)
+add_test(NAME test_e2e COMMAND test_e2e)
