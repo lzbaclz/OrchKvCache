@@ -286,7 +286,7 @@ def run_e5(n_blocks: int = 256, n_steps: int = 100,
 
 # ─── E6: Block Size Ablation ────────────────────────────────────────
 
-def run_e6(model: str = "meta-llama/Llama-2-7b-hf",
+def run_e6(model: str = "Qwen/Qwen2.5-7B",
            seq_len: int = 4096, batch_size: int = 4,
            max_new_tokens: int = 64) -> list[dict]:
     """E6: Compare throughput across block sizes."""
@@ -352,7 +352,7 @@ def main():
     parser = argparse.ArgumentParser(description="E4-E6 Ablation Benchmarks")
     parser.add_argument("--exp", default="all",
                         choices=["e4", "e5", "e6", "all"])
-    parser.add_argument("--model", default="meta-llama/Llama-2-7b-hf")
+    parser.add_argument("--model", default="Qwen/Qwen2.5-7B")
     parser.add_argument("--seq-len", type=int, default=4096)
     parser.add_argument("--batch-size", type=int, default=4)
     parser.add_argument("--n-blocks", type=int, default=256)

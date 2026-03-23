@@ -27,8 +27,8 @@ from bench_utils import (
     CPUTimer, generate_synthetic_prompts, build_vllm_engine,
 )
 
-DEFAULT_MODELS = ["meta-llama/Llama-2-7b-hf"]
-DEFAULT_SEQ_LENS = [1024, 4096, 8192, 16384, 32768]
+DEFAULT_MODELS = ["Qwen/Qwen2.5-7B"]
+DEFAULT_SEQ_LENS = [512, 1024, 2048, 4096, 8192]
 DEFAULT_BATCH_SIZES = [1, 4, 8, 16]
 
 

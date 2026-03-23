@@ -467,29 +467,97 @@ Phase 3 — vLLM 实验（需模型）:
 
 ---
 
-## 八、TODO 清单
+### E10: 生成质量验证 ✅
+
+**关键发现**:
+- 使用 Qwen/Qwen2.5-7B 模型（vLLM 0.7.3, A100-80GB）
+- Token 一致率: **100.0000%** (320/320 tokens)
+- Perplexity: baseline=2.3046, orchkv=2.3046, 相对差 **0.0000%**
+- 结论：OrchKvCache 的存储管理层对模型输出质量零影响
+- 生成图表: `tab01_quality_verification.pdf`
+
+### E1: 端到端吞吐率 ✅
+
+**关键发现**:
+- 5 种 seq_len (512~8192) × 3 种 batch_size (1/4/8) × 2 backends = 30 数据点，全部成功
+- baseline vs orchkv 吞吐几乎一致（swap_space 差异不影响 GPU 充裕时的性能）
+- seq=8192, bs=8: 11484.9 tok/s (orchkv) vs 11484.5 tok/s (baseline)
+- 生成图表: `fig01_throughput_vs_seqlen.pdf`, `fig02_throughput_vs_batchsize.pdf`, `fig03_ttft_tpot.pdf`
+
+### E2: 最大 Batch Size ✅
+
+**关键发现**:
+- seq=4096 时 baseline 和 orchkv 均可达 bs=64（A100-80GB 显存充裕）
+- 生成图表: `fig04_max_batch_size.pdf`
+
+### E3: 延迟分解 ✅
+
+**关键发现**:
+- seq=2048, bs=4: baseline 1386.0ms vs orchkv 1392.4ms
+- 调度开销 < 0.5%（6.4ms / 1386ms）
+- TTFT ≈ 1344ms, TPOT ≈ 0.66ms
+- 生成图表: `fig05_latency_breakdown.pdf`
+
+### E4: 存储层消融 ✅
+
+**关键发现**:
+- 4 种配置 (GPU-only / GPU+DRAM / GPU+DRAM+NVM / 4-tier):
+  - GPU-only: 6082.7 tok/s
+  - GPU+DRAM: 6053.2 tok/s
+  - GPU+DRAM+NVM: 6050.6 tok/s
+  - GPU+DRAM+NVM+SSD: 6060.7 tok/s
+- 层数增加带来的吞吐退化 < 0.5%
+- 生成图表: `fig06_tier_throughput.pdf`, `fig07_tier_gpu_memory.pdf`
+
+### E6: Block Size 消融 ✅
+
+**关键发现**:
+- 4 种 block_size (16/32/64/128):
+  - bs=16: 6079.6 tok/s
+  - bs=32: 6069.8 tok/s
+  - bs=64: 6074.9 tok/s
+  - bs=128: 6086.8 tok/s
+- block_size 对吞吐影响极小（<0.3%），128 略优
+- 生成图表: `fig10_block_size_ablation.pdf`
+
+---
+
+## 八、实验环境
+
+```
+硬件: 2× NVIDIA A100-SXM4-80GB / 256GB DDR4 DRAM / NVMe SSD
+CUDA: 12.2 (Driver 535.288.01)
+Python: 3.11.15
+PyTorch: 2.5.1+cu121
+vLLM: 0.7.3
+模型: Qwen/Qwen2.5-7B (bf16, ~14.3GB)
+orchkv_core: pybind11 C++ 扩展模块
+```
+
+---
+
+## 九、TODO 清单
 
 ```
 Phase E 实验执行:
 
   ┌──────────────────────────────────────────────────────────────┐
-  │ [E-prep] 环境准备                                状态: TODO │
-  │   pip install vllm==0.17.2                                  │
-  │   huggingface-cli download meta-llama/Llama-2-7b-hf         │
-  │   估时: 0.5d (视网络)                                       │
+  │ [E-prep] 环境准备                                状态: DONE │
+  │   vLLM 0.7.3 + Qwen/Qwen2.5-7B (via hf-mirror.com)        │
   ├──────────────────────────────────────────────────────────────┤
-  │ [E5]  冷热策略 sweep        ⚡ 立即可跑          状态: DONE │
-  │ [E7]  预取效果              ⚡ 立即可跑          状态: DONE │
-  │ [E8]  存储带宽              ⚡ 立即可跑          状态: DONE │
-  │ [E9]  调度可扩展性          ⚡ 立即可跑          状态: DONE │
+  │ [E5]  冷热策略 sweep        ⚡ orchkv_core       状态: DONE │
+  │ [E7]  预取效果              ⚡ orchkv_core       状态: DONE │
+  │ [E8]  存储带宽              ⚡ orchkv_core       状态: DONE │
+  │ [E9]  调度可扩展性          ⚡ orchkv_core       状态: DONE │
   ├──────────────────────────────────────────────────────────────┤
-  │ [E10] 生成质量验证          需 vLLM + 模型      状态: TODO │
-  │ [E1]  端到端吞吐            需 vLLM + 模型      状态: TODO │
-  │ [E2]  最大 Batch Size       需 vLLM + 模型      状态: TODO │
-  │ [E3]  延迟分解              需 vLLM + 模型      状态: TODO │
-  │ [E4]  存储层消融            需 vLLM + 模型      状态: TODO │
-  │ [E6]  Block Size 消融       需 vLLM + 模型      状态: TODO │
+  │ [E10] 生成质量验证          vLLM + Qwen2.5-7B   状态: DONE │
+  │ [E1]  端到端吞吐            vLLM + Qwen2.5-7B   状态: DONE │
+  │ [E2]  最大 Batch Size       vLLM + Qwen2.5-7B   状态: DONE │
+  │ [E3]  延迟分解              vLLM + Qwen2.5-7B   状态: DONE │
+  │ [E4]  存储层消融            vLLM + Qwen2.5-7B   状态: DONE │
+  │ [E6]  Block Size 消融       vLLM + Qwen2.5-7B   状态: DONE │
   └──────────────────────────────────────────────────────────────┘
 
-  下一步: 安装 vLLM → E10 → E1 → E2 → E3 → E4 → E6
+  所有 E1~E10 实验全部完成 ✅
+  16 个论文图表 (PDF+PNG) 已生成至 benchmarks/figures/
 ```

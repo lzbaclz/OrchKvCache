@@ -1,0 +1,7 @@
+{
+  "seq_len": 4096,
+  "baseline_max_batch": 64,
+  "orchkv_max_batch": 64,
+  "extension_ratio": 1.0,
+  "status": "marginal"
+}

@@ -1,0 +1,200 @@
+{
+  "token_consistency": {
+    "status": "pass",
+    "total_tokens": 320,
+    "matching_tokens": 320,
+    "match_rate": 1.0,
+    "per_sample": [
+      {
+        "sample": 0,
+        "total": 32,
+        "match": 32,
+        "rate": 1.0
+      },
+      {
+        "sample": 1,
+        "total": 32,
+        "match": 32,
+        "rate": 1.0
+      },
+      {
+        "sample": 2,
+        "total": 32,
+        "match": 32,
+        "rate": 1.0
+      },
+      {
+        "sample": 3,
+        "total": 32,
+        "match": 32,
+        "rate": 1.0
+      },
+      {
+        "sample": 4,
+        "total": 32,
+        "match": 32,
+        "rate": 1.0
+      },
+      {
+        "sample": 5,
+        "total": 32,
+        "match": 32,
+        "rate": 1.0
+      },
+      {
+        "sample": 6,
+        "total": 32,
+        "match": 32,
+        "rate": 1.0
+      },
+      {
+        "sample": 7,
+        "total": 32,
+        "match": 32,
+        "rate": 1.0
+      },
+      {
+        "sample": 8,
+        "total": 32,
+        "match": 32,
+        "rate": 1.0
+      },
+      {
+        "sample": 9,
+        "total": 32,
+        "match": 32,
+        "rate": 1.0
+      }
+    ]
+  },
+  "perplexity": {
+    "status": "pass",
+    "baseline_avg_ppl": 2.3046,
+    "orchkv_avg_ppl": 2.3046,
+    "ppl_relative_diff": 0.0,
+    "baseline": [
+      {
+        "cum_logprob": -28.920993776991963,
+        "n_tokens": 32,
+        "avg_logprob": -0.9037810555309989,
+        "perplexity": 2.468920610996061
+      },
+      {
+        "cum_logprob": -19.848536614328623,
+        "n_tokens": 32,
+        "avg_logprob": -0.6202667691977695,
+        "perplexity": 1.859424012740714
+      },
+      {
+        "cum_logprob": -41.10206035990268,
+        "n_tokens": 30,
+        "avg_logprob": -1.3700686786634226,
+        "perplexity": 3.9356209793775996
+      },
+      {
+        "cum_logprob": -17.989768471568823,
+        "n_tokens": 32,
+        "avg_logprob": -0.5621802647365257,
+        "perplexity": 1.7544935937977624
+      },
+      {
+        "cum_logprob": -27.371786564122885,
+        "n_tokens": 32,
+        "avg_logprob": -0.8553683301288402,
+        "perplexity": 2.352240622125088
+      },
+      {
+        "cum_logprob": -22.5027884170413,
+        "n_tokens": 32,
+        "avg_logprob": -0.7032121380325407,
+        "perplexity": 2.0202315590424047
+      },
+      {
+        "cum_logprob": -16.73034331202507,
+        "n_tokens": 32,
+        "avg_logprob": -0.5228232285007834,
+        "perplexity": 1.6867831078124005
+      },
+      {
+        "cum_logprob": -23.6842521391809,
+        "n_tokens": 32,
+        "avg_logprob": -0.7401328793494031,
+        "perplexity": 2.0962140395466253
+      },
+      {
+        "cum_logprob": -26.610539365559816,
+        "n_tokens": 32,
+        "avg_logprob": -0.8315793551737443,
+        "perplexity": 2.2969435667724443
+      },
+      {
+        "cum_logprob": -30.263424515724182,
+        "n_tokens": 32,
+        "avg_logprob": -0.9457320161163807,
+        "perplexity": 2.574697408932051
+      }
+    ],
+    "orchkv": [
+      {
+        "cum_logprob": -28.920993776991963,
+        "n_tokens": 32,
+        "avg_logprob": -0.9037810555309989,
+        "perplexity": 2.468920610996061
+      },
+      {
+        "cum_logprob": -19.848536614328623,
+        "n_tokens": 32,
+        "avg_logprob": -0.6202667691977695,
+        "perplexity": 1.859424012740714
+      },
+      {
+        "cum_logprob": -41.10206035990268,
+        "n_tokens": 30,
+        "avg_logprob": -1.3700686786634226,
+        "perplexity": 3.9356209793775996
+      },
+      {
+        "cum_logprob": -17.989768471568823,
+        "n_tokens": 32,
+        "avg_logprob": -0.5621802647365257,
+        "perplexity": 1.7544935937977624
+      },
+      {
+        "cum_logprob": -27.371786564122885,
+        "n_tokens": 32,
+        "avg_logprob": -0.8553683301288402,
+        "perplexity": 2.352240622125088
+      },
+      {
+        "cum_logprob": -22.5027884170413,
+        "n_tokens": 32,
+        "avg_logprob": -0.7032121380325407,
+        "perplexity": 2.0202315590424047
+      },
+      {
+        "cum_logprob": -16.73034331202507,
+        "n_tokens": 32,
+        "avg_logprob": -0.5228232285007834,
+        "perplexity": 1.6867831078124005
+      },
+      {
+        "cum_logprob": -23.6842521391809,
+        "n_tokens": 32,
+        "avg_logprob": -0.7401328793494031,
+        "perplexity": 2.0962140395466253
+      },
+      {
+        "cum_logprob": -26.610539365559816,
+        "n_tokens": 32,
+        "avg_logprob": -0.8315793551737443,
+        "perplexity": 2.2969435667724443
+      },
+      {
+        "cum_logprob": -30.263424515724182,
+        "n_tokens": 32,
+        "avg_logprob": -0.9457320161163807,
+        "perplexity": 2.574697408932051
+      }
+    ]
+  }
+}

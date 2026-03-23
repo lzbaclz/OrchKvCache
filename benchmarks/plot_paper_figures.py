@@ -341,7 +341,338 @@ def plot_e9():
 
 
 # ═══════════════════════════════════════════════════════════════════
-#  Summary Table (Tab.1 placeholder for E10)
+#  E1: End-to-End Throughput — Fig.1 + Fig.2 + Fig.3
+# ═══════════════════════════════════════════════════════════════════
+
+def plot_e1():
+    data = load_json("benchmark_e2e")
+    if not data:
+        print("  [skip] E1: no data")
+        return
+
+    ok = [r for r in data if r.get("status") == "ok"]
+    if not ok:
+        print("  [skip] E1: no valid data")
+        return
+
+    backends = sorted(set(r["backend"] for r in ok))
+    seq_lens = sorted(set(r["seq_len"] for r in ok))
+    batch_sizes = sorted(set(r["batch_size"] for r in ok))
+
+    # --- Fig.1: Throughput vs seq_len (fixed bs=4 or closest) ---
+    bs_target = min(batch_sizes, key=lambda x: abs(x - 4))
+    fig, ax = plt.subplots(figsize=(7, 4.5))
+    for be in backends:
+        sub = sorted([r for r in ok if r["backend"] == be and r["batch_size"] == bs_target],
+                     key=lambda r: r["seq_len"])
+        if sub:
+            xs = [r["seq_len"] for r in sub]
+            ys = [r["throughput_tok_s"] for r in sub]
+            color = COLORS.get(be, "#333")
+            marker = "o" if be == "baseline" else "s"
+            label = "Baseline" if be == "baseline" else "OrchKvCache"
+            ax.plot(xs, ys, f"{marker}-", color=color, label=label, markersize=7)
+
+    ax.set_xlabel("Sequence Length (tokens)")
+    ax.set_ylabel("Throughput (tok/s)")
+    ax.set_title(f"Fig.1: Throughput vs. Sequence Length (batch={bs_target})")
+    ax.legend()
+    ax.set_xscale("log", base=2)
+    ax.xaxis.set_major_formatter(mticker.FuncFormatter(lambda x, _: f"{int(x)}"))
+    fig.tight_layout()
+    save_fig(fig, "fig01_throughput_vs_seqlen")
+
+    # --- Fig.2: Throughput vs batch_size (fixed seq=2048 or closest) ---
+    seq_target = min(seq_lens, key=lambda x: abs(x - 2048))
+    fig, ax = plt.subplots(figsize=(7, 4.5))
+    for be in backends:
+        sub = sorted([r for r in ok if r["backend"] == be and r["seq_len"] == seq_target],
+                     key=lambda r: r["batch_size"])
+        if sub:
+            xs = [r["batch_size"] for r in sub]
+            ys = [r["throughput_tok_s"] for r in sub]
+            color = COLORS.get(be, "#333")
+            marker = "o" if be == "baseline" else "s"
+            label = "Baseline" if be == "baseline" else "OrchKvCache"
+            ax.plot(xs, ys, f"{marker}-", color=color, label=label, markersize=7)
+
+    ax.set_xlabel("Batch Size")
+    ax.set_ylabel("Throughput (tok/s)")
+    ax.set_title(f"Fig.2: Throughput vs. Batch Size (seq={seq_target})")
+    ax.legend()
+    fig.tight_layout()
+    save_fig(fig, "fig02_throughput_vs_batchsize")
+
+    # --- Fig.3: TTFT comparison ---
+    fig, axes = plt.subplots(1, 2, figsize=(12, 4.5))
+
+    for ax_idx, (metric, ylabel, title) in enumerate([
+        ("ttft_est_ms", "TTFT (ms)", "Fig.3a: Time-to-First-Token"),
+        ("tpot_est_ms", "TPOT (ms)", "Fig.3b: Time-per-Output-Token"),
+    ]):
+        ax = axes[ax_idx]
+        width = 0.35
+        sub = [r for r in ok if r["seq_len"] == seq_target]
+        bl_data = sorted([r for r in sub if r["backend"] == "baseline"],
+                        key=lambda r: r["batch_size"])
+        ok_data = sorted([r for r in sub if r["backend"] == "orchkv"],
+                        key=lambda r: r["batch_size"])
+
+        if bl_data and ok_data:
+            x = np.arange(len(bl_data))
+            bl_vals = [r[metric] for r in bl_data]
+            ok_vals = [r[metric] for r in ok_data]
+            ax.bar(x - width/2, bl_vals, width, label="Baseline",
+                   color=COLORS["baseline"], alpha=0.85)
+            ax.bar(x + width/2, ok_vals, width, label="OrchKvCache",
+                   color=COLORS["orchkv"], alpha=0.85)
+            ax.set_xticks(x)
+            ax.set_xticklabels([f"bs={r['batch_size']}" for r in bl_data])
+            ax.set_ylabel(ylabel)
+            ax.set_title(title)
+            ax.legend()
+
+    fig.tight_layout()
+    save_fig(fig, "fig03_ttft_tpot")
+
+
+# ═══════════════════════════════════════════════════════════════════
+#  E2: Max Batch Size — Fig.4
+# ═══════════════════════════════════════════════════════════════════
+
+def plot_e2():
+    data = load_json("test_memory_extension")
+    if not data:
+        print("  [skip] E2: no data")
+        return
+
+    fig, ax = plt.subplots(figsize=(6, 4))
+
+    if isinstance(data, dict):
+        labels = [f"seq={data['seq_len']}"]
+        bl = [data["baseline_max_batch"]]
+        ok = [data["orchkv_max_batch"]]
+    elif isinstance(data, list):
+        labels = [f"seq={r['seq_len']}" for r in data]
+        bl = [r["baseline_max_batch"] for r in data]
+        ok = [r["orchkv_max_batch"] for r in data]
+    else:
+        print("  [skip] E2: unexpected format")
+        return
+
+    x = np.arange(len(labels))
+    width = 0.35
+    ax.bar(x - width/2, bl, width, label="Baseline", color=COLORS["baseline"], alpha=0.85)
+    ax.bar(x + width/2, ok, width, label="OrchKvCache", color=COLORS["orchkv"], alpha=0.85)
+
+    for i, (b, o) in enumerate(zip(bl, ok)):
+        ax.text(i - width/2, b + 0.5, str(b), ha="center", fontsize=9)
+        ax.text(i + width/2, o + 0.5, str(o), ha="center", fontsize=9)
+
+    ax.set_xticks(x)
+    ax.set_xticklabels(labels)
+    ax.set_ylabel("Max Batch Size")
+    ax.set_title("Fig.4: Maximum Batch Size Before OOM")
+    ax.legend()
+    fig.tight_layout()
+    save_fig(fig, "fig04_max_batch_size")
+
+
+# ═══════════════════════════════════════════════════════════════════
+#  E3: Latency Breakdown — Fig.5
+# ═══════════════════════════════════════════════════════════════════
+
+def plot_e3():
+    data = load_json("test_latency_breakdown")
+    if not data:
+        print("  [skip] E3: no data")
+        return
+
+    fig, ax = plt.subplots(figsize=(7, 4.5))
+
+    configs = []
+    for be in ["baseline", "orchkv"]:
+        if be in data and isinstance(data[be], dict):
+            info = data[be]
+            label = "Baseline" if be == "baseline" else "OrchKvCache"
+            ttft = info.get("ttft_est_ms", 0)
+            tpot_total = info.get("timing", {}).get("avg_us", 0) / 1000 - ttft
+            configs.append({
+                "label": label,
+                "ttft": ttft,
+                "decode": max(tpot_total, 0),
+            })
+
+    if not configs:
+        print("  [skip] E3: no valid data")
+        return
+
+    x = np.arange(len(configs))
+    width = 0.5
+
+    ttft_vals = [c["ttft"] for c in configs]
+    decode_vals = [c["decode"] for c in configs]
+    colors_stack = [COLORS["gpu_hbm"], COLORS["dram"]]
+    labels_stack = ["Prefill (TTFT)", "Decode"]
+
+    ax.bar(x, ttft_vals, width, label=labels_stack[0], color=colors_stack[0], alpha=0.85)
+    ax.bar(x, decode_vals, width, bottom=ttft_vals, label=labels_stack[1],
+           color=colors_stack[1], alpha=0.85)
+
+    ax.set_xticks(x)
+    ax.set_xticklabels([c["label"] for c in configs])
+    ax.set_ylabel("Latency (ms)")
+    ax.set_title("Fig.5: Latency Breakdown (Prefill + Decode)")
+    ax.legend()
+
+    for i, c in enumerate(configs):
+        total = c["ttft"] + c["decode"]
+        ax.text(i, total + 5, f"{total:.0f}ms", ha="center", fontsize=9)
+
+    fig.tight_layout()
+    save_fig(fig, "fig05_latency_breakdown")
+
+
+# ═══════════════════════════════════════════════════════════════════
+#  E4: Storage Tier Ablation — Fig.6 + Fig.7
+# ═══════════════════════════════════════════════════════════════════
+
+def plot_e4():
+    data = load_json("benchmark_e4_tier_ablation")
+    if not data:
+        print("  [skip] E4: no data")
+        return
+
+    ok = [r for r in data if r.get("status") == "ok"]
+    if not ok:
+        print("  [skip] E4: no valid data")
+        return
+
+    labels = [r["tier"] for r in ok]
+    throughput = [r["throughput_tok_s"] for r in ok]
+    gpu_peak = [r["gpu_peak_mb"] / 1024 for r in ok]
+    tier_colors = [COLORS["baseline"], COLORS["dram"], COLORS["tmpfs"], COLORS["orchkv"]]
+
+    # --- Fig.6: Throughput vs tier config ---
+    fig, ax = plt.subplots(figsize=(7, 4.5))
+    bars = ax.bar(range(len(labels)), throughput,
+                  color=tier_colors[:len(ok)], alpha=0.85)
+    for i, v in enumerate(throughput):
+        ax.text(i, v + 20, f"{v:.0f}", ha="center", fontsize=9)
+
+    ax.set_xticks(range(len(labels)))
+    ax.set_xticklabels(labels, fontsize=9)
+    ax.set_ylabel("Throughput (tok/s)")
+    ax.set_title("Fig.6: Throughput vs. Storage Tier Configuration")
+    fig.tight_layout()
+    save_fig(fig, "fig06_tier_throughput")
+
+    # --- Fig.7: GPU peak memory vs tier config ---
+    fig, ax = plt.subplots(figsize=(7, 4.5))
+    bars = ax.bar(range(len(labels)), gpu_peak,
+                  color=tier_colors[:len(ok)], alpha=0.85)
+    for i, v in enumerate(gpu_peak):
+        ax.text(i, v + 0.2, f"{v:.1f}", ha="center", fontsize=9)
+
+    ax.set_xticks(range(len(labels)))
+    ax.set_xticklabels(labels, fontsize=9)
+    ax.set_ylabel("GPU Peak Memory (GB)")
+    ax.set_title("Fig.7: GPU Peak Memory vs. Storage Tier Configuration")
+    fig.tight_layout()
+    save_fig(fig, "fig07_tier_gpu_memory")
+
+
+# ═══════════════════════════════════════════════════════════════════
+#  E6: Block Size Ablation — Fig.10
+# ═══════════════════════════════════════════════════════════════════
+
+def plot_e6():
+    data = load_json("benchmark_e6_block_size")
+    if not data:
+        print("  [skip] E6: no data")
+        return
+
+    ok = [r for r in data if r.get("status") == "ok"]
+    if not ok:
+        return
+
+    blk_sizes = [r["block_size"] for r in ok]
+    throughput = [r["throughput_tok_s"] for r in ok]
+
+    fig, ax = plt.subplots(figsize=(6, 4.5))
+    ax.plot(blk_sizes, throughput, "o-", color=COLORS["orchkv"], markersize=8, linewidth=2)
+
+    for x, y in zip(blk_sizes, throughput):
+        ax.annotate(f"{y:.0f}", (x, y), textcoords="offset points",
+                    xytext=(0, 10), ha="center", fontsize=9)
+
+    ax.set_xlabel("Block Size (tokens/block)")
+    ax.set_ylabel("Throughput (tok/s)")
+    ax.set_title("Fig.10: Throughput vs. Block Size")
+    ax.set_xticks(blk_sizes)
+    fig.tight_layout()
+    save_fig(fig, "fig10_block_size_ablation")
+
+
+# ═══════════════════════════════════════════════════════════════════
+#  E10: Quality Verification — Tab.1
+# ═══════════════════════════════════════════════════════════════════
+
+def plot_e10():
+    data = load_json("eval_e10_quality")
+    if not data:
+        print("  [skip] E10: no data")
+        return
+
+    fig, ax = plt.subplots(figsize=(8, 2.5))
+    ax.axis("off")
+
+    rows = []
+    tc = data.get("token_consistency", {})
+    if tc and tc.get("status") != "skipped":
+        rows.append(["Token Match Rate", f"{tc.get('match_rate', 0):.4%}",
+                      f"{tc.get('matching_tokens', 0)}/{tc.get('total_tokens', 0)}",
+                      "PASS" if tc.get("status") == "pass" else "FAIL"])
+
+    ppl = data.get("perplexity", {})
+    if ppl and ppl.get("status") not in ("skipped", "error"):
+        rows.append(["Baseline PPL", f"{ppl.get('baseline_avg_ppl', 0):.4f}", "", ""])
+        rows.append(["OrchKvCache PPL", f"{ppl.get('orchkv_avg_ppl', 0):.4f}", "", ""])
+        rows.append(["PPL Relative Diff", f"{ppl.get('ppl_relative_diff', 0):.4%}", "",
+                      "PASS" if ppl.get("status") == "pass" else "MARGINAL"])
+
+    if not rows:
+        print("  [skip] E10: no data")
+        return
+
+    headers = ["Metric", "Value", "Detail", "Status"]
+    colors = [["#f0f4ff" if i % 2 == 0 else "white"] * len(headers)
+              for i in range(len(rows))]
+
+    table = ax.table(cellText=rows, colLabels=headers,
+                     cellColours=colors, colColours=["#dbeafe"] * len(headers),
+                     loc="center", cellLoc="center")
+    table.auto_set_font_size(False)
+    table.set_fontsize(10)
+    table.scale(1, 1.8)
+
+    for (r, c), cell in table.get_celld().items():
+        if r == 0:
+            cell.set_text_props(weight="bold")
+        if c == 3 and r > 0:
+            status = rows[r-1][3]
+            if status == "PASS":
+                cell.set_facecolor("#dcfce7")
+            elif status == "FAIL":
+                cell.set_facecolor("#fee2e2")
+
+    ax.set_title("Tab.1: Generation Quality Verification (E10)", fontsize=13, pad=20)
+    fig.tight_layout()
+    save_fig(fig, "tab01_quality_verification")
+
+
+# ═══════════════════════════════════════════════════════════════════
+#  Summary Table
 # ═══════════════════════════════════════════════════════════════════
 
 def plot_summary_table():
@@ -424,10 +755,16 @@ def plot_summary_table():
 # ═══════════════════════════════════════════════════════════════════
 
 PLOTTERS = {
+    "e1": plot_e1,
+    "e2": plot_e2,
+    "e3": plot_e3,
+    "e4": plot_e4,
     "e5": plot_e5,
+    "e6": plot_e6,
     "e7": plot_e7,
     "e8": plot_e8,
     "e9": plot_e9,
+    "e10": plot_e10,
     "summary": plot_summary_table,
 }
 

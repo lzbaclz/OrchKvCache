@@ -1,0 +1,26 @@
+[
+  {
+    "block_size": 16,
+    "avg_ms": 1389.57,
+    "throughput_tok_s": 6079.6,
+    "status": "ok"
+  },
+  {
+    "block_size": 32,
+    "avg_ms": 1391.82,
+    "throughput_tok_s": 6069.8,
+    "status": "ok"
+  },
+  {
+    "block_size": 64,
+    "avg_ms": 1390.64,
+    "throughput_tok_s": 6074.9,
+    "status": "ok"
+  },
+  {
+    "block_size": 128,
+    "avg_ms": 1387.92,
+    "throughput_tok_s": 6086.8,
+    "status": "ok"
+  }
+]

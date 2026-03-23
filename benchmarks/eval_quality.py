@@ -179,7 +179,7 @@ def eval_perplexity_proxy(
 
 def main():
     parser = argparse.ArgumentParser(description="E10 Quality Evaluation")
-    parser.add_argument("--model", default="meta-llama/Llama-2-7b-hf")
+    parser.add_argument("--model", default="Qwen/Qwen2.5-7B")
     parser.add_argument("--seq-len", type=int, default=512)
     parser.add_argument("--n-samples", type=int, default=20)
     parser.add_argument("--max-new-tokens", type=int, default=64)

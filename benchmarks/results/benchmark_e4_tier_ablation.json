@@ -1,0 +1,34 @@
+[
+  {
+    "tier": "GPU-only",
+    "n_tiers": 1,
+    "avg_ms": 1388.86,
+    "throughput_tok_s": 6082.7,
+    "gpu_peak_mb": 71701.0,
+    "status": "ok"
+  },
+  {
+    "tier": "GPU+DRAM",
+    "n_tiers": 2,
+    "avg_ms": 1395.63,
+    "throughput_tok_s": 6053.2,
+    "gpu_peak_mb": 71852.9,
+    "status": "ok"
+  },
+  {
+    "tier": "GPU+DRAM+NVM",
+    "n_tiers": 3,
+    "avg_ms": 1396.22,
+    "throughput_tok_s": 6050.6,
+    "gpu_peak_mb": 71852.9,
+    "status": "ok"
+  },
+  {
+    "tier": "GPU+DRAM+NVM+SSD",
+    "n_tiers": 4,
+    "avg_ms": 1393.89,
+    "throughput_tok_s": 6060.7,
+    "gpu_peak_mb": 71852.9,
+    "status": "ok"
+  }
+]

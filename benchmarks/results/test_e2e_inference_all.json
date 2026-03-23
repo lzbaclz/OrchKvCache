@@ -1,0 +1,43 @@
+{
+  "latency": {
+    "baseline": {
+      "timing": {
+        "count": 5,
+        "avg_us": 1385962.7458,
+        "p50_us": 1386204.67,
+        "p99_us": 1386790.645,
+        "min_us": 1384796.324,
+        "max_us": 1386790.645
+      },
+      "ttft_est_ms": 1343.9638747151516,
+      "tpot_est_ms": 0.6562323607007556,
+      "throughput_tok_per_s": 6095.40193313326,
+      "gpu_mem": {
+        "allocated_mb": 71422.94384765625,
+        "reserved_mb": 71828.0,
+        "max_allocated_mb": 71700.99365234375
+      },
+      "n_output_tokens": 256
+    },
+    "orchkv": {
+      "timing": {
+        "count": 5,
+        "avg_us": 1392355.584,
+        "p50_us": 1392242.003,
+        "p99_us": 1393194.847,
+        "min_us": 1391565.426,
+        "max_us": 1393194.847
+      },
+      "ttft_est_ms": 1350.1629905454547,
+      "tpot_est_ms": 0.6592592727272724,
+      "throughput_tok_per_s": 6067.415606385789,
+      "gpu_mem": {
+        "allocated_mb": 71574.81884765625,
+        "reserved_mb": 71928.0,
+        "max_allocated_mb": 71852.86865234375
+      },
+      "n_output_tokens": 256
+    },
+    "overhead_pct": 0.4612561354461275
+  }
+}

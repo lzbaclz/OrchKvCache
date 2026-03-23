@@ -31,8 +31,8 @@ from bench_utils import (
 )
 
 
-MODELS = ["meta-llama/Llama-2-7b-hf"]
-SEQ_LENS = [1024, 4096, 16384, 32768]
+MODELS = ["Qwen/Qwen2.5-7B"]
+SEQ_LENS = [512, 1024, 2048, 4096]
 BATCH_SIZES = [1, 4, 8, 16]
 
 
@@ -272,7 +272,7 @@ def test_latency_breakdown(
 
 def main():
     parser = argparse.ArgumentParser(description="OrchKvCache E2E Inference Tests")
-    parser.add_argument("--model", default=MODELS[0])
+    parser.add_argument("--model", default="Qwen/Qwen2.5-7B")
     parser.add_argument("--test", default="all",
                         choices=["correctness", "memory", "latency", "all"])
     parser.add_argument("--seq-len", type=int, default=1024)

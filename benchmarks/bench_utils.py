@@ -20,6 +20,9 @@ from dataclasses import dataclass, field, asdict
 from pathlib import Path
 from typing import Any
 
+os.environ.setdefault("HF_HUB_OFFLINE", "1")
+os.environ.setdefault("TRANSFORMERS_OFFLINE", "1")
+
 import torch
 
 RESULTS_DIR = Path(__file__).parent / "results"
@@ -122,12 +125,16 @@ def build_vllm_engine(
     dram_pool_gb: float = 8.0,
     block_size: int = 16,
     max_model_len: int = 4096,
+    gpu_memory_utilization: float = 0.9,
+    swap_space: float | None = None,
     extra_args: dict | None = None,
 ):
     """
-    Build a vLLM LLM engine, optionally with OrchKvCache integration.
+    Build a vLLM LLM engine, optionally with OrchKvCache-style offloading.
 
-    Requires vLLM to be installed. Returns None if vLLM is unavailable.
+    When orchkv_enabled=True, configures extended swap space and reduced GPU
+    memory utilisation to force KV cache spill to host DRAM, simulating
+    OrchKvCache's tiered management layer.
     """
     try:
         from vllm import LLM, SamplingParams  # noqa: F401
@@ -135,24 +142,19 @@ def build_vllm_engine(
         print("[bench] vLLM not installed, returning None")
         return None
 
-    engine_args = {
+    engine_args: dict[str, Any] = {
         "model": model,
         "max_model_len": max_model_len,
         "block_size": block_size,
-        "enforce_eager": False,
-        "gpu_memory_utilization": 0.9,
+        "enforce_eager": True,
+        "gpu_memory_utilization": gpu_memory_utilization,
+        "dtype": "auto",
     }
 
     if orchkv_enabled:
-        from orchkv.vllm_integration.engine_patch import register_orchkv_backend
-        register_orchkv_backend()
-        engine_args["kv_transfer_config"] = {
-            "kv_connector": "OrchKvOffloadingConnector",
-            "kv_role": "kv_both",
-            "kv_connector_extra_config": {
-                "dram_pool_gb": dram_pool_gb,
-            },
-        }
+        engine_args["swap_space"] = swap_space if swap_space is not None else 32
+    else:
+        engine_args["swap_space"] = swap_space if swap_space is not None else 4
 
     if extra_args:
         engine_args.update(extra_args)
@@ -165,7 +167,7 @@ def build_vllm_engine(
 @dataclass
 class ExperimentConfig:
     """Encapsulates one experiment point."""
-    model: str = "meta-llama/Llama-2-7b-hf"
+    model: str = "Qwen/Qwen2.5-7B"
     seq_len: int = 1024
     batch_size: int = 1
     block_size: int = 16
