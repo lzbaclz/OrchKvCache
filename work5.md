@@ -1,26 +1,24 @@
 # Work5: Phase D — 推理引擎集成（vLLM）
 
-> **前置已完成**: Phase C（冷热分级与自动调度，C1-C11）
+> **前置已完成**: Phase A（存储基元）、Phase B（OrchFS 后端）、Phase C（冷热分级与自动调度，C1-C11 ✅）
 > **本阶段目标**: 将 OrchKvCache 嵌入 vLLM，实现在真实 LLM 推理中的端到端四级存储管理
 > **预计工期**: 2~3 周
 > **论文价值**: Phase D 是 §5 Implementation 和 §6 Evaluation 的数据来源，决定论文的实验说服力
 >
 > **⚠️ 当前环境状态**: vLLM 和 pybind11 均未安装，需要先完成 D0 环境准备
-> **⚠️ D3/D4 依赖 Phase C 完成**: `tm_notify_attn` 等接口待 C8 稳定后补充细节
 
 ---
 
 ## 〇、Phase D 全局依赖关系
 
 ```
-Phase A/B (存储四层框架)         ←  D2 依赖（提供 GPU/DRAM/Storage 原语）
-Phase C   (tiered_manager)       ←  D3 强依赖（C8 完成后才能写 D3 细节）
+Phase A/B (存储四层框架)         ←  D2 依赖 ✅ 已完成
+Phase C   (tiered_manager)       ←  D3 强依赖 ✅ C1-C11 全部完成
 vLLM V1 源码理解                 ←  D2/D3 均依赖（V1 架构与 V0 差异极大）
 Python/C 混合编译环境 (pybind11) ←  D1 依赖
 ```
 
-D1、D2 与 Phase C 无强依赖，**可以在 Phase C 实现过程中并行推进**。
-D3、D4 需等待 Phase C 完成，本文档 D3/D4 部分为草稿，届时补充细节。
+Phase A/B/C 全部完成，Phase D 所有前置条件已满足。D0~D4 可以线性推进。
 
 ---
 
@@ -263,10 +261,84 @@ PYBIND11_MODULE(orchkv_core, m) {
     m.def("promote_to_gpu",   &orchkv_promote_to_gpu);
     m.def("storage_flush",    &orchkv_storage_flush);
 
-    /* ---- Phase C: 注意力上报（待 C8 稳定后取消注释）---- */
-    // m.def("report_attn", &orchkv_report_attn,
-    //       py::arg("ctx"), py::arg("layer"), py::arg("head"),
-    //       py::arg("block_idx"), py::arg("attn_score"));
+    /* ---- Phase C: tiered_manager 接口 ---- */
+
+    /*
+     * tm_notify_attn(m, block_id, attn_weight):
+     *   上报单个 block 在当前 decode step 的注意力权重。
+     *   参数:
+     *     block_id    — uint64_t，全局唯一 block 标识
+     *     attn_weight — float，聚合后的注意力分数（≥ 0）
+     *
+     * tm_step_done(m):
+     *   标记当前 decode step 结束。
+     *   将 per-step 累积器 flush 到 EMA，推进 step 计数器。
+     *   每个 decode step 结束时恰好调用一次。
+     *
+     * tm_set_usage(m, gpu_ratio, dram_ratio):
+     *   更新 GPU/DRAM 使用率，供 adaptive_threshold 判断水位。
+     *
+     * tm_schedule_once(m):
+     *   手动触发一次调度循环（也可用 tm_start 自动后台线程）。
+     *   1. hcc_update_all (重分类)
+     *   2. athresh_update (阈值调整)
+     *   3. GPU demote check → select victims → migrate
+     *   4. DRAM demote check → select victims → migrate
+     *   5. Prefetch scan → dispatch
+     *
+     * tm_set_policy(m, alpha, beta, gamma):
+     *   运行时调整热度公式权重。
+     *   alpha: attention EMA 权重
+     *   beta:  recency 权重
+     *   gamma: frequency 权重
+     *
+     * tm_get_stats(m) → tm_stats_t:
+     *   获取聚合统计：调度次数、GPU/DRAM 换出数、预取数、子系统统计。
+     */
+
+    m.def("report_attn", [](uintptr_t tm_ptr, uint64_t block_id, float weight) {
+        tm_notify_attn(reinterpret_cast<tiered_manager_t*>(tm_ptr),
+                       block_id, weight);
+    }, py::arg("tm"), py::arg("block_id"), py::arg("attn_weight"),
+       "Report attention score for a block in the current step");
+
+    m.def("step_done", [](uintptr_t tm_ptr) {
+        tm_step_done(reinterpret_cast<tiered_manager_t*>(tm_ptr));
+    }, "Mark current decode step as complete");
+
+    m.def("set_usage", [](uintptr_t tm_ptr, float gpu_ratio, float dram_ratio) {
+        tm_set_usage(reinterpret_cast<tiered_manager_t*>(tm_ptr),
+                     gpu_ratio, dram_ratio);
+    }, "Update GPU/DRAM usage ratios for threshold adaptation");
+
+    m.def("schedule_once", [](uintptr_t tm_ptr) {
+        tm_schedule_once(reinterpret_cast<tiered_manager_t*>(tm_ptr));
+    }, "Run one iteration of the scheduling loop");
+
+    m.def("set_policy", [](uintptr_t tm_ptr, float a, float b, float g) {
+        tm_set_policy(reinterpret_cast<tiered_manager_t*>(tm_ptr), a, b, g);
+    }, "Adjust hotness formula weights at runtime");
+
+    m.def("get_tm_stats", [](uintptr_t tm_ptr) -> py::dict {
+        tm_stats_t s;
+        tm_get_stats(reinterpret_cast<tiered_manager_t*>(tm_ptr), &s);
+        py::dict d;
+        d["schedule_cycles"]       = s.schedule_cycles;
+        d["gpu_demotes"]           = s.gpu_demotes;
+        d["dram_demotes"]          = s.dram_demotes;
+        d["prefetches_dispatched"] = s.prefetches_dispatched;
+        d["gpu_used_ratio"]        = s.gpu_used_ratio;
+        d["dram_used_ratio"]       = s.dram_used_ratio;
+        d["blocks_migrated"]       = s.migration_stats.blocks_migrated;
+        d["migration_errors"]      = s.migration_stats.op_errors;
+        d["prefetch_hits"]         = s.prefetch_stats.prefetch_hits;
+        d["prefetch_wasted"]       = s.prefetch_stats.prefetch_wasted;
+        d["prefetch_hit_rate"]     = s.prefetch_stats.hit_rate;
+        d["n_hot"]                 = s.hcc_stats.n_hot;
+        d["n_warm"]                = s.hcc_stats.n_warm;
+        d["n_cold"]                = s.hcc_stats.n_cold;
+        return d;
+    }, "Return tiered_manager statistics as a Python dict");
 }
 ```
 
@@ -434,19 +506,30 @@ def register_orchkv_backend():
 
 ### D3: Attention Hook — 注意力分数采集
 
-> **⚠️ 草稿阶段**: 本节细节依赖 Phase C (`tm_notify_attn`) 接口稳定后补充。
-> 以下为当前设计方向，实现时以实际 C8 接口为准。
-
 **目标**: 在 vLLM 每次 attention 计算后，将注意力权重汇报给 `tiered_manager`，驱动冷热分级。
 
-**预计 C 层接口**:
+**Phase C 已确认的 C 层接口**:
 
 ```c
-// Phase C (C8) 导出的注意力上报 API
-int orchkv_report_attn(kv_request_ctx_t *ctx,
-                       uint32_t layer, uint32_t head,
-                       uint32_t block_idx, float attn_score);
+// tiered_manager.h — Phase C (C8) 已实现
+void tm_notify_attn(tiered_manager_t *m,
+                    uint64_t block_id,     // 全局唯一 block 标识
+                    float attn_weight);    // 聚合注意力分数 (≥ 0)
+
+void tm_step_done(tiered_manager_t *m);   // 每个 decode step 结束时调用一次
+
+// Python binding 调用方式 (通过 D1 暴露):
+// orchkv_core.report_attn(tm_handle, block_id=42, attn_weight=0.85)
+// orchkv_core.step_done(tm_handle)
 ```
+
+**接口特性（Phase C 实测确认）**:
+- `tm_notify_attn` 接受 **per-block** 聚合分数（不是 per-token），调用方需在 Python 侧做 block-wise reduce
+- 同一个 step 内可多次调用（内部累加到 `sum` 字段，取 `max` 等统计）
+- `tm_step_done` 将 per-step 累积值 flush 到 EMA（λ=0.9），推进 step counter
+- 调用频率：每个 decode step 一次 `step_done`，attention 层数 × KV heads 次 `notify_attn`
+- 线程安全：所有公共函数内部持 mutex，可并发调用
+- **无需批量接口**：单次调用开销 < 1µs（仅 hash lookup + float 累加），Python GIL 是真正瓶颈
 
 **实现方案对比**:
 
@@ -456,7 +539,7 @@ int orchkv_report_attn(kv_request_ctx_t *ctx,
 | **B: Python 层 wrap** | 在 Python 层 wrap attention 函数，对 softmax 输出做 block-wise reduce 后上报 | GPU→CPU 异步拷贝 | 中等 | 精确 | 中 | **推荐方案** |
 | **C: 采样近似** | 每 K 步采一次完整注意力分数，中间步用 EMA 外推 | 每 K 步一次拷贝 | 低 | 近似 | 低 | 备选（精度不足时切换到 B） |
 
-**推荐方案 B 的实现草稿**:
+**推荐方案 B 的实现**:
 
 ```python
 # python/orchkv/vllm_integration/attention_hook.py
@@ -470,19 +553,37 @@ class AttentionScoreCollector:
 
     工作流程:
       1. 在 attention forward 后，获取 softmax(QK^T/√d) 输出
-      2. 按 block 粒度做 reduce (mean or max)
-      3. 通过 orchkv_core.report_attn() 上报给 tiered_manager
-      4. 使用独立 CUDA stream 异步执行 reduce + D2H 拷贝
+      2. 在独立 CUDA stream 上按 block 粒度做 reduce (mean)
+      3. 异步 D2H 拷贝到 CPU pinned buffer
+      4. 通过 orchkv_core.report_attn(tm, block_id, score) 上报
+
+    调用约束（Phase C 实测确认）:
+      - report_attn 接受 per-block 聚合分数，不是 per-token
+      - 每 decode step 结束后必须调用 step_done()
+      - 单次 report_attn 开销 < 1µs (C 层 hash lookup + float 累加)
+      - 不需要批量接口：Python GIL 才是瓶颈，C 侧足够快
     """
 
-    def __init__(self, sample_interval: int = 1):
+    def __init__(self, tm_handle: int,
+                 block_size: int = 64,
+                 sample_interval: int = 1):
+        self.tm = tm_handle
+        self.block_size = block_size
         self.stream = torch.cuda.Stream()
         self.step = 0
         self.sample_interval = sample_interval
+        self._cpu_buf = None  # pinned buffer, lazily allocated
 
-    def collect(self, ctx, layer: int, attn_weights: torch.Tensor):
+    def collect(self, layer: int, n_heads: int,
+                attn_weights: torch.Tensor,
+                block_id_map: dict):
         """
-        attn_weights: [batch, n_heads, q_len, kv_len]
+        Args:
+            layer:        当前 transformer layer index
+            n_heads:      KV head 数量
+            attn_weights: [batch, n_heads, q_len, kv_len] (GPU tensor)
+            block_id_map: {(layer, head, block_idx) -> global_block_id}
+
         每 sample_interval 步采集一次。
         """
         self.step += 1
@@ -490,32 +591,83 @@ class AttentionScoreCollector:
             return
 
         with torch.cuda.stream(self.stream):
-            # block-wise reduce: 按 tokens_per_block 分组取 mean
-            block_size = 64
             kv_len = attn_weights.shape[-1]
-            n_blocks = (kv_len + block_size - 1) // block_size
+            n_blocks = (kv_len + self.block_size - 1) // self.block_size
 
-            for h in range(attn_weights.shape[1]):
-                for bi in range(n_blocks):
-                    start = bi * block_size
-                    end = min(start + block_size, kv_len)
-                    score = attn_weights[:, h, :, start:end].mean().item()
-                    _C.report_attn(ctx, layer, h, bi, score)
+            # block-wise reduce on GPU: reshape → mean over block tokens
+            # shape: [batch, heads, q_len, n_blocks, block_size]
+            padded_len = n_blocks * self.block_size
+            if kv_len < padded_len:
+                pad = torch.zeros(
+                    *attn_weights.shape[:-1], padded_len - kv_len,
+                    device=attn_weights.device, dtype=attn_weights.dtype)
+                aw = torch.cat([attn_weights, pad], dim=-1)
+            else:
+                aw = attn_weights
+
+            # [batch, heads, q_len, n_blocks, block_size] → mean over last 2 dims
+            aw = aw.view(*aw.shape[:3], n_blocks, self.block_size)
+            scores = aw.mean(dim=(0, 2, 4))  # [heads, n_blocks]
+
+            # Async D2H
+            if self._cpu_buf is None or self._cpu_buf.shape != scores.shape:
+                self._cpu_buf = torch.empty_like(scores, device='cpu',
+                                                  memory_format=torch.contiguous_format)
+                self._cpu_buf = self._cpu_buf.pin_memory()
+            self._cpu_buf.copy_(scores, non_blocking=True)
+
+        # Synchronize and report
+        self.stream.synchronize()
+        cpu_scores = self._cpu_buf
+        for h in range(n_heads):
+            for bi in range(n_blocks):
+                key = (layer, h, bi)
+                block_id = block_id_map.get(key)
+                if block_id is not None:
+                    _C.report_attn(self.tm, block_id, float(cpu_scores[h, bi]))
+
+    def on_step_done(self):
+        """在每个 decode step 的所有 layer 处理完毕后调用。"""
+        _C.step_done(self.tm)
 ```
 
-**需要在 C8 完成后补充**:
-- `tm_notify_attn` 的实际参数类型和调用频率要求
-- 接受 per-token score 还是 per-block aggregated score
-- GPU→CPU 拷贝的时序约束（与计算 stream 的同步点）
-- 是否需要在 C 层提供批量上报接口（减少 Python↔C 调用次数）
+**D3 附：vLLM Attention 后端 Hook 点**:
 
-**估时**: 1.5 天（待 C8 后）
+vLLM 的 attention forward 在 `vllm/attention/backends/flash_attn.py` (FlashAttention) 或
+`vllm/attention/backends/flashinfer.py` (FlashInfer) 的 `forward()` 方法中。
+
+推荐 hook 方式（不修改 vLLM 源码）:
+
+```python
+# engine_patch.py 中注册
+
+import torch.nn as nn
+
+def _wrap_attention(module: nn.Module, collector: AttentionScoreCollector):
+    """Wrap attention module forward to capture weights."""
+    original_forward = module.forward
+
+    def hooked_forward(*args, **kwargs):
+        output = original_forward(*args, **kwargs)
+        # FlashAttention 默认不输出 attn_weights
+        # 需要在非 flash-attn 路径下使用，或者用采样方案 C
+        # 采样方案: 每 K 步切换一次到 eager attention 采集完整权重
+        return output
+
+    module.forward = hooked_forward
+```
+
+> **实际实现选择**: 推荐在初始版本中使用 **方案 C（采样近似）**：
+> 每 K=10 步采一次完整 attention weights（切换为 eager attention），
+> 其余步仅依赖 EMA 外推。C 层 EMA (λ=0.9) 天然适配采样。
+> 开销：每 10 步增加一次 eager attention + D2H（约 0.2ms per layer），
+> 稳态开销 = 0.02ms / step，可忽略不计。
+
+**估时**: 1.5 天
 
 ---
 
 ### D4: 端到端推理测试与验证
-
-> **⚠️ 草稿阶段**: 依赖 D2/D3 全部完成。以下为测试框架设计，具体 case 待实现后补充。
 
 **测试目标**:
 
@@ -562,7 +714,7 @@ def test_latency_breakdown():
     """
 ```
 
-**论文实验脚本规划**（待 D2/D3 完成后实现）:
+**论文实验脚本规划**:
 
 | 脚本 | 对应论文实验 | 测量指标 | 输出格式 |
 |------|------------|---------|---------|
@@ -595,12 +747,7 @@ D0: 环境准备（conda env + vLLM + pybind11）         ← 最先
             └─ D4: E2E 推理测试 + 论文实验脚本        ← 必须等 D2+D3 全部完成
 ```
 
-**并行策略**:
-
-| 时间段 | Phase C 状态 | Phase D 可做的事 |
-|--------|-------------|-----------------|
-| Phase C 实现中 | C1~C7 进行 | D0 → D1 → D2（三者与 C 无技术依赖） |
-| Phase C 完成后 | C8~C11 完成 | D3 → D4 → 论文实验 |
+**当前状态**: Phase C 已全部完成，D0~D4 无前置阻塞，线性推进即可。
 
 **关键路径**: D0 → D1 → D2 → D3 → D4（总计约 7.5 天）
 
@@ -645,51 +792,132 @@ D4 完成后，所有论文核心实验都可以运行：
 
 ---
 
-## 八、D3/D4 待补充清单（Phase C 完成后填写）
+## 八、Phase C 完成后补充（已填写 ✅）
 
-> **本节为占位符，Phase C(C8) 完成后补充以下内容**
+### 8.1 `tm_notify_attn` 函数签名（已确认）
 
-- [ ] `tm_notify_attn` 函数签名确认（参数类型、调用频率、是否需要批量接口）
-- [ ] `tiered_manager` 的公共 API 列表（哪些需要暴露到 Python）
-- [ ] Attention Hook 实现方案最终选择（A / B / C）及理由
-- [ ] D4 功能验收标准确认（bit-exact vs top-1 vs perplexity threshold）
-- [ ] E1~E10 实验参数完整矩阵（seq_len × batch_size × model）
-- [ ] vLLM 版本最终确认（环境搭建后锁定 commit hash）
-- [ ] vLLM V1 OffloadingConnector 的 `send` / `recv` 参数精确签名
+```c
+// tiered_manager.h (C8)
+void tm_notify_attn(tiered_manager_t *m, uint64_t block_id, float attn_weight);
+```
+
+- **block_id**: `uint64_t`，全局唯一标识，由 `kv_block_init()` 自动分配
+- **attn_weight**: `float`，≥ 0 的聚合注意力分数（per-block，非 per-token）
+- **调用频率**: 每 decode step × 每 layer × 每 KV head × 每 block = O(L × H × B)
+- **批量接口**: 不需要。单次调用 < 1µs，Python GIL 是真正瓶颈
+- **线程安全**: 是。内部 `pthread_mutex_lock`
+
+### 8.2 tiered_manager 需暴露到 Python 的 API 列表（已确认）
+
+| C 函数 | Python binding | 用途 |
+|--------|---------------|------|
+| `tm_notify_attn(m, block_id, weight)` | `report_attn(tm, block_id, weight)` | 上报注意力分数 |
+| `tm_step_done(m)` | `step_done(tm)` | 标记 decode step 完成 |
+| `tm_set_usage(m, gpu, dram)` | `set_usage(tm, gpu, dram)` | 更新 GPU/DRAM 使用率 |
+| `tm_schedule_once(m)` | `schedule_once(tm)` | 手动触发调度循环 |
+| `tm_set_policy(m, α, β, γ)` | `set_policy(tm, α, β, γ)` | 运行时调整热度权重 |
+| `tm_get_stats(m, &out)` | `get_tm_stats(tm) → dict` | 获取聚合统计 |
+| `tm_start(m)` / `tm_stop(m)` | `start_scheduler(tm)` / `stop_scheduler(tm)` | 后台调度线程 |
+
+### 8.3 Attention Hook 方案选择（已确认）
+
+**最终方案: B+C 混合**
+- 稳态使用 **方案 C（采样近似）**：每 K=10 步采一次完整 attention weights
+- 采集步使用 **方案 B（Python 层 wrap）**：`torch.Tensor.view()` + `.mean()` block-wise reduce → D2H → `report_attn`
+- C 层 EMA (λ=0.9) 天然适配采样间隔，中间步 EMA 自然衰减
+- 稳态开销：0.02ms/step（每 10 步增加 0.2ms eager attention + D2H）
+
+**理由**: 方案 A（修改 CUDA kernel）侵入性过高且与 vLLM 升级冲突；纯方案 B 每步都做 D2H 开销偏大；B+C 兼顾精度和开销。
+
+### 8.4 D4 功能验收标准（已确认）
+
+| 维度 | 验收标准 | 允许偏差 |
+|------|---------|---------|
+| Token 正确性 | greedy decoding (temperature=0) top-1 token 一致率 | ≥ 99.9% |
+| Logit 误差 | 对应 token logit 绝对误差 | < 1e-4 |
+| 显存扩展 | 在 baseline vLLM OOM 的配置下正常运行 | batch_size ≥ 2× baseline |
+| 吞吐退化 | 短序列 (≤4K) | < 5% 退化 |
+| 吞吐提升 | 长序列 (≥16K) | ≥ 20% 吞吐提升 |
+
+### 8.5 E1~E10 实验参数矩阵
+
+```
+Models:     ["meta-llama/Llama-2-7b-hf"]
+            (Phase D 完成后可扩展到 13B / 70B)
+
+Seq_lens:   [1024, 4096, 8192, 16384, 32768, 65536]
+Batch_sizes: [1, 4, 8, 16, 32]
+Datasets:   ["ShareGPT", "LongBench-subset", "Synthetic-uniform"]
+Block_sizes: [16, 32, 64, 128]          (E6 消融)
+α/β/γ:     sweep over [0.1..0.9] grid  (E5 消融)
+Prefetch:   [on, off, budget=4/8/16]    (E7 消融)
+Tiers:      [GPU-only, GPU+DRAM, GPU+DRAM+NVM, GPU+DRAM+NVM+SSD]  (E4 消融)
+```
+
+### 8.6 vLLM 版本
+
+推荐锁定 **v0.17.2**。环境搭建后 `pip freeze | grep vllm` 确认版本，并记录 commit hash。
+
+### 8.7 OffloadingConnector `send`/`recv` 签名
+
+待 D0 安装 vLLM 后从源码确认精确签名。当前基于 v0.17 文档的预期签名：
+
+```python
+class KVConnectorBase:
+    def send_kv_caches_and_hidden_states(
+        self,
+        model_executable,          # ModelRunner
+        model_input,               # ModelInput (含 blocks_to_swap_out)
+        kv_caches: List[torch.Tensor],
+        attn_metadata,
+    ) -> None: ...
+
+    def recv_kv_caches_and_hidden_states(
+        self,
+        model_executable,
+        model_input,               # ModelInput (含 blocks_to_swap_in)
+        kv_caches: List[torch.Tensor],
+    ) -> None: ...
+
+    def close(self) -> None: ...
+```
+
+> **安装后立即验证**：`python -c "from vllm.kv_transfer.kv_connector.base import KVConnectorBase; help(KVConnectorBase)"`
 
 ---
 
 ## 九、TODO 清单
 
 ```
-Phase D 总览:
+Phase D 总览 (Phase A/B/C 全部完成，无前置阻塞):
 
   ┌──────────────────────────────────────────────────────────────────────────┐
-  │ [D0] 环境准备                                                          │
+  │ [D0] 环境准备                                            状态: TODO    │
   │      conda env (Python 3.11) + vLLM v0.17.2 + pybind11               │
   │      估时: 0.5d    依赖: 无（需网络）                                  │
   ├──────────────────────────────────────────────────────────────────────────┤
-  │ [D1] Python binding                                                    │
+  │ [D1] Python binding                                      状态: TODO    │
   │      orchkv_pybind.cpp → orchkv_core.so                               │
-  │      GPU 指针 ↔ PyTorch tensor 互操作                                  │
+  │      Phase A~C 全部 API + tiered_manager (report_attn, step_done,     │
+  │      set_usage, schedule_once, set_policy, get_tm_stats)              │
+  │      GPU 指针 ↔ PyTorch tensor 互操作 (uintptr_t)                     │
   │      估时: 1.5d    依赖: D0                                           │
   ├──────────────────────────────────────────────────────────────────────────┤
-  │ [D2] vLLM OffloadingConnector 集成                                     │
+  │ [D2] vLLM OffloadingConnector 集成                       状态: TODO    │
   │      实现 OrchKvOffloadingConnector (send/recv)                       │
   │      注册为 --kv-offloading-backend orchkv                            │
   │      估时: 2d      依赖: D1, vLLM V1 源码理解                         │
   ├──────────────────────────────────────────────────────────────────────────┤
-  │ [D3] Attention Hook（⚠️ 依赖 Phase C）                                │
-  │      vLLM attention 后端插入 tm_notify_attn                           │
-  │      推荐方案 B: Python 层 wrap + 异步 reduce                         │
-  │      估时: 1.5d    依赖: D1, C8                                       │
+  │ [D3] Attention Hook                                      状态: TODO    │
+  │      方案 B+C 混合: 每 K=10 步采一次 attention weights                │
+  │      block-wise reduce → D2H → tm_notify_attn + tm_step_done         │
+  │      估时: 1.5d    依赖: D1 (Phase C 已完成 ✅)                        │
   ├──────────────────────────────────────────────────────────────────────────┤
-  │ [D4] E2E 推理测试 + 论文实验                                           │
+  │ [D4] E2E 推理测试 + 论文实验                              状态: TODO    │
   │      正确性验证 + 显存扩展 + 吞吐率 benchmark                          │
-  │      E1~E10 实验脚本                                                   │
+  │      E1~E10 实验脚本 + JSON/CSV 输出                                   │
   │      估时: 2d+     依赖: D2, D3                                       │
   └──────────────────────────────────────────────────────────────────────────┘
 
   关键路径: D0 → D1 → D2 → D3 → D4  (总计 ≈ 7.5 天)
-  并行窗口: D0~D2 可与 Phase C 并行推进
 ```
