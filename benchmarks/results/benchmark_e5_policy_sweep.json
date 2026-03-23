@@ -1,0 +1,38 @@
+[
+  {
+    "alpha": 0.5,
+    "beta": 0.1,
+    "gamma": 0.4,
+    "schedule_cycles": 2,
+    "gpu_demotes": 0,
+    "dram_demotes": 0,
+    "prefetches_dispatched": 0,
+    "n_hot": 0,
+    "n_warm": 0,
+    "n_cold": 0
+  },
+  {
+    "alpha": 0.5,
+    "beta": 0.3,
+    "gamma": 0.2,
+    "schedule_cycles": 2,
+    "gpu_demotes": 0,
+    "dram_demotes": 0,
+    "prefetches_dispatched": 0,
+    "n_hot": 0,
+    "n_warm": 0,
+    "n_cold": 0
+  },
+  {
+    "alpha": 0.8,
+    "beta": 0.1,
+    "gamma": 0.1,
+    "schedule_cycles": 2,
+    "gpu_demotes": 0,
+    "dram_demotes": 0,
+    "prefetches_dispatched": 0,
+    "n_hot": 0,
+    "n_warm": 0,
+    "n_cold": 0
+  }
+]

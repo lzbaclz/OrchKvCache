@@ -1,0 +1,10 @@
+# Phase D (D1): pybind11 Python binding for OrchKvCache
+find_package(pybind11 CONFIG)
+if(pybind11_FOUND)
+    pybind11_add_module(orchkv_core orchkv_pybind.cpp)
+    target_include_directories(orchkv_core PRIVATE ${CMAKE_SOURCE_DIR}/src)
+    target_link_libraries(orchkv_core PRIVATE orchkv)
+    message(STATUS "pybind11 found → building orchkv_core Python module")
+else()
+    message(STATUS "pybind11 not found → skipping Python binding (install: pip install pybind11[global])")
+endif()

@@ -1,0 +1,4 @@
+alpha,beta,gamma,schedule_cycles,gpu_demotes,dram_demotes,prefetches_dispatched,n_hot,n_warm,n_cold
+0.5,0.1,0.4,2,0,0,0,0,0,0
+0.5,0.3,0.2,2,0,0,0,0,0,0
+0.8,0.1,0.1,2,0,0,0,0,0,0

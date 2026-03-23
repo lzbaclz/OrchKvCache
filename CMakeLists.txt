@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.18)
-project(OrchKvCache LANGUAGES C CUDA)
+project(OrchKvCache LANGUAGES C CXX CUDA)
 
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
@@ -170,3 +170,6 @@ add_executable(test_e2e_auto test/test_e2e_auto.cu)
 target_include_directories(test_e2e_auto PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_link_libraries(test_e2e_auto orchkv m)
 add_test(NAME test_e2e_auto COMMAND test_e2e_auto)
+
+# Phase D: Python binding (pybind11)
+add_subdirectory(bindings)

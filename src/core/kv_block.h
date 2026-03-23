@@ -3,7 +3,7 @@
 
 #include "kv_types.h"
 
-#ifndef __CUDACC__
+#if !defined(__CUDACC__) && !defined(__cplusplus)
 #include <stdatomic.h>
 #endif
 
@@ -52,7 +52,7 @@ typedef struct kv_block {
 } kv_block_t;
 
 /* ---------------- Global block-ID counter (module-internal) ------------- */
-#ifndef __CUDACC__
+#if !defined(__CUDACC__) && !defined(__cplusplus)
 extern atomic_uint_fast64_t g_block_id_counter;
 #endif
 
