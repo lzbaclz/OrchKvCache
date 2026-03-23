@@ -45,6 +45,10 @@ add_library(orchkv STATIC
     src/scheduler/hotcold_classifier.c
     src/scheduler/adaptive_threshold.c
     src/scheduler/eviction_policy.c
+    src/scheduler/prefetch_scheduler.c
+    src/scheduler/pipeline.c
+    src/scheduler/migration_engine.c
+    src/scheduler/tiered_manager.c
     src/api/orchkv_api.cu
 )
 
@@ -131,3 +135,38 @@ add_executable(test_eviction_policy test/test_eviction_policy.c)
 target_include_directories(test_eviction_policy PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_link_libraries(test_eviction_policy orchkv m)
 add_test(NAME test_eviction_policy COMMAND test_eviction_policy)
+
+add_executable(test_prefetch_scheduler test/test_prefetch_scheduler.c)
+target_include_directories(test_prefetch_scheduler PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+target_link_libraries(test_prefetch_scheduler orchkv m)
+add_test(NAME test_prefetch_scheduler COMMAND test_prefetch_scheduler)
+
+add_executable(test_pipeline test/test_pipeline.c)
+target_include_directories(test_pipeline PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+target_link_libraries(test_pipeline orchkv m)
+add_test(NAME test_pipeline COMMAND test_pipeline)
+
+add_executable(test_migration_engine test/test_migration_engine.c)
+target_include_directories(test_migration_engine PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+target_link_libraries(test_migration_engine orchkv m)
+add_test(NAME test_migration_engine COMMAND test_migration_engine)
+
+add_executable(test_tiered_manager test/test_tiered_manager.c)
+target_include_directories(test_tiered_manager PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+target_link_libraries(test_tiered_manager orchkv m)
+add_test(NAME test_tiered_manager COMMAND test_tiered_manager)
+
+add_executable(test_hotcold test/test_hotcold.c)
+target_include_directories(test_hotcold PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+target_link_libraries(test_hotcold orchkv m)
+add_test(NAME test_hotcold COMMAND test_hotcold)
+
+add_executable(test_prefetch test/test_prefetch.c)
+target_include_directories(test_prefetch PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+target_link_libraries(test_prefetch orchkv m)
+add_test(NAME test_prefetch COMMAND test_prefetch)
+
+add_executable(test_e2e_auto test/test_e2e_auto.cu)
+target_include_directories(test_e2e_auto PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+target_link_libraries(test_e2e_auto orchkv m)
+add_test(NAME test_e2e_auto COMMAND test_e2e_auto)
