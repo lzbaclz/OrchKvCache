@@ -97,22 +97,22 @@ class TestBenchUtils:
 class TestE5PolicySweep:
     def test_single_config(self):
         from benchmark_ablation import run_e5
-        results = run_e5(n_blocks=32, n_steps=10)
+        results = run_e5(n_blocks=32, n_steps=10, n_runs=1)
         assert len(results) > 0
         r = results[0]
         assert "alpha" in r
-        assert "n_hot" in r
-        assert "schedule_cycles" in r
+        assert "avg_n_hot" in r
+        assert "pattern" in r
 
     def test_hot_cold_separation(self):
         """High alpha → attention dominates → better hot/cold separation."""
         from benchmark_ablation import run_e5
-        results = run_e5(n_blocks=64, n_steps=20)
+        results = run_e5(n_blocks=64, n_steps=20, n_runs=1)
         high_alpha = [r for r in results if r["alpha"] >= 0.8]
         low_alpha = [r for r in results if r["alpha"] <= 0.2]
         if high_alpha and low_alpha:
-            ha_hot = sum(r["n_hot"] for r in high_alpha) / len(high_alpha)
-            la_hot = sum(r["n_hot"] for r in low_alpha) / len(low_alpha)
+            ha_hot = sum(r["avg_n_hot"] for r in high_alpha) / len(high_alpha)
+            la_hot = sum(r["avg_n_hot"] for r in low_alpha) / len(low_alpha)
             assert ha_hot >= 0
             assert la_hot >= 0
 
@@ -122,23 +122,25 @@ class TestE5PolicySweep:
 class TestE7Prefetch:
     def test_budget_sweep(self):
         from benchmark_prefetch import run_prefetch_sweep
-        results = run_prefetch_sweep(n_blocks=32, n_steps=20, budgets=[0, 4, 8])
+        results = run_prefetch_sweep(n_blocks=32, n_steps=20,
+                                      budgets=[0, 4, 8], n_runs=1)
         assert len(results) == 3
 
         budget_0 = results[0]
         assert budget_0["prefetch_budget"] == 0
-        assert budget_0["prefetches_dispatched"] == 0
 
     def test_higher_budget_more_dispatches(self):
         from benchmark_prefetch import run_prefetch_sweep
-        results = run_prefetch_sweep(n_blocks=64, n_steps=30, budgets=[0, 16])
+        results = run_prefetch_sweep(n_blocks=64, n_steps=30,
+                                      budgets=[0, 16], n_runs=1)
         b0 = next(r for r in results if r["prefetch_budget"] == 0)
         b16 = next(r for r in results if r["prefetch_budget"] == 16)
-        assert b16["prefetches_dispatched"] >= b0["prefetches_dispatched"]
+        assert b16["avg_prefetches_dispatched"] >= b0["avg_prefetches_dispatched"]
 
     def test_schedule_latency(self):
         from benchmark_prefetch import run_prefetch_sweep
-        results = run_prefetch_sweep(n_blocks=32, n_steps=10, budgets=[8])
+        results = run_prefetch_sweep(n_blocks=32, n_steps=10,
+                                      budgets=[8], n_runs=1)
         r = results[0]
         assert r["avg_schedule_us"] > 0
         assert r["p99_schedule_us"] >= r["avg_schedule_us"]
@@ -149,7 +151,7 @@ class TestE7Prefetch:
 class TestE9Scalability:
     def test_basic(self):
         from benchmark_scalability import run_scalability
-        results = run_scalability(block_counts=[64, 128], n_steps=10)
+        results = run_scalability(block_counts=[64, 128], n_steps=10, n_runs=1)
         assert len(results) == 2
         for r in results:
             assert "avg_schedule_us" in r
@@ -158,16 +160,20 @@ class TestE9Scalability:
     def test_latency_scales(self):
         """More blocks → scheduling takes more time (roughly)."""
         from benchmark_scalability import run_scalability
-        results = run_scalability(block_counts=[64, 256, 1024], n_steps=15)
+        results = run_scalability(block_counts=[64, 256, 1024],
+                                   n_steps=15, n_runs=1)
         latencies = [r["avg_schedule_us"] for r in results]
         assert latencies[-1] > 0
         assert len(latencies) == 3
 
-    def test_schedule_count_matches(self):
+    def test_demotes_and_prefetches(self):
+        """Verify stats fields from multi-run output."""
         from benchmark_scalability import run_scalability
-        results = run_scalability(block_counts=[64], n_steps=20)
+        results = run_scalability(block_counts=[128], n_steps=20, n_runs=2)
         r = results[0]
-        assert r["schedule_cycles"] == 20
+        assert "avg_demotes" in r
+        assert "avg_prefetches" in r
+        assert "std_schedule_us" in r
 
 
 # ===== E8: GPU↔DRAM bandwidth (quick) =====

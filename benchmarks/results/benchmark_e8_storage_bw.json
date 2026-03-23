@@ -1,0 +1,190 @@
+{
+  "gpu_dram": [
+    {
+      "size_mb": 0.5,
+      "d2h_avg_ms": 0.0287,
+      "d2h_p50_ms": 0.0284,
+      "d2h_p99_ms": 0.0308,
+      "h2d_avg_ms": 0.0285,
+      "h2d_p50_ms": 0.0281,
+      "h2d_p99_ms": 0.0345,
+      "d2h_gbps": 17.04,
+      "h2d_gbps": 17.14
+    },
+    {
+      "size_mb": 1.0,
+      "d2h_avg_ms": 0.0505,
+      "d2h_p50_ms": 0.0501,
+      "d2h_p99_ms": 0.0548,
+      "h2d_avg_ms": 0.0502,
+      "h2d_p50_ms": 0.0492,
+      "h2d_p99_ms": 0.0711,
+      "d2h_gbps": 19.32,
+      "h2d_gbps": 19.44
+    },
+    {
+      "size_mb": 2.0,
+      "d2h_avg_ms": 0.0935,
+      "d2h_p50_ms": 0.0935,
+      "d2h_p99_ms": 0.0946,
+      "h2d_avg_ms": 0.0907,
+      "h2d_p50_ms": 0.0902,
+      "h2d_p99_ms": 0.0993,
+      "d2h_gbps": 20.88,
+      "h2d_gbps": 21.53
+    },
+    {
+      "size_mb": 4.0,
+      "d2h_avg_ms": 0.1806,
+      "d2h_p50_ms": 0.1802,
+      "d2h_p99_ms": 0.1836,
+      "h2d_avg_ms": 0.1734,
+      "h2d_p50_ms": 0.1734,
+      "h2d_p99_ms": 0.174,
+      "d2h_gbps": 21.63,
+      "h2d_gbps": 22.52
+    },
+    {
+      "size_mb": 8.0,
+      "d2h_avg_ms": 0.3544,
+      "d2h_p50_ms": 0.3538,
+      "d2h_p99_ms": 0.3591,
+      "h2d_avg_ms": 0.3387,
+      "h2d_p50_ms": 0.3388,
+      "h2d_p99_ms": 0.3393,
+      "d2h_gbps": 22.04,
+      "h2d_gbps": 23.06
+    },
+    {
+      "size_mb": 16.0,
+      "d2h_avg_ms": 0.7307,
+      "d2h_p50_ms": 0.7298,
+      "d2h_p99_ms": 0.7387,
+      "h2d_avg_ms": 0.6696,
+      "h2d_p50_ms": 0.6692,
+      "h2d_p99_ms": 0.6732,
+      "d2h_gbps": 21.38,
+      "h2d_gbps": 23.34
+    },
+    {
+      "size_mb": 32.0,
+      "d2h_avg_ms": 1.4542,
+      "d2h_p50_ms": 1.4538,
+      "d2h_p99_ms": 1.4643,
+      "h2d_avg_ms": 1.3294,
+      "h2d_p50_ms": 1.3293,
+      "h2d_p99_ms": 1.3305,
+      "d2h_gbps": 21.49,
+      "h2d_gbps": 23.51
+    },
+    {
+      "size_mb": 64.0,
+      "d2h_avg_ms": 2.8955,
+      "d2h_p50_ms": 2.8953,
+      "d2h_p99_ms": 2.8975,
+      "h2d_avg_ms": 2.6525,
+      "h2d_p50_ms": 2.6519,
+      "h2d_p99_ms": 2.6571,
+      "d2h_gbps": 21.58,
+      "h2d_gbps": 23.56
+    }
+  ],
+  "dram_storage": [
+    {
+      "size_mb": 0.5,
+      "backend": "tmpfs",
+      "write_avg_ms": 0.132,
+      "write_p50_ms": 0.1307,
+      "write_p99_ms": 0.1455,
+      "read_avg_ms": 0.034,
+      "read_p50_ms": 0.0339,
+      "read_p99_ms": 0.0349,
+      "write_gbps": 3.7,
+      "read_gbps": 14.38
+    },
+    {
+      "size_mb": 1.0,
+      "backend": "tmpfs",
+      "write_avg_ms": 0.2907,
+      "write_p50_ms": 0.2896,
+      "write_p99_ms": 0.3218,
+      "read_avg_ms": 0.112,
+      "read_p50_ms": 0.1119,
+      "read_p99_ms": 0.1329,
+      "write_gbps": 3.36,
+      "read_gbps": 8.72
+    },
+    {
+      "size_mb": 2.0,
+      "backend": "tmpfs",
+      "write_avg_ms": 0.6252,
+      "write_p50_ms": 0.6137,
+      "write_p99_ms": 0.6719,
+      "read_avg_ms": 0.2102,
+      "read_p50_ms": 0.2091,
+      "read_p99_ms": 0.2155,
+      "write_gbps": 3.12,
+      "read_gbps": 9.29
+    },
+    {
+      "size_mb": 4.0,
+      "backend": "tmpfs",
+      "write_avg_ms": 1.4751,
+      "write_p50_ms": 1.2494,
+      "write_p99_ms": 5.7158,
+      "read_avg_ms": 0.4295,
+      "read_p50_ms": 0.4276,
+      "read_p99_ms": 0.4458,
+      "write_gbps": 2.65,
+      "read_gbps": 9.09
+    },
+    {
+      "size_mb": 8.0,
+      "backend": "tmpfs",
+      "write_avg_ms": 2.4869,
+      "write_p50_ms": 2.4875,
+      "write_p99_ms": 2.5245,
+      "read_avg_ms": 0.8374,
+      "read_p50_ms": 0.8372,
+      "read_p99_ms": 0.8489,
+      "write_gbps": 3.14,
+      "read_gbps": 9.33
+    },
+    {
+      "size_mb": 16.0,
+      "backend": "tmpfs",
+      "write_avg_ms": 5.0199,
+      "write_p50_ms": 5.0208,
+      "write_p99_ms": 5.0588,
+      "read_avg_ms": 1.6759,
+      "read_p50_ms": 1.6771,
+      "read_p99_ms": 1.6894,
+      "write_gbps": 3.11,
+      "read_gbps": 9.32
+    },
+    {
+      "size_mb": 32.0,
+      "backend": "tmpfs",
+      "write_avg_ms": 13.5949,
+      "write_p50_ms": 13.5503,
+      "write_p99_ms": 13.9864,
+      "read_avg_ms": 17.1032,
+      "read_p50_ms": 16.9683,
+      "read_p99_ms": 18.5644,
+      "write_gbps": 2.3,
+      "read_gbps": 1.83
+    },
+    {
+      "size_mb": 64.0,
+      "backend": "tmpfs",
+      "write_avg_ms": 34.8829,
+      "write_p50_ms": 34.7332,
+      "write_p99_ms": 41.9881,
+      "read_avg_ms": 41.184,
+      "read_p50_ms": 41.06,
+      "read_p99_ms": 42.0748,
+      "write_gbps": 1.79,
+      "read_gbps": 1.52
+    }
+  ]
+}

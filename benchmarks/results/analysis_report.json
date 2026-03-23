@@ -1,0 +1,96 @@
+{
+  "E5_policy_sweep": {
+    "best_config_fixed": {
+      "alpha": 0.5,
+      "beta": 0.1,
+      "gamma": 0.4,
+      "hot": 24.0,
+      "warm": 0.0,
+      "cold": 40.0
+    },
+    "worst_config_fixed": {
+      "alpha": 0.2,
+      "beta": 0.5,
+      "gamma": 0.3,
+      "hot": 24.0,
+      "warm": 40.0,
+      "cold": 0.0
+    },
+    "high_alpha_avg_hot_fixed": 16.0,
+    "low_alpha_avg_hot_fixed": 24.0,
+    "high_alpha_avg_hot_shift": 16.0,
+    "low_alpha_avg_hot_shift": 24.0,
+    "high_alpha_avg_hot_zipf": 1.5,
+    "low_alpha_avg_hot_zipf": 26.0,
+    "n_configs": 27,
+    "n_patterns": 3
+  },
+  "E7_prefetch": {
+    "budget_vs_dispatches": [
+      {
+        "budget": 0,
+        "dispatched": 245.3,
+        "sched_us": 5.84
+      },
+      {
+        "budget": 2,
+        "dispatched": 63.7,
+        "sched_us": 5.72
+      },
+      {
+        "budget": 4,
+        "dispatched": 126.3,
+        "sched_us": 5.68
+      },
+      {
+        "budget": 8,
+        "dispatched": 245.3,
+        "sched_us": 5.81
+      },
+      {
+        "budget": 16,
+        "dispatched": 245.3,
+        "sched_us": 5.82
+      },
+      {
+        "budget": 32,
+        "dispatched": 245.3,
+        "sched_us": 5.86
+      }
+    ],
+    "saturation_budget": 0,
+    "sched_overhead_range_us": {
+      "min": 5.68,
+      "max": 5.86
+    }
+  },
+  "E8_storage_bandwidth": {
+    "gpu_dram": {
+      "peak_d2h_gbps": 22.04,
+      "peak_d2h_at_mb": 8.0,
+      "peak_h2d_gbps": 23.56,
+      "peak_h2d_at_mb": 64.0,
+      "asymmetry_ratio": 1.07
+    },
+    "dram_tmpfs": {
+      "peak_write_gbps": 3.7,
+      "peak_read_gbps": 14.38,
+      "read_write_ratio": 3.89
+    },
+    "tier_gap_ratio": 1.6
+  },
+  "E9_scalability": {
+    "scaling": {
+      "block_range": "64\u21924096",
+      "scale_factor": 64.0,
+      "latency_factor": 22.5,
+      "scaling_exponent": 0.749
+    },
+    "at_4096_blocks": {
+      "avg_us": 38.33,
+      "p99_us": 57.88,
+      "within_100us": true
+    },
+    "per_block_ns": 9.36
+  }
+}

@@ -1,18 +1,14 @@
 #!/usr/bin/env python3
 """
-D4 / E4-E6: Ablation benchmarks.
+E4-E6: Ablation benchmarks.
 
-E4: Storage tier ablation   (GPU-only, GPU+DRAM, GPU+DRAM+NVM, full 4-tier)
-E5: Hot/cold policy sweep   (α, β, γ parameter grid)
-E6: Block size ablation     (16, 32, 64, 128 tokens per block)
-
-All experiments output JSON to benchmarks/results/.
+E4: Storage tier ablation   (GPU-only → full 4-tier)    — requires vLLM
+E5: Hot/cold policy sweep   (α, β, γ parameter grid)    — orchkv_core only
+E6: Block size ablation     (16, 32, 64, 128 tok/blk)   — requires vLLM
 
 Usage:
-    python benchmarks/benchmark_ablation.py --exp e4
     python benchmarks/benchmark_ablation.py --exp e5
-    python benchmarks/benchmark_ablation.py --exp e6
-    python benchmarks/benchmark_ablation.py --exp all
+    python benchmarks/benchmark_ablation.py --exp e5 --n-blocks 512 --n-steps 200
 """
 from __future__ import annotations
 
@@ -21,6 +17,7 @@ import itertools
 import sys
 import os
 import time
+import random
 
 import torch
 
@@ -61,10 +58,7 @@ def run_e4(model: str, seq_len: int = 4096, batch_size: int = 4,
         label = tcfg["name"]
         print(f"\n  [{label}] ...", end=" ", flush=True)
 
-        if tcfg["tiers"] == 1:
-            orchkv_on = False
-        else:
-            orchkv_on = True
+        orchkv_on = tcfg["tiers"] > 1
 
         try:
             from vllm import SamplingParams
@@ -121,11 +115,57 @@ def run_e4(model: str, seq_len: int = 4096, batch_size: int = 4,
 
 # ─── E5: Hot/Cold Policy Sweep ───────────────────────────────────────
 
-def run_e5(n_blocks: int = 256, n_steps: int = 100) -> list[dict]:
+def _generate_attention_patterns(n_blocks: int, n_hot: int, step: int,
+                                  pattern: str = "fixed") -> list[tuple[int, float]]:
+    """
+    Generate (block_id, attn_weight) pairs for blocks accessed this step.
+
+    Only returns blocks that are actually "attended to" — cold blocks
+    are omitted so their recency/frequency naturally decay, producing
+    realistic three-level classification.
+    """
+    if pattern == "fixed":
+        result = [(bid, 0.85) for bid in range(n_hot)]
+        n_luke = n_blocks // 8
+        for bid in range(n_hot, n_hot + n_luke):
+            result.append((bid, 0.15 + random.random() * 0.1))
+        return result
+    elif pattern == "shift":
+        offset = (step // 20) * (n_hot // 2) % n_blocks
+        result = []
+        for i in range(n_hot):
+            bid = (offset + i) % n_blocks
+            result.append((bid, 0.85))
+        n_luke = n_blocks // 8
+        for i in range(n_luke):
+            bid = (offset + n_hot + i) % n_blocks
+            result.append((bid, 0.15 + random.random() * 0.1))
+        return result
+    elif pattern == "random":
+        hot_set = random.sample(range(n_blocks), n_hot)
+        result = [(bid, 0.85) for bid in hot_set]
+        warm_set = random.sample(
+            [b for b in range(n_blocks) if b not in hot_set],
+            min(n_blocks // 8, n_blocks - n_hot))
+        for bid in warm_set:
+            result.append((bid, 0.15 + random.random() * 0.1))
+        return result
+    elif pattern == "zipf":
+        result = []
+        for bid in range(n_blocks):
+            w = 1.0 / (bid + 1) ** 1.2
+            if w > 0.02:
+                result.append((bid, min(w, 1.0)))
+        return result
+    return [(bid, 0.5) for bid in range(n_hot)]
+
+
+def run_e5(n_blocks: int = 256, n_steps: int = 100,
+           n_runs: int = 3, seed: int = 42) -> list[dict]:
     """
     E5: Sweep α/β/γ weights and measure scheduling behavior.
 
-    Uses orchkv_core directly (no vLLM needed) for fast parameter sweep.
+    Registers blocks with the classifier and tracker for realistic stats.
     """
     print(f"\n{'='*60}")
     print(f"  E5: Hot/Cold Policy Sweep (n_blocks={n_blocks}, steps={n_steps})")
@@ -135,50 +175,108 @@ def run_e5(n_blocks: int = 256, n_steps: int = 100) -> list[dict]:
         print("[SKIP] orchkv_core not available")
         return [{"status": "skip"}]
 
-    alphas = [0.2, 0.5, 0.8]
-    betas = [0.1, 0.3, 0.5]
-    gammas = [0.1, 0.2, 0.4]
+    param_grid = [
+        (0.2, 0.5, 0.3),
+        (0.3, 0.4, 0.3),
+        (0.4, 0.4, 0.2),
+        (0.5, 0.3, 0.2),
+        (0.5, 0.1, 0.4),
+        (0.6, 0.2, 0.2),
+        (0.6, 0.3, 0.1),
+        (0.7, 0.2, 0.1),
+        (0.8, 0.1, 0.1),
+    ]
 
+    n_hot = n_blocks // 4
     results = []
-    for alpha, beta, gamma in itertools.product(alphas, betas, gammas):
-        s = alpha + beta + gamma
-        if abs(s - 1.0) > 0.01:
-            continue
+    patterns = ["fixed", "shift", "zipf"]
 
-        tm = _C.tm_create(
-            tracker_cap=n_blocks * 2,
-            alpha=alpha, beta=beta, gamma=gamma,
-            prefetch_budget=16,
-            schedule_interval_us=500,
-        )
+    for alpha, beta, gamma in param_grid:
+        for pattern in patterns:
+            run_results = []
 
-        for step in range(n_steps):
-            for bid in range(n_blocks):
-                weight = 0.9 if bid < n_blocks // 4 else 0.1
-                _C.tm_report_attn(tm, bid, weight)
-            _C.tm_step_done(tm)
+            for run_id in range(n_runs):
+                random.seed(seed + run_id)
 
-            if step % 10 == 0:
-                _C.tm_set_usage(tm, gpu_ratio=0.85, dram_ratio=0.6)
-                _C.tm_schedule_once(tm)
+                tm = _C.tm_create(
+                    tracker_cap=n_blocks * 2,
+                    alpha=alpha, beta=beta, gamma=gamma,
+                    prefetch_budget=16,
+                    schedule_interval_us=500,
+                    gpu_hwm=0.80, gpu_lwm=0.60,
+                    dram_hwm=0.80, dram_lwm=0.60,
+                    max_blocks=n_blocks + 64,
+                    threshold_to_gpu=0.4,
+                    threshold_to_dram=0.15,
+                )
 
-        stats = _C.tm_get_stats(tm)
-        r = {
-            "alpha": alpha, "beta": beta, "gamma": gamma,
-            "schedule_cycles": stats["schedule_cycles"],
-            "gpu_demotes": stats["gpu_demotes"],
-            "dram_demotes": stats["dram_demotes"],
-            "prefetches_dispatched": stats["prefetches_dispatched"],
-            "n_hot": stats["n_hot"],
-            "n_warm": stats["n_warm"],
-            "n_cold": stats["n_cold"],
-        }
-        results.append(r)
-        _C.tm_destroy(tm)
+                for bid in range(n_blocks):
+                    _C.tm_register_block_id(tm, bid, int(_C.GPU_HBM), 0)
 
-        print(f"  α={alpha:.1f} β={beta:.1f} γ={gamma:.1f}  "
-              f"hot={r['n_hot']} warm={r['n_warm']} cold={r['n_cold']}  "
-              f"demotes={r['gpu_demotes']+r['dram_demotes']}")
+                step_trace = []
+
+                for step in range(n_steps):
+                    attn_pairs = _generate_attention_patterns(
+                        n_blocks, n_hot, step, pattern)
+                    for bid, w in attn_pairs:
+                        _C.tm_report_attn(tm, bid, w)
+                    _C.tm_step_done(tm)
+
+                    if step % 5 == 0:
+                        _C.tm_set_usage(tm, gpu_ratio=0.85, dram_ratio=0.55)
+                        _C.tm_schedule_once(tm)
+
+                    if step % 10 == 0:
+                        s = _C.tm_get_stats(tm)
+                        step_trace.append({
+                            "step": step,
+                            "n_hot": s["n_hot"],
+                            "n_warm": s["n_warm"],
+                            "n_cold": s["n_cold"],
+                        })
+
+                stats = _C.tm_get_stats(tm)
+                run_results.append({
+                    "n_hot": stats["n_hot"],
+                    "n_warm": stats["n_warm"],
+                    "n_cold": stats["n_cold"],
+                    "gpu_demotes": stats["gpu_demotes"],
+                    "dram_demotes": stats["dram_demotes"],
+                    "prefetches": stats["prefetches_dispatched"],
+                    "schedule_cycles": stats["schedule_cycles"],
+                })
+                _C.tm_destroy(tm)
+
+            avg_hot = sum(r["n_hot"] for r in run_results) / n_runs
+            avg_warm = sum(r["n_warm"] for r in run_results) / n_runs
+            avg_cold = sum(r["n_cold"] for r in run_results) / n_runs
+            avg_demotes = sum(r["gpu_demotes"] + r["dram_demotes"]
+                              for r in run_results) / n_runs
+
+            r = {
+                "alpha": alpha, "beta": beta, "gamma": gamma,
+                "pattern": pattern,
+                "n_blocks": n_blocks,
+                "n_steps": n_steps,
+                "n_runs": n_runs,
+                "avg_n_hot": round(avg_hot, 1),
+                "avg_n_warm": round(avg_warm, 1),
+                "avg_n_cold": round(avg_cold, 1),
+                "avg_demotes": round(avg_demotes, 1),
+                "avg_prefetches": round(
+                    sum(r["prefetches"] for r in run_results) / n_runs, 1),
+                "hot_ratio": round(avg_hot / max(n_blocks, 1), 4),
+                "warm_ratio": round(avg_warm / max(n_blocks, 1), 4),
+                "cold_ratio": round(avg_cold / max(n_blocks, 1), 4),
+            }
+            results.append(r)
+
+            print(f"  α={alpha:.1f} β={beta:.1f} γ={gamma:.1f} "
+                  f"[{pattern:5s}]  "
+                  f"hot={r['avg_n_hot']:5.1f}  "
+                  f"warm={r['avg_n_warm']:5.1f}  "
+                  f"cold={r['avg_n_cold']:5.1f}  "
+                  f"demotes={r['avg_demotes']:.1f}")
 
     save_json(results, "benchmark_e5_policy_sweep")
     if results:
@@ -257,12 +355,15 @@ def main():
     parser.add_argument("--model", default="meta-llama/Llama-2-7b-hf")
     parser.add_argument("--seq-len", type=int, default=4096)
     parser.add_argument("--batch-size", type=int, default=4)
+    parser.add_argument("--n-blocks", type=int, default=256)
+    parser.add_argument("--n-steps", type=int, default=100)
+    parser.add_argument("--n-runs", type=int, default=3)
     args = parser.parse_args()
 
     if args.exp in ("e4", "all"):
         run_e4(args.model, args.seq_len, args.batch_size)
     if args.exp in ("e5", "all"):
-        run_e5()
+        run_e5(args.n_blocks, args.n_steps, args.n_runs)
     if args.exp in ("e6", "all"):
         run_e6(args.model, args.seq_len, args.batch_size)
 

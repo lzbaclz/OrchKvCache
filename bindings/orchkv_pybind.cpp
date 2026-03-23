@@ -8,6 +8,9 @@
  */
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+#include <unordered_map>
+#include <vector>
+#include <cstring>
 namespace py = pybind11;
 
 extern "C" {
@@ -17,6 +20,8 @@ extern "C" {
 #include "api/orchkv_api.h"
 #include "scheduler/tiered_manager.h"
 }
+
+static std::unordered_map<uintptr_t, std::vector<kv_block_t*>> g_bench_blocks;
 
 PYBIND11_MODULE(orchkv_core, m) {
     m.doc() = "OrchKvCache: Tiered KV-Cache management for LLM inference";
@@ -211,7 +216,11 @@ PYBIND11_MODULE(orchkv_core, m) {
           [](uint32_t tracker_cap, float ema_lambda,
              float alpha, float beta, float gamma,
              uint32_t prefetch_budget,
-             uint32_t schedule_interval_us) -> uintptr_t {
+             uint32_t schedule_interval_us,
+             float gpu_hwm, float gpu_lwm,
+             float dram_hwm, float dram_lwm,
+             uint32_t max_blocks,
+             float threshold_to_gpu, float threshold_to_dram) -> uintptr_t {
               auto *m_ptr = new tiered_manager_t();
               tm_config_t cfg;
               tm_config_default(&cfg);
@@ -223,6 +232,13 @@ PYBIND11_MODULE(orchkv_core, m) {
               cfg.prefetch_budget       = prefetch_budget;
               cfg.schedule_interval_us  = schedule_interval_us;
               cfg.auto_schedule         = false;
+              cfg.athresh_params.gpu_hwm  = gpu_hwm;
+              cfg.athresh_params.gpu_lwm  = gpu_lwm;
+              cfg.athresh_params.dram_hwm = dram_hwm;
+              cfg.athresh_params.dram_lwm = dram_lwm;
+              cfg.max_blocks              = max_blocks;
+              cfg.threshold_to_gpu        = threshold_to_gpu;
+              cfg.threshold_to_dram       = threshold_to_dram;
               int rc = tm_init(m_ptr, &cfg);
               if (rc != ORCHKV_OK) {
                   delete m_ptr;
@@ -237,16 +253,63 @@ PYBIND11_MODULE(orchkv_core, m) {
           py::arg("gamma") = 0.2f,
           py::arg("prefetch_budget") = 16,
           py::arg("schedule_interval_us") = 1000,
+          py::arg("gpu_hwm") = 0.9f,
+          py::arg("gpu_lwm") = 0.7f,
+          py::arg("dram_hwm") = 0.9f,
+          py::arg("dram_lwm") = 0.7f,
+          py::arg("max_blocks") = 8192,
+          py::arg("threshold_to_gpu") = 0.5f,
+          py::arg("threshold_to_dram") = 0.2f,
           "Create a tiered_manager (returns opaque handle)");
 
     m.def("tm_destroy",
           [](uintptr_t tm_ptr) {
               auto *m_ptr = reinterpret_cast<tiered_manager_t*>(tm_ptr);
               tm_destroy(m_ptr);
+              auto it = g_bench_blocks.find(tm_ptr);
+              if (it != g_bench_blocks.end()) {
+                  for (auto *blk : it->second) delete blk;
+                  g_bench_blocks.erase(it);
+              }
               delete m_ptr;
           },
           py::arg("tm"),
           "Destroy a tiered_manager");
+
+    m.def("tm_register_block_id",
+          [](uintptr_t tm_ptr, uint64_t block_id, int tier, uint8_t flags) -> int {
+              auto *m_ptr = reinterpret_cast<tiered_manager_t*>(tm_ptr);
+              auto *blk = new kv_block_t();
+              std::memset(blk, 0, sizeof(*blk));
+              blk->block_id = block_id;
+              blk->tier     = static_cast<StorageTier>(tier);
+              blk->flags    = flags;
+              int rc = tm_register_block(m_ptr, blk);
+              if (rc == ORCHKV_OK) {
+                  g_bench_blocks[tm_ptr].push_back(blk);
+              } else {
+                  delete blk;
+              }
+              return rc;
+          },
+          py::arg("tm"), py::arg("block_id"),
+          py::arg("tier") = static_cast<int>(TIER_GPU_HBM),
+          py::arg("flags") = 0,
+          "Register a block for scheduling (benchmark helper)");
+
+    m.def("tm_set_block_tier",
+          [](uintptr_t tm_ptr, uint64_t block_id, int tier) {
+              auto it = g_bench_blocks.find(tm_ptr);
+              if (it == g_bench_blocks.end()) return;
+              for (auto *blk : it->second) {
+                  if (blk->block_id == block_id) {
+                      blk->tier = static_cast<StorageTier>(tier);
+                      return;
+                  }
+              }
+          },
+          py::arg("tm"), py::arg("block_id"), py::arg("tier"),
+          "Change a block's tier (benchmark helper)");
 
     m.def("tm_report_attn",
           [](uintptr_t tm_ptr, uint64_t block_id, float weight) {

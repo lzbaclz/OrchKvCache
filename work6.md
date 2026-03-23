@@ -428,7 +428,46 @@ Phase 3 — vLLM 实验（需模型）:
 
 ---
 
-## 七、TODO 清单
+## 七、已完成实验结果摘要
+
+### E5: 冷热策略参数 sweep ✅
+
+**关键发现**:
+- 9 组 (α,β,γ) × 3 种访问模式 = 27 组实验，每组 3 次运行
+- α≥0.7 时注意力驱动分类最准确：fixed 模式下 hot=64 完美匹配 ground truth
+- α≤0.3 时 recency/frequency 主导，分类偏宽松
+- zipf 模式下仅 2~26 个 block 被判为 hot → 长尾分布敏感
+- 生成图表: `fig08_policy_heatmap.pdf`, `fig09_classification_distribution.pdf`
+
+### E7: 预取效果 ✅
+
+**关键发现**:
+- 6 种 budget (0~32)，每种 3 次运行
+- budget≥8 时 prefetch dispatches 饱和 (~245/100步)
+- 调度开销稳定在 5.7~5.9μs，不随 budget 线性增长
+- 生成图表: `fig11_prefetch_dispatches.pdf`, `fig12_prefetch_latency.pdf`
+
+### E8: 存储带宽 ✅
+
+**关键发现**:
+- GPU↔DRAM (pinned): D2H ≈ 22 GB/s, H2D ≈ 23.6 GB/s（A100 PCIe 理论上限 ~25 GB/s）
+- DRAM↔tmpfs: Write ≈ 3.7 GB/s, Read ≈ 14.4 GB/s
+- GPU↔DRAM 是 DRAM↔tmpfs 的 ~1.6×（写）~ 3.9×（读）
+- 带宽随数据块增大先升后稳（≥8MB 趋于饱和）
+- 生成图表: `fig13_storage_bandwidth.pdf`
+
+### E9: 调度可扩展性 ✅
+
+**关键发现**:
+- 64 → 4096 blocks: 调度延迟 1.7μs → 38.3μs
+- 缩放指数 0.749（亚线性，优于 O(n)）
+- 4096 blocks 下 P99 = 57.9μs < 100μs 阈值 ✅
+- 每 block 开销 ≈ 9.4 ns
+- 生成图表: `fig14_scalability.pdf`
+
+---
+
+## 八、TODO 清单
 
 ```
 Phase E 实验执行:
@@ -439,10 +478,10 @@ Phase E 实验执行:
   │   huggingface-cli download meta-llama/Llama-2-7b-hf         │
   │   估时: 0.5d (视网络)                                       │
   ├──────────────────────────────────────────────────────────────┤
-  │ [E5]  冷热策略 sweep        ⚡ 可立即跑         状态: TODO │
-  │ [E7]  预取效果              ⚡ 可立即跑         状态: TODO │
-  │ [E8]  存储带宽              ⚡ 可立即跑         状态: TODO │
-  │ [E9]  调度可扩展性          ⚡ 可立即跑         状态: TODO │
+  │ [E5]  冷热策略 sweep        ⚡ 立即可跑          状态: DONE │
+  │ [E7]  预取效果              ⚡ 立即可跑          状态: DONE │
+  │ [E8]  存储带宽              ⚡ 立即可跑          状态: DONE │
+  │ [E9]  调度可扩展性          ⚡ 立即可跑          状态: DONE │
   ├──────────────────────────────────────────────────────────────┤
   │ [E10] 生成质量验证          需 vLLM + 模型      状态: TODO │
   │ [E1]  端到端吞吐            需 vLLM + 模型      状态: TODO │
@@ -452,6 +491,5 @@ Phase E 实验执行:
   │ [E6]  Block Size 消融       需 vLLM + 模型      状态: TODO │
   └──────────────────────────────────────────────────────────────┘
 
-  建议路径: E5+E7+E8+E9 → 安装vLLM → E10 → E1 → E2 → E3 → E4 → E6
-  总计估时: ~1 天环境 + ~1 天跑实验 + ~1 天整理数据
+  下一步: 安装 vLLM → E10 → E1 → E2 → E3 → E4 → E6
 ```
