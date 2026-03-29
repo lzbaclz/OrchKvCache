@@ -1,0 +1,46 @@
+[
+  {
+    "prompt": "short_256",
+    "prompt_len": 152,
+    "generated_len": 128,
+    "token_match_rate": 100.0,
+    "first_mismatch": -1,
+    "evictions": 0,
+    "promotions": 0,
+    "blocks_gpu": 504,
+    "blocks_dram": 0
+  },
+  {
+    "prompt": "medium_512",
+    "prompt_len": 541,
+    "generated_len": 128,
+    "token_match_rate": 100.0,
+    "first_mismatch": -1,
+    "evictions": 1024,
+    "promotions": 1024,
+    "blocks_gpu": 1176,
+    "blocks_dram": 0
+  },
+  {
+    "prompt": "long_1024",
+    "prompt_len": 1081,
+    "generated_len": 128,
+    "token_match_rate": 100.0,
+    "first_mismatch": -1,
+    "evictions": 1024,
+    "promotions": 1024,
+    "blocks_gpu": 2128,
+    "blocks_dram": 0
+  },
+  {
+    "prompt": "longer_2048",
+    "prompt_len": 1721,
+    "generated_len": 128,
+    "token_match_rate": 100.0,
+    "first_mismatch": -1,
+    "evictions": 1024,
+    "promotions": 1024,
+    "blocks_gpu": 3248,
+    "blocks_dram": 0
+  }
+]

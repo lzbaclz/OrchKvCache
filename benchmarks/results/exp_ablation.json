@@ -1,0 +1,41 @@
+[
+  {
+    "config": "gpu-only",
+    "prompt_len": 2048,
+    "generated": 128,
+    "elapsed_s": 3.469,
+    "throughput_tok_s": 627.4,
+    "evictions": 0,
+    "promotions": 0,
+    "blocks_gpu": 0,
+    "blocks_dram": 0,
+    "gpu_kv_mb": 0,
+    "status": "OK"
+  },
+  {
+    "config": "naive-fifo",
+    "prompt_len": 2048,
+    "generated": 128,
+    "elapsed_s": 30.71,
+    "throughput_tok_s": 70.9,
+    "evictions": 331296,
+    "promotions": 331296,
+    "blocks_gpu": 3808,
+    "blocks_dram": 0,
+    "gpu_kv_mb": 119.0,
+    "status": "OK"
+  },
+  {
+    "config": "orchkv-full",
+    "prompt_len": 2048,
+    "generated": 128,
+    "elapsed_s": 25.059,
+    "throughput_tok_s": 86.8,
+    "evictions": 1024,
+    "promotions": 1024,
+    "blocks_gpu": 3808,
+    "blocks_dram": 0,
+    "gpu_kv_mb": 119.0,
+    "status": "OK"
+  }
+]
