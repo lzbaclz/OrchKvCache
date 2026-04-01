@@ -1,0 +1,54 @@
+[
+  {
+    "model": "LLaMA-2-7B",
+    "prompt": "short",
+    "prompt_len": 227,
+    "match_rate": 100.0,
+    "evictions": 1024
+  },
+  {
+    "model": "LLaMA-2-7B",
+    "prompt": "medium",
+    "prompt_len": 302,
+    "match_rate": 100.0,
+    "evictions": 1024
+  },
+  {
+    "model": "LLaMA-2-7B",
+    "prompt": "long",
+    "prompt_len": 562,
+    "match_rate": 100.0,
+    "evictions": 1024
+  },
+  {
+    "model": "LLaMA-2-7B",
+    "prompt": "short",
+    "prompt_len": 227,
+    "match_rate": 100.0,
+    "evictions": 1024
+  },
+  {
+    "model": "LLaMA-2-13B",
+    "prompt": "short",
+    "prompt_len": 128,
+    "generated": 32,
+    "match_rate": 100.0,
+    "evictions": 256
+  },
+  {
+    "model": "LLaMA-2-13B",
+    "prompt": "medium",
+    "prompt_len": 256,
+    "generated": 32,
+    "match_rate": 100.0,
+    "evictions": 256
+  },
+  {
+    "model": "LLaMA-2-13B",
+    "prompt": "long",
+    "prompt_len": 512,
+    "generated": 32,
+    "match_rate": 100.0,
+    "evictions": 256
+  }
+]

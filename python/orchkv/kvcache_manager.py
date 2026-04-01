@@ -381,6 +381,9 @@ class KVCacheManager:
         if budget > 0 and gpu_bytes > budget * 0.85:
             evicted = self._evict_cold_blocks()
 
+        if self.ssd_dir:
+            self._spill_dram_to_ssd()
+
         if budget > 0 and gpu_bytes < budget * 0.60:
             promoted = self._promote_warm_blocks()
 
@@ -443,6 +446,21 @@ class KVCacheManager:
     # ------------------------------------------------------------------
     # Data movement primitives
     # ------------------------------------------------------------------
+
+    def _spill_dram_to_ssd(self, max_spill: int = 4):
+        """Move oldest DRAM blocks to SSD when DRAM has many blocks."""
+        dram_blocks = []
+        for layer_blocks in self._blocks:
+            for blk in layer_blocks:
+                if blk.tier == TIER_DRAM and blk.dram_data is not None and not blk.is_sink:
+                    dram_blocks.append(blk)
+
+        if len(dram_blocks) < 4:
+            return
+
+        dram_blocks.sort(key=lambda b: b.access_count)
+        for blk in dram_blocks[:max_spill]:
+            self._save_to_ssd(blk)
 
     def _demote_block(self, blk: KVBlock):
         """GPU -> DRAM (and optionally DRAM -> SSD)."""

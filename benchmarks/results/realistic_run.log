@@ -1,0 +1,113 @@
+======================================================================
+Improvement 3: W3 (Realistic Workload) + W4 (SSD Tier)
+======================================================================
+
+######################################################################
+# Qwen2.5-7B
+######################################################################
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:01<00:03,  1.09s/it]Loading checkpoint shards:  50%|█████     | 2/4 [00:02<00:02,  1.01s/it]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:02<00:00,  1.04it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:03<00:00,  1.10it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:03<00:00,  1.06it/s]
+  Loaded Qwen2.5-7B: {'n_layers': 28, 'n_kv_heads': 4, 'head_dim': 128}, GPU=15.2GB
+
+======================================================================
+W3: Realistic Workload — Qwen2.5-7B
+======================================================================
+
+  Workload: sharegpt-like
+  Lengths: min=64, max=1957, mean=519, std=516
+    baseline: OK=20 tps=770 evict=0
+    naive: OK=20 tps=266 evict=166824
+    orchkv: OK=20 tps=272 evict=1024
+
+  Workload: longcontext-mix
+  Lengths: min=178, max=3877, mean=726, std=938
+    baseline: OK=20 tps=1019 evict=0
+    naive: OK=20 tps=263 evict=382648
+    orchkv: OK=20 tps=289 evict=1024
+
+======================================================================
+W4: SSD Tier End-to-End — Qwen2.5-7B
+======================================================================
+
+  short (256 tokens):
+    baseline: 32 tokens
+    orchkv+ssd: 32 tokens, match=100.00%, gpu→dram=256, dram→ssd=128, ssd→dram=128
+
+  medium (512 tokens):
+    baseline: 32 tokens
+    orchkv+ssd: 32 tokens, match=100.00%, gpu→dram=256, dram→ssd=128, ssd→dram=128
+
+  long (1024 tokens):
+    baseline: 32 tokens
+    orchkv+ssd: 32 tokens, match=100.00%, gpu→dram=256, dram→ssd=128, ssd→dram=128
+
+######################################################################
+# LLaMA-2-7B
+######################################################################
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards:  50%|█████     | 1/2 [00:01<00:01,  1.39s/it]Loading checkpoint shards: 100%|██████████| 2/2 [00:01<00:00,  1.10it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:01<00:00,  1.02it/s]
+  Loaded LLaMA-2-7B: {'n_layers': 32, 'n_kv_heads': 32, 'head_dim': 128}, GPU=13.5GB
+
+======================================================================
+W3: Realistic Workload — LLaMA-2-7B
+======================================================================
+
+  Workload: sharegpt-like
+  Lengths: min=64, max=1957, mean=519, std=516
+    baseline: OK=20 tps=827 evict=0
+    naive: OK=20 tps=154 evict=603972
+    orchkv: OK=20 tps=236 evict=4904
+
+  Workload: longcontext-mix
+  Lengths: min=178, max=3877, mean=726, std=938
+    baseline: OK=20 tps=1022 evict=0
+    naive: OK=20 tps=157 evict=868864
+    orchkv: OK=20 tps=247 evict=5120
+
+======================================================================
+W4: SSD Tier End-to-End — LLaMA-2-7B
+======================================================================
+
+  short (256 tokens):
+    baseline: 32 tokens
+    orchkv+ssd: 32 tokens, match=100.00%, gpu→dram=256, dram→ssd=128, ssd→dram=128
+
+  medium (512 tokens):
+    baseline: 32 tokens
+    orchkv+ssd: 32 tokens, match=100.00%, gpu→dram=256, dram→ssd=128, ssd→dram=128
+
+  long (1024 tokens):
+    baseline: 32 tokens
+    orchkv+ssd: 32 tokens, match=100.00%, gpu→dram=256, dram→ssd=128, ssd→dram=128
+
+Saved /home/lzq/codes/orchkv/OrchKvCache/benchmarks/results/realistic_workload.json
+
+Saved /home/lzq/codes/orchkv/OrchKvCache/benchmarks/results/ssd_tier_e2e.json
+
+======================================================================
+W3: REALISTIC WORKLOAD SUMMARY
+======================================================================
+Model          Workload         Mode         OK   Tok/s    Evict
+-----------------------------------------------------------------
+Qwen2.5-7B     sharegpt-like    baseline     20     770        0
+Qwen2.5-7B     sharegpt-like    naive        20     266   166824
+Qwen2.5-7B     sharegpt-like    orchkv       20     272     1024
+Qwen2.5-7B     longcontext-mix  baseline     20    1019        0
+Qwen2.5-7B     longcontext-mix  naive        20     263   382648
+Qwen2.5-7B     longcontext-mix  orchkv       20     289     1024
+LLaMA-2-7B     sharegpt-like    baseline     20     827        0
+LLaMA-2-7B     sharegpt-like    naive        20     154   603972
+LLaMA-2-7B     sharegpt-like    orchkv       20     236     4904
+LLaMA-2-7B     longcontext-mix  baseline     20    1022        0
+LLaMA-2-7B     longcontext-mix  naive        20     157   868864
+LLaMA-2-7B     longcontext-mix  orchkv       20     247     5120
+
+======================================================================
+W4: SSD TIER SUMMARY
+======================================================================
+Model          Prompt      Match  GPU→DRAM  DRAM→SSD  SSD→DRAM SSD files
+---------------------------------------------------------------------------
+Qwen2.5-7B     short     100.00%       256       128       128        12
+Qwen2.5-7B     medium    100.00%       256       128       128        20
+Qwen2.5-7B     long      100.00%       256       128       128        28
+LLaMA-2-7B     short     100.00%       256       128       128        12
+LLaMA-2-7B     medium    100.00%       256       128       128        20
+LLaMA-2-7B     long      100.00%       256       128       128        28

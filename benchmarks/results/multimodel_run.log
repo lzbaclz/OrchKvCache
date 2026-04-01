@@ -1,0 +1,524 @@
+
+######################################################################
+# MODEL: Qwen2.5-7B
+######################################################################
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:01<00:03,  1.07s/it]Loading checkpoint shards:  50%|█████     | 2/4 [00:01<00:01,  1.03it/s]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:02<00:00,  1.09it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:03<00:00,  1.17it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:03<00:00,  1.12it/s]
+  Loaded Qwen2.5-7B: 28L, 4KV, d=128, KV/tok=56KB, model=15.2GB
+
+======================================================================
+EXP E2E: Qwen2.5-7B
+======================================================================
+
+  [baseline budget=50MB seq=2048 nreq=1] OK=1 OOM=0 tps=993 evict=0
+
+  [naive budget=50MB seq=2048 nreq=1] OK=1 OOM=0 tps=145 evict=162064
+
+  [orchkv budget=50MB seq=2048 nreq=1] OK=1 OOM=0 tps=175 evict=512
+
+  [baseline budget=50MB seq=2048 nreq=4] OK=4 OOM=0 tps=1345 evict=0
+
+  [naive budget=50MB seq=2048 nreq=4] OK=4 OOM=0 tps=130 evict=863296
+
+  [orchkv budget=50MB seq=2048 nreq=4] OK=4 OOM=0 tps=175 evict=2048
+
+  [baseline budget=50MB seq=2048 nreq=8] OK=8 OOM=0 tps=1344 evict=0
+
+  [naive budget=50MB seq=2048 nreq=8] OK=8 OOM=0 tps=127 evict=1798272
+
+  [orchkv budget=50MB seq=2048 nreq=8] OK=8 OOM=0 tps=176 evict=4096
+
+  [baseline budget=50MB seq=2048 nreq=16] OK=16 OOM=0 tps=1345 evict=0
+
+  [naive budget=50MB seq=2048 nreq=16] OK=16 OOM=0 tps=126 evict=3668224
+
+  [orchkv budget=50MB seq=2048 nreq=16] OK=16 OOM=0 tps=175 evict=8192
+
+  [baseline budget=50MB seq=4096 nreq=1] OK=1 OOM=0 tps=1930 evict=0
+
+  [naive budget=50MB seq=4096 nreq=1] OK=1 OOM=0 tps=136 evict=391440
+
+  [orchkv budget=50MB seq=4096 nreq=1] OK=1 OOM=0 tps=178 evict=512
+
+  [baseline budget=50MB seq=4096 nreq=4] OK=4 OOM=0 tps=1934 evict=0
+
+  [naive budget=50MB seq=4096 nreq=4] OK=4 OOM=0 tps=129 evict=1780800
+
+  [orchkv budget=50MB seq=4096 nreq=4] OK=4 OOM=0 tps=178 evict=2048
+
+  [baseline budget=50MB seq=4096 nreq=8] OK=8 OOM=0 tps=1935 evict=0
+
+  [naive budget=50MB seq=4096 nreq=8] OK=8 OOM=0 tps=128 evict=3633280
+
+  [orchkv budget=50MB seq=4096 nreq=8] OK=8 OOM=0 tps=178 evict=4096
+
+  [baseline budget=50MB seq=4096 nreq=16] OK=16 OOM=0 tps=1936 evict=0
+
+  [naive budget=50MB seq=4096 nreq=16] OK=16 OOM=0 tps=125 evict=7338240
+
+  [orchkv budget=50MB seq=4096 nreq=16] OK=16 OOM=0 tps=175 evict=8192
+
+  [baseline budget=100MB seq=2048 nreq=1] OK=1 OOM=0 tps=1324 evict=0
+
+  [naive budget=100MB seq=2048 nreq=1] OK=1 OOM=0 tps=170 evict=90384
+
+  [orchkv budget=100MB seq=2048 nreq=1] OK=1 OOM=0 tps=171 evict=512
+
+  [baseline budget=100MB seq=2048 nreq=4] OK=4 OOM=0 tps=1307 evict=0
+
+  [naive budget=100MB seq=2048 nreq=4] OK=4 OOM=0 tps=131 evict=791616
+
+  [orchkv budget=100MB seq=2048 nreq=4] OK=4 OOM=0 tps=171 evict=2048
+
+  [baseline budget=100MB seq=2048 nreq=8] OK=8 OOM=0 tps=1347 evict=0
+
+  [naive budget=100MB seq=2048 nreq=8] OK=8 OOM=0 tps=126 evict=1726592
+
+  [orchkv budget=100MB seq=2048 nreq=8] OK=8 OOM=0 tps=172 evict=4096
+
+  [baseline budget=100MB seq=2048 nreq=16] OK=16 OOM=0 tps=1324 evict=0
+
+  [naive budget=100MB seq=2048 nreq=16] OK=16 OOM=0 tps=125 evict=3596544
+
+  [orchkv budget=100MB seq=2048 nreq=16] OK=16 OOM=0 tps=174 evict=8192
+
+  [baseline budget=100MB seq=4096 nreq=1] OK=1 OOM=0 tps=1935 evict=0
+
+  [naive budget=100MB seq=4096 nreq=1] OK=1 OOM=0 tps=147 evict=319760
+
+  [orchkv budget=100MB seq=4096 nreq=1] OK=1 OOM=0 tps=178 evict=512
+
+  [baseline budget=100MB seq=4096 nreq=4] OK=4 OOM=0 tps=1935 evict=0
+
+  [naive budget=100MB seq=4096 nreq=4] OK=4 OOM=0 tps=131 evict=1709120
+
+  [orchkv budget=100MB seq=4096 nreq=4] OK=4 OOM=0 tps=178 evict=2048
+
+  [baseline budget=100MB seq=4096 nreq=8] OK=8 OOM=0 tps=1936 evict=0
+
+  [naive budget=100MB seq=4096 nreq=8] OK=8 OOM=0 tps=129 evict=3561600
+
+  [orchkv budget=100MB seq=4096 nreq=8] OK=8 OOM=0 tps=178 evict=4096
+
+  [baseline budget=100MB seq=4096 nreq=16] OK=16 OOM=0 tps=1936 evict=0
+
+  [naive budget=100MB seq=4096 nreq=16] OK=16 OOM=0 tps=127 evict=7266560
+
+  [orchkv budget=100MB seq=4096 nreq=16] OK=16 OOM=0 tps=178 evict=8192
+
+  [baseline budget=200MB seq=2048 nreq=1] OK=1 OOM=0 tps=1324 evict=0
+
+  [naive budget=200MB seq=2048 nreq=1] OK=1 OOM=0 tps=223 evict=0
+
+  [orchkv budget=200MB seq=2048 nreq=1] OK=1 OOM=0 tps=210 evict=0
+
+  [baseline budget=200MB seq=2048 nreq=4] OK=4 OOM=0 tps=1346 evict=0
+
+  [naive budget=200MB seq=2048 nreq=4] OK=4 OOM=0 tps=144 evict=648256
+
+  [orchkv budget=200MB seq=2048 nreq=4] OK=4 OOM=0 tps=174 evict=2048
+
+  [baseline budget=200MB seq=2048 nreq=8] OK=8 OOM=0 tps=1345 evict=0
+
+  [naive budget=200MB seq=2048 nreq=8] OK=8 OOM=0 tps=133 evict=1583232
+
+  [orchkv budget=200MB seq=2048 nreq=8] OK=8 OOM=0 tps=175 evict=4096
+
+  [baseline budget=200MB seq=2048 nreq=16] OK=16 OOM=0 tps=1346 evict=0
+
+  [naive budget=200MB seq=2048 nreq=16] OK=16 OOM=0 tps=128 evict=3453184
+
+  [orchkv budget=200MB seq=2048 nreq=16] OK=16 OOM=0 tps=175 evict=8192
+
+  [baseline budget=200MB seq=4096 nreq=1] OK=1 OOM=0 tps=1938 evict=0
+
+  [naive budget=200MB seq=4096 nreq=1] OK=1 OOM=0 tps=178 evict=176400
+
+  [orchkv budget=200MB seq=4096 nreq=1] OK=1 OOM=0 tps=179 evict=512
+
+  [baseline budget=200MB seq=4096 nreq=4] OK=4 OOM=0 tps=1931 evict=0
+
+  [naive budget=200MB seq=4096 nreq=4] OK=4 OOM=0 tps=136 evict=1565760
+
+  [orchkv budget=200MB seq=4096 nreq=4] OK=4 OOM=0 tps=179 evict=2048
+
+  [baseline budget=200MB seq=4096 nreq=8] OK=8 OOM=0 tps=1935 evict=0
+
+  [naive budget=200MB seq=4096 nreq=8] OK=8 OOM=0 tps=131 evict=3418240
+
+  [orchkv budget=200MB seq=4096 nreq=8] OK=8 OOM=0 tps=178 evict=4096
+
+  [baseline budget=200MB seq=4096 nreq=16] OK=16 OOM=0 tps=1936 evict=0
+
+  [naive budget=200MB seq=4096 nreq=16] OK=16 OOM=0 tps=129 evict=7123200
+
+  [orchkv budget=200MB seq=4096 nreq=16] OK=16 OOM=0 tps=178 evict=8192
+
+======================================================================
+EXP QUALITY: Qwen2.5-7B
+======================================================================
+
+  short (152 tokens): match=100.00% [PASS] evict=0
+
+  medium (341 tokens): match=100.00% [PASS] evict=1024
+
+  long (701 tokens): match=100.00% [PASS] evict=1024
+
+======================================================================
+EXP ABLATION: Qwen2.5-7B
+======================================================================
+
+  gpu-only: 756 tok/s evict=0
+
+  naive-fifo: 74 tok/s evict=331296
+
+  orchkv: 91 tok/s evict=1024
+
+######################################################################
+# MODEL: Mistral-7B
+######################################################################
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards:  50%|█████     | 1/2 [00:02<00:02,  2.17s/it]Loading checkpoint shards: 100%|██████████| 2/2 [00:03<00:00,  1.62s/it]Loading checkpoint shards: 100%|██████████| 2/2 [00:03<00:00,  1.71s/it]
+  Loaded Mistral-7B: 32L, 8KV, d=128, KV/tok=128KB, model=14.5GB
+
+======================================================================
+EXP E2E: Mistral-7B
+======================================================================
+
+  [baseline budget=50MB seq=2048 nreq=1] OK=1 OOM=0 tps=1215 evict=0
+
+  [naive budget=50MB seq=2048 nreq=1] OK=1 OOM=0 tps=111 evict=231296
+
+  [orchkv budget=50MB seq=2048 nreq=1] OK=1 OOM=0 tps=151 evict=512
+
+  [baseline budget=50MB seq=2048 nreq=4] OK=4 OOM=0 tps=1217 evict=0
+
+  [naive budget=50MB seq=2048 nreq=4] OK=4 OOM=0 tps=106 evict=1032704
+
+  [orchkv budget=50MB seq=2048 nreq=4] OK=4 OOM=0 tps=151 evict=2048
+
+  [baseline budget=50MB seq=2048 nreq=8] OK=8 OOM=0 tps=1218 evict=0
+
+  [naive budget=50MB seq=2048 nreq=8] OK=8 OOM=0 tps=105 evict=2101248
+
+  [orchkv budget=50MB seq=2048 nreq=8] OK=8 OOM=0 tps=151 evict=4096
+
+  [baseline budget=50MB seq=2048 nreq=16] OK=16 OOM=0 tps=1218 evict=0
+
+  [naive budget=50MB seq=2048 nreq=16] OK=16 OOM=0 tps=105 evict=4238336
+
+  [orchkv budget=50MB seq=2048 nreq=16] OK=16 OOM=0 tps=151 evict=8192
+
+  [baseline budget=50MB seq=4096 nreq=1] OK=1 OOM=0 tps=1680 evict=0
+
+  [naive budget=50MB seq=4096 nreq=1] OK=1 OOM=0 tps=109 evict=493312
+
+  [orchkv budget=50MB seq=4096 nreq=1] OK=1 OOM=0 tps=157 evict=512
+
+  [baseline budget=50MB seq=4096 nreq=4] OK=4 OOM=0 tps=1680 evict=0
+
+  [naive budget=50MB seq=4096 nreq=4] OK=4 OOM=0 tps=107 evict=2080768
+
+  [orchkv budget=50MB seq=4096 nreq=4] OK=4 OOM=0 tps=157 evict=2048
+
+  [baseline budget=50MB seq=4096 nreq=8] OK=8 OOM=0 tps=1681 evict=0
+
+  [naive budget=50MB seq=4096 nreq=8] OK=8 OOM=0 tps=106 evict=4197376
+
+  [orchkv budget=50MB seq=4096 nreq=8] OK=8 OOM=0 tps=157 evict=4096
+
+  [baseline budget=50MB seq=4096 nreq=16] OK=16 OOM=0 tps=1681 evict=0
+
+  [naive budget=50MB seq=4096 nreq=16] OK=16 OOM=0 tps=106 evict=8430592
+
+  [orchkv budget=50MB seq=4096 nreq=16] OK=16 OOM=0 tps=157 evict=8192
+
+  [baseline budget=100MB seq=2048 nreq=1] OK=1 OOM=0 tps=1194 evict=0
+
+  [naive budget=100MB seq=2048 nreq=1] OK=1 OOM=0 tps=119 evict=195456
+
+  [orchkv budget=100MB seq=2048 nreq=1] OK=1 OOM=0 tps=151 evict=512
+
+  [baseline budget=100MB seq=2048 nreq=4] OK=4 OOM=0 tps=1217 evict=0
+
+  [naive budget=100MB seq=2048 nreq=4] OK=4 OOM=0 tps=107 evict=996864
+
+  [orchkv budget=100MB seq=2048 nreq=4] OK=4 OOM=0 tps=151 evict=2048
+
+  [baseline budget=100MB seq=2048 nreq=8] OK=8 OOM=0 tps=1215 evict=0
+
+  [naive budget=100MB seq=2048 nreq=8] OK=8 OOM=0 tps=105 evict=2065408
+
+  [orchkv budget=100MB seq=2048 nreq=8] OK=8 OOM=0 tps=151 evict=4096
+
+  [baseline budget=100MB seq=2048 nreq=16] OK=16 OOM=0 tps=1217 evict=0
+
+  [naive budget=100MB seq=2048 nreq=16] OK=16 OOM=0 tps=104 evict=4202496
+
+  [orchkv budget=100MB seq=2048 nreq=16] OK=16 OOM=0 tps=151 evict=8192
+
+  [baseline budget=100MB seq=4096 nreq=1] OK=1 OOM=0 tps=1684 evict=0
+
+  [naive budget=100MB seq=4096 nreq=1] OK=1 OOM=0 tps=112 evict=457472
+
+  [orchkv budget=100MB seq=4096 nreq=1] OK=1 OOM=0 tps=157 evict=512
+
+  [baseline budget=100MB seq=4096 nreq=4] OK=4 OOM=0 tps=1681 evict=0
+
+  [naive budget=100MB seq=4096 nreq=4] OK=4 OOM=0 tps=107 evict=2044928
+
+  [orchkv budget=100MB seq=4096 nreq=4] OK=4 OOM=0 tps=157 evict=2048
+
+  [baseline budget=100MB seq=4096 nreq=8] OK=8 OOM=0 tps=1681 evict=0
+
+  [naive budget=100MB seq=4096 nreq=8] OK=8 OOM=0 tps=106 evict=4161536
+
+  [orchkv budget=100MB seq=4096 nreq=8] OK=8 OOM=0 tps=157 evict=4096
+
+  [baseline budget=100MB seq=4096 nreq=16] OK=16 OOM=0 tps=1679 evict=0
+
+  [naive budget=100MB seq=4096 nreq=16] OK=16 OOM=0 tps=105 evict=8394752
+
+  [orchkv budget=100MB seq=4096 nreq=16] OK=16 OOM=0 tps=157 evict=8192
+
+  [baseline budget=200MB seq=2048 nreq=1] OK=1 OOM=0 tps=1191 evict=0
+
+  [naive budget=200MB seq=2048 nreq=1] OK=1 OOM=0 tps=139 evict=123776
+
+  [orchkv budget=200MB seq=2048 nreq=1] OK=1 OOM=0 tps=151 evict=512
+
+  [baseline budget=200MB seq=2048 nreq=4] OK=4 OOM=0 tps=1216 evict=0
+
+  [naive budget=200MB seq=2048 nreq=4] OK=4 OOM=0 tps=111 evict=925184
+
+  [orchkv budget=200MB seq=2048 nreq=4] OK=4 OOM=0 tps=151 evict=2048
+
+  [baseline budget=200MB seq=2048 nreq=8] OK=8 OOM=0 tps=1217 evict=0
+
+  [naive budget=200MB seq=2048 nreq=8] OK=8 OOM=0 tps=107 evict=1993728
+
+  [orchkv budget=200MB seq=2048 nreq=8] OK=8 OOM=0 tps=151 evict=4096
+
+  [baseline budget=200MB seq=2048 nreq=16] OK=16 OOM=0 tps=1217 evict=0
+
+  [naive budget=200MB seq=2048 nreq=16] OK=16 OOM=0 tps=105 evict=4130816
+
+  [orchkv budget=200MB seq=2048 nreq=16] OK=16 OOM=0 tps=152 evict=8192
+
+  [baseline budget=200MB seq=4096 nreq=1] OK=1 OOM=0 tps=1683 evict=0
+
+  [naive budget=200MB seq=4096 nreq=1] OK=1 OOM=0 tps=121 evict=385792
+
+  [orchkv budget=200MB seq=4096 nreq=1] OK=1 OOM=0 tps=158 evict=512
+
+  [baseline budget=200MB seq=4096 nreq=4] OK=4 OOM=0 tps=1679 evict=0
+
+  [naive budget=200MB seq=4096 nreq=4] OK=4 OOM=0 tps=109 evict=1973248
+
+  [orchkv budget=200MB seq=4096 nreq=4] OK=4 OOM=0 tps=158 evict=2048
+
+  [baseline budget=200MB seq=4096 nreq=8] OK=8 OOM=0 tps=1683 evict=0
+
+  [naive budget=200MB seq=4096 nreq=8] OK=8 OOM=0 tps=107 evict=4089856
+
+  [orchkv budget=200MB seq=4096 nreq=8] OK=8 OOM=0 tps=157 evict=4096
+
+  [baseline budget=200MB seq=4096 nreq=16] OK=16 OOM=0 tps=1683 evict=0
+
+  [naive budget=200MB seq=4096 nreq=16] OK=16 OOM=0 tps=106 evict=8323072
+
+  [orchkv budget=200MB seq=4096 nreq=16] OK=16 OOM=0 tps=157 evict=8192
+
+======================================================================
+EXP QUALITY: Mistral-7B
+======================================================================
+
+  short (182 tokens): match=100.00% [PASS] evict=1024
+
+  medium (342 tokens): match=100.00% [PASS] evict=1024
+
+  long (807 tokens): match=100.00% [PASS] evict=1024
+
+======================================================================
+EXP ABLATION: Mistral-7B
+======================================================================
+
+  gpu-only: 685 tok/s evict=0
+
+  naive-fifo: 57 tok/s evict=470784
+
+  orchkv: 78 tok/s evict=1024
+
+Saved /home/lzq/codes/orchkv/OrchKvCache/benchmarks/results/multimodel_e2e.json
+
+Saved /home/lzq/codes/orchkv/OrchKvCache/benchmarks/results/multimodel_quality.json
+
+Saved /home/lzq/codes/orchkv/OrchKvCache/benchmarks/results/multimodel_ablation.json
+
+================================================================================
+E2E SUMMARY
+================================================================================
+Model          Mode        Budget    Seq  NReq   OK   Tok/s      Evict
+---------------------------------------------------------------------------
+Qwen2.5-7B     baseline      50MB   2048     1    1     993          0
+Qwen2.5-7B     naive         50MB   2048     1    1     145     162064
+Qwen2.5-7B     orchkv        50MB   2048     1    1     175        512
+Qwen2.5-7B     baseline      50MB   2048     4    4    1345          0
+Qwen2.5-7B     naive         50MB   2048     4    4     130     863296
+Qwen2.5-7B     orchkv        50MB   2048     4    4     175       2048
+Qwen2.5-7B     baseline      50MB   2048     8    8    1344          0
+Qwen2.5-7B     naive         50MB   2048     8    8     127    1798272
+Qwen2.5-7B     orchkv        50MB   2048     8    8     176       4096
+Qwen2.5-7B     baseline      50MB   2048    16   16    1345          0
+Qwen2.5-7B     naive         50MB   2048    16   16     126    3668224
+Qwen2.5-7B     orchkv        50MB   2048    16   16     175       8192
+Qwen2.5-7B     baseline      50MB   4096     1    1    1930          0
+Qwen2.5-7B     naive         50MB   4096     1    1     136     391440
+Qwen2.5-7B     orchkv        50MB   4096     1    1     178        512
+Qwen2.5-7B     baseline      50MB   4096     4    4    1934          0
+Qwen2.5-7B     naive         50MB   4096     4    4     129    1780800
+Qwen2.5-7B     orchkv        50MB   4096     4    4     178       2048
+Qwen2.5-7B     baseline      50MB   4096     8    8    1935          0
+Qwen2.5-7B     naive         50MB   4096     8    8     128    3633280
+Qwen2.5-7B     orchkv        50MB   4096     8    8     178       4096
+Qwen2.5-7B     baseline      50MB   4096    16   16    1936          0
+Qwen2.5-7B     naive         50MB   4096    16   16     125    7338240
+Qwen2.5-7B     orchkv        50MB   4096    16   16     175       8192
+Qwen2.5-7B     baseline     100MB   2048     1    1    1324          0
+Qwen2.5-7B     naive        100MB   2048     1    1     170      90384
+Qwen2.5-7B     orchkv       100MB   2048     1    1     171        512
+Qwen2.5-7B     baseline     100MB   2048     4    4    1307          0
+Qwen2.5-7B     naive        100MB   2048     4    4     131     791616
+Qwen2.5-7B     orchkv       100MB   2048     4    4     171       2048
+Qwen2.5-7B     baseline     100MB   2048     8    8    1347          0
+Qwen2.5-7B     naive        100MB   2048     8    8     126    1726592
+Qwen2.5-7B     orchkv       100MB   2048     8    8     172       4096
+Qwen2.5-7B     baseline     100MB   2048    16   16    1324          0
+Qwen2.5-7B     naive        100MB   2048    16   16     124    3596544
+Qwen2.5-7B     orchkv       100MB   2048    16   16     174       8192
+Qwen2.5-7B     baseline     100MB   4096     1    1    1935          0
+Qwen2.5-7B     naive        100MB   4096     1    1     147     319760
+Qwen2.5-7B     orchkv       100MB   4096     1    1     178        512
+Qwen2.5-7B     baseline     100MB   4096     4    4    1935          0
+Qwen2.5-7B     naive        100MB   4096     4    4     131    1709120
+Qwen2.5-7B     orchkv       100MB   4096     4    4     178       2048
+Qwen2.5-7B     baseline     100MB   4096     8    8    1936          0
+Qwen2.5-7B     naive        100MB   4096     8    8     129    3561600
+Qwen2.5-7B     orchkv       100MB   4096     8    8     178       4096
+Qwen2.5-7B     baseline     100MB   4096    16   16    1936          0
+Qwen2.5-7B     naive        100MB   4096    16   16     127    7266560
+Qwen2.5-7B     orchkv       100MB   4096    16   16     178       8192
+Qwen2.5-7B     baseline     200MB   2048     1    1    1324          0
+Qwen2.5-7B     naive        200MB   2048     1    1     223          0
+Qwen2.5-7B     orchkv       200MB   2048     1    1     210          0
+Qwen2.5-7B     baseline     200MB   2048     4    4    1346          0
+Qwen2.5-7B     naive        200MB   2048     4    4     144     648256
+Qwen2.5-7B     orchkv       200MB   2048     4    4     174       2048
+Qwen2.5-7B     baseline     200MB   2048     8    8    1345          0
+Qwen2.5-7B     naive        200MB   2048     8    8     133    1583232
+Qwen2.5-7B     orchkv       200MB   2048     8    8     174       4096
+Qwen2.5-7B     baseline     200MB   2048    16   16    1346          0
+Qwen2.5-7B     naive        200MB   2048    16   16     128    3453184
+Qwen2.5-7B     orchkv       200MB   2048    16   16     175       8192
+Qwen2.5-7B     baseline     200MB   4096     1    1    1938          0
+Qwen2.5-7B     naive        200MB   4096     1    1     178     176400
+Qwen2.5-7B     orchkv       200MB   4096     1    1     179        512
+Qwen2.5-7B     baseline     200MB   4096     4    4    1931          0
+Qwen2.5-7B     naive        200MB   4096     4    4     136    1565760
+Qwen2.5-7B     orchkv       200MB   4096     4    4     179       2048
+Qwen2.5-7B     baseline     200MB   4096     8    8    1934          0
+Qwen2.5-7B     naive        200MB   4096     8    8     131    3418240
+Qwen2.5-7B     orchkv       200MB   4096     8    8     178       4096
+Qwen2.5-7B     baseline     200MB   4096    16   16    1936          0
+Qwen2.5-7B     naive        200MB   4096    16   16     128    7123200
+Qwen2.5-7B     orchkv       200MB   4096    16   16     178       8192
+Mistral-7B     baseline      50MB   2048     1    1    1215          0
+Mistral-7B     naive         50MB   2048     1    1     111     231296
+Mistral-7B     orchkv        50MB   2048     1    1     151        512
+Mistral-7B     baseline      50MB   2048     4    4    1217          0
+Mistral-7B     naive         50MB   2048     4    4     106    1032704
+Mistral-7B     orchkv        50MB   2048     4    4     151       2048
+Mistral-7B     baseline      50MB   2048     8    8    1218          0
+Mistral-7B     naive         50MB   2048     8    8     105    2101248
+Mistral-7B     orchkv        50MB   2048     8    8     151       4096
+Mistral-7B     baseline      50MB   2048    16   16    1218          0
+Mistral-7B     naive         50MB   2048    16   16     105    4238336
+Mistral-7B     orchkv        50MB   2048    16   16     151       8192
+Mistral-7B     baseline      50MB   4096     1    1    1680          0
+Mistral-7B     naive         50MB   4096     1    1     109     493312
+Mistral-7B     orchkv        50MB   4096     1    1     157        512
+Mistral-7B     baseline      50MB   4096     4    4    1680          0
+Mistral-7B     naive         50MB   4096     4    4     107    2080768
+Mistral-7B     orchkv        50MB   4096     4    4     157       2048
+Mistral-7B     baseline      50MB   4096     8    8    1681          0
+Mistral-7B     naive         50MB   4096     8    8     106    4197376
+Mistral-7B     orchkv        50MB   4096     8    8     157       4096
+Mistral-7B     baseline      50MB   4096    16   16    1681          0
+Mistral-7B     naive         50MB   4096    16   16     106    8430592
+Mistral-7B     orchkv        50MB   4096    16   16     157       8192
+Mistral-7B     baseline     100MB   2048     1    1    1194          0
+Mistral-7B     naive        100MB   2048     1    1     119     195456
+Mistral-7B     orchkv       100MB   2048     1    1     151        512
+Mistral-7B     baseline     100MB   2048     4    4    1217          0
+Mistral-7B     naive        100MB   2048     4    4     107     996864
+Mistral-7B     orchkv       100MB   2048     4    4     151       2048
+Mistral-7B     baseline     100MB   2048     8    8    1215          0
+Mistral-7B     naive        100MB   2048     8    8     105    2065408
+Mistral-7B     orchkv       100MB   2048     8    8     151       4096
+Mistral-7B     baseline     100MB   2048    16   16    1216          0
+Mistral-7B     naive        100MB   2048    16   16     104    4202496
+Mistral-7B     orchkv       100MB   2048    16   16     151       8192
+Mistral-7B     baseline     100MB   4096     1    1    1684          0
+Mistral-7B     naive        100MB   4096     1    1     112     457472
+Mistral-7B     orchkv       100MB   4096     1    1     157        512
+Mistral-7B     baseline     100MB   4096     4    4    1681          0
+Mistral-7B     naive        100MB   4096     4    4     107    2044928
+Mistral-7B     orchkv       100MB   4096     4    4     157       2048
+Mistral-7B     baseline     100MB   4096     8    8    1681          0
+Mistral-7B     naive        100MB   4096     8    8     106    4161536
+Mistral-7B     orchkv       100MB   4096     8    8     157       4096
+Mistral-7B     baseline     100MB   4096    16   16    1679          0
+Mistral-7B     naive        100MB   4096    16   16     105    8394752
+Mistral-7B     orchkv       100MB   4096    16   16     157       8192
+Mistral-7B     baseline     200MB   2048     1    1    1191          0
+Mistral-7B     naive        200MB   2048     1    1     139     123776
+Mistral-7B     orchkv       200MB   2048     1    1     151        512
+Mistral-7B     baseline     200MB   2048     4    4    1216          0
+Mistral-7B     naive        200MB   2048     4    4     111     925184
+Mistral-7B     orchkv       200MB   2048     4    4     151       2048
+Mistral-7B     baseline     200MB   2048     8    8    1217          0
+Mistral-7B     naive        200MB   2048     8    8     107    1993728
+Mistral-7B     orchkv       200MB   2048     8    8     151       4096
+Mistral-7B     baseline     200MB   2048    16   16    1217          0
+Mistral-7B     naive        200MB   2048    16   16     105    4130816
+Mistral-7B     orchkv       200MB   2048    16   16     152       8192
+Mistral-7B     baseline     200MB   4096     1    1    1683          0
+Mistral-7B     naive        200MB   4096     1    1     121     385792
+Mistral-7B     orchkv       200MB   4096     1    1     158        512
+Mistral-7B     baseline     200MB   4096     4    4    1679          0
+Mistral-7B     naive        200MB   4096     4    4     109    1973248
+Mistral-7B     orchkv       200MB   4096     4    4     158       2048
+Mistral-7B     baseline     200MB   4096     8    8    1683          0
+Mistral-7B     naive        200MB   4096     8    8     107    4089856
+Mistral-7B     orchkv       200MB   4096     8    8     157       4096
+Mistral-7B     baseline     200MB   4096    16   16    1683          0
+Mistral-7B     naive        200MB   4096    16   16     106    8323072
+Mistral-7B     orchkv       200MB   4096    16   16     157       8192
+
+================================================================================
+QUALITY SUMMARY
+================================================================================
+  Qwen2.5-7B     short    len=  152 match= 100.00% [PASS] evict=0
+  Qwen2.5-7B     medium   len=  341 match= 100.00% [PASS] evict=1024
+  Qwen2.5-7B     long     len=  701 match= 100.00% [PASS] evict=1024
+  Mistral-7B     short    len=  182 match= 100.00% [PASS] evict=1024
+  Mistral-7B     medium   len=  342 match= 100.00% [PASS] evict=1024
+  Mistral-7B     long     len=  807 match= 100.00% [PASS] evict=1024
+
+================================================================================
+ABLATION SUMMARY
+================================================================================
+  Qwen2.5-7B     gpu-only         756 tok/s evict=0
+  Qwen2.5-7B     naive-fifo        74 tok/s evict=331296
+  Qwen2.5-7B     orchkv            91 tok/s evict=1024
+  Mistral-7B     gpu-only         685 tok/s evict=0
+  Mistral-7B     naive-fifo        57 tok/s evict=470784
+  Mistral-7B     orchkv            78 tok/s evict=1024

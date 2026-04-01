@@ -1,0 +1,13 @@
+3:test_address_map
+5:test_gpu_dram
+9:test_attention_tracker
+10:test_hotcold_classifier
+11:test_adaptive_threshold
+12:test_eviction_policy
+13:test_prefetch_scheduler
+14:test_pipeline
+15:test_migration_engine
+16:test_tiered_manager
+17:test_hotcold
+18:test_prefetch
+19:test_e2e_auto
