@@ -1,0 +1,18 @@
+[
+  {
+    "model": "Qwen/Qwen2.5-7B",
+    "n_prompts": 4,
+    "total_input_tokens": 4084,
+    "total_output_tokens": 256,
+    "elapsed_s": 1.03,
+    "throughput_tok_s": 4200.9
+  },
+  {
+    "model": "meta-llama/Llama-2-7b-hf",
+    "n_prompts": 4,
+    "total_input_tokens": 4768,
+    "total_output_tokens": 100,
+    "elapsed_s": 0.67,
+    "throughput_tok_s": 7231.1
+  }
+]

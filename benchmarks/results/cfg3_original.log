@@ -1,0 +1,10 @@
+/home/lzq/miniconda3/envs/infinigen/lib/python3.9/site-packages/huggingface_hub/file_download.py:949: FutureWarning: `resume_download` is deprecated and will be removed in version 1.0.0. Downloads always resume when possible. If you want to force a new download, use `force_download=True`.
+  warnings.warn(
+/home/lzq/miniconda3/envs/infinigen/lib/python3.9/site-packages/torch/distributed/distributed_c10d.py:293: UserWarning: torch.distributed.reduce_op is deprecated, please use torch.distributed.ReduceOp instead
+  warnings.warn(
++++++++++++++++++++++++++++++++++++++++++++++++++
+FlexGen
+input: 512 output: 128 bsz: 4
++++++++++++++++++++++++++++++++++++++++++++++++++
+Total: 18.36510400986299 Prefill: 0.19102379912510514 Decode: 18.174080210737884
+=================================================

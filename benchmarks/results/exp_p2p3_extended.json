@@ -1,0 +1,78 @@
+{
+  "p2_extended_context": [
+    {
+      "seq_len": 2048,
+      "actual_len": 2048,
+      "budget_mb": 50,
+      "max_new": 32,
+      "gpu_only_tok_s": 1244.6,
+      "orchkv_tok_s": 317.0,
+      "evictions": 256,
+      "token_match": 1.0
+    },
+    {
+      "seq_len": 4096,
+      "actual_len": 4096,
+      "budget_mb": 50,
+      "max_new": 32,
+      "gpu_only_tok_s": 2860.6,
+      "orchkv_tok_s": 326.1,
+      "evictions": 256,
+      "token_match": 1.0
+    },
+    {
+      "seq_len": 8192,
+      "actual_len": 8192,
+      "budget_mb": 50,
+      "max_new": 32,
+      "gpu_only_tok_s": 2936.6,
+      "orchkv_tok_s": 0,
+      "evictions": 0,
+      "token_match": "N/A"
+    }
+  ],
+  "p3_hyperparam_e2e": [
+    {
+      "ema_lambda": 0.1,
+      "tok_s": 154.3,
+      "evictions": 512,
+      "token_match": 1.0,
+      "speedup_vs_gpu": 0.203
+    },
+    {
+      "ema_lambda": 0.3,
+      "tok_s": 154.9,
+      "evictions": 512,
+      "token_match": 1.0,
+      "speedup_vs_gpu": 0.204
+    },
+    {
+      "ema_lambda": 0.5,
+      "tok_s": 155.8,
+      "evictions": 512,
+      "token_match": 1.0,
+      "speedup_vs_gpu": 0.205
+    },
+    {
+      "ema_lambda": 0.7,
+      "tok_s": 142.9,
+      "evictions": 512,
+      "token_match": 1.0,
+      "speedup_vs_gpu": 0.188
+    },
+    {
+      "ema_lambda": 0.9,
+      "tok_s": 156.3,
+      "evictions": 512,
+      "token_match": 1.0,
+      "speedup_vs_gpu": 0.205
+    },
+    {
+      "ema_lambda": 0.95,
+      "tok_s": 156.7,
+      "evictions": 512,
+      "token_match": 1.0,
+      "speedup_vs_gpu": 0.206
+    }
+  ]
+}

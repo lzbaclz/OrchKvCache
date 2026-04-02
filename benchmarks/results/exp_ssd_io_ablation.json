@@ -1,0 +1,37 @@
+[
+  {
+    "config": "C0: Random+Sync+Single",
+    "write_time_s": 0.0291,
+    "write_bw_mbs": 1101.1,
+    "read_time_s": 0.0054,
+    "read_bw_mbs": 1468.5
+  },
+  {
+    "config": "C1: Determ+Sync+Single",
+    "write_time_s": 0.0266,
+    "write_bw_mbs": 1204.9,
+    "read_time_s": 0.0028,
+    "read_bw_mbs": 2901.7
+  },
+  {
+    "config": "C2: Determ+Aligned+Sync",
+    "write_time_s": 0.0257,
+    "write_bw_mbs": 1244.2,
+    "read_time_s": 0.0028,
+    "read_bw_mbs": 2881.8
+  },
+  {
+    "config": "C3: Determ+Aligned+Async",
+    "write_time_s": 0.0463,
+    "write_bw_mbs": 691.6,
+    "read_time_s": 0.0033,
+    "read_bw_mbs": 2394.0
+  },
+  {
+    "config": "C4: Determ+Aligned+Async+Batch",
+    "write_time_s": 0.0486,
+    "write_bw_mbs": 659.0,
+    "read_time_s": 0.0041,
+    "read_bw_mbs": 1949.5
+  }
+]

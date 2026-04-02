@@ -348,6 +348,22 @@ PYBIND11_MODULE(orchkv_core, m) {
           py::arg("tm"),
           "Run one scheduling iteration");
 
+    m.def("tm_get_block_score",
+          [](uintptr_t tm_ptr, uint64_t block_id) -> float {
+              return tm_get_block_score(
+                  reinterpret_cast<const tiered_manager_t*>(tm_ptr), block_id);
+          },
+          py::arg("tm"), py::arg("block_id"),
+          "Get the composite hotness score for a block from the C classifier");
+
+    m.def("tm_get_block_heat",
+          [](uintptr_t tm_ptr, uint64_t block_id) -> int {
+              return static_cast<int>(tm_get_block_heat(
+                  reinterpret_cast<const tiered_manager_t*>(tm_ptr), block_id));
+          },
+          py::arg("tm"), py::arg("block_id"),
+          "Get the heat level (0=HOT, 1=WARM, 2=COLD) for a block");
+
     m.def("tm_start",
           [](uintptr_t tm_ptr) {
               return tm_start(reinterpret_cast<tiered_manager_t*>(tm_ptr));

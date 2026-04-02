@@ -397,6 +397,22 @@ void tm_set_policy(tiered_manager_t *m,
 }
 
 /* ========================================================================
+ *  Per-block query
+ * ======================================================================== */
+
+float tm_get_block_score(const tiered_manager_t *m, uint64_t block_id)
+{
+    if (!m) return 0.0f;
+    return hcc_get_score(&m->classifier, block_id);
+}
+
+HeatLevel tm_get_block_heat(const tiered_manager_t *m, uint64_t block_id)
+{
+    if (!m) return HEAT_COLD;
+    return hcc_get_heat(&m->classifier, block_id);
+}
+
+/* ========================================================================
  *  Statistics
  * ======================================================================== */
 

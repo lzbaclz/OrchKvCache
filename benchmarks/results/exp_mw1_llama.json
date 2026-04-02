@@ -1,0 +1,38 @@
+[
+  {
+    "model": "Qwen/Qwen2.5-7B",
+    "prompt_len": 1024,
+    "gpu_only": 823.3,
+    "original_orchkv": 168.1,
+    "fast_orchkv": 265.4,
+    "speedup": 1.58,
+    "overhead_original": 79.6,
+    "overhead_fast": 67.8,
+    "breakdown": {
+      "forward": 19.53,
+      "build_past_kv": 16.0,
+      "append_token": 1.0,
+      "report_attn": 4.1,
+      "step_schedule": 23.33,
+      "total": 64.05
+    }
+  },
+  {
+    "model": "meta-llama/Llama-2-7b-hf",
+    "prompt_len": 1024,
+    "gpu_only": 842.9,
+    "original_orchkv": 147.0,
+    "fast_orchkv": 171.5,
+    "speedup": 1.17,
+    "overhead_original": 82.6,
+    "overhead_fast": 79.7,
+    "breakdown": {
+      "forward": 19.68,
+      "build_past_kv": 23.85,
+      "append_token": 1.19,
+      "report_attn": 4.96,
+      "step_schedule": 49.35,
+      "total": 99.11
+    }
+  }
+]

@@ -1,0 +1,36 @@
+`torch_dtype` is deprecated! Use `dtype` instead!
+
+=================================================================
+  P2: Extended Context Length Experiments (Qwen2.5-7B)
+=================================================================
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:01<00:04,  1.37s/it]Loading checkpoint shards:  50%|█████     | 2/4 [00:02<00:02,  1.27s/it]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:03<00:01,  1.24s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:04<00:00,  1.15s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:04<00:00,  1.20s/it]
+
+  seq_len=2048, budget=50MB, gen=32
+    actual prompt tokens: 2048
+    GPU-Only: 1244.6 tok/s
+    OrchKv:   317.0 tok/s  evict=256  match=100.00%
+
+  seq_len=4096, budget=50MB, gen=32
+    actual prompt tokens: 4096
+    GPU-Only: 2860.6 tok/s
+    OrchKv:   326.1 tok/s  evict=256  match=100.00%
+
+  seq_len=8192, budget=50MB, gen=32
+    actual prompt tokens: 8192
+    GPU-Only: 2936.6 tok/s
+    OrchKv:   OOM (CUDA out of memory. Tried to allocate 7.00 GiB. GPU 0 has a total capacity of 79.15 GiB of which 931.69 MiB is free. Including non-PyTorch memory, this process has 78.22 GiB memory in use. Of the allocated memory 67.39 GiB is allocated by PyTorch, and 10.33 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables))
+
+=================================================================
+  P3: Hyperparameter E2E Validation (Qwen2.5-7B)
+=================================================================
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:02<00:06,  2.07s/it]Loading checkpoint shards:  50%|█████     | 2/4 [00:03<00:03,  1.55s/it]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:04<00:01,  1.36s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:05<00:00,  1.23s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:05<00:00,  1.36s/it]
+  GPU-Only baseline: 761.3 tok/s
+  lambda=0.10:    154.3 tok/s  evict=  512  match=100.00%  vs_gpu=0.203x
+  lambda=0.30:    154.9 tok/s  evict=  512  match=100.00%  vs_gpu=0.204x
+  lambda=0.50:    155.8 tok/s  evict=  512  match=100.00%  vs_gpu=0.205x
+  lambda=0.70:    142.9 tok/s  evict=  512  match=100.00%  vs_gpu=0.188x
+  lambda=0.90:    156.3 tok/s  evict=  512  match=100.00%  vs_gpu=0.205x
+  lambda=0.95:    156.7 tok/s  evict=  512  match=100.00%  vs_gpu=0.206x
+[bench] saved → /home/lzq/codes/orchkv/OrchKvCache/benchmarks/results/exp_p2p3_extended.json
+
+All results saved to /home/lzq/codes/orchkv/OrchKvCache/benchmarks/results/exp_p2p3_extended.json

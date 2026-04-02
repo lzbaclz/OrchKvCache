@@ -1,0 +1,73 @@
+{
+  "results": [
+    {
+      "config": "GPU-Only (eager)",
+      "throughput": 819.7
+    },
+    {
+      "config": "Original OrchKv (eager, N=10)",
+      "throughput": 160.4,
+      "token_match": 1.0
+    },
+    {
+      "config": "Fast OrchKv (eager, N=10)",
+      "throughput": 253.5,
+      "token_match": 1.0,
+      "stats": {
+        "step": 64,
+        "total_tokens": 1087,
+        "blocks_gpu": 1904,
+        "blocks_dram": 0,
+        "blocks_ssd": 0,
+        "blocks_total": 1904,
+        "gpu_kv_mb": 59.5,
+        "migrations": {
+          "gpu_to_dram": 14336,
+          "dram_to_gpu": 14336,
+          "dram_to_ssd": 0,
+          "ssd_to_dram": 0,
+          "total_blocks": 1792,
+          "evictions_this_step": 8
+        }
+      }
+    },
+    {
+      "config": "Fast OrchKv (eager, N=1)",
+      "throughput": 157.6,
+      "token_match": 1.0
+    },
+    {
+      "config": "GPU-Only (SDPA)",
+      "throughput": 953.0
+    },
+    {
+      "config": "Fast OrchKv (SDPA, no scoring)",
+      "throughput": 287.0,
+      "token_match": 1.0,
+      "stats": {
+        "step": 64,
+        "total_tokens": 1087,
+        "blocks_gpu": 1904,
+        "blocks_dram": 0,
+        "blocks_ssd": 0,
+        "blocks_total": 1904,
+        "gpu_kv_mb": 59.5,
+        "migrations": {
+          "gpu_to_dram": 14336,
+          "dram_to_gpu": 14336,
+          "dram_to_ssd": 0,
+          "ssd_to_dram": 0,
+          "total_blocks": 1792,
+          "evictions_this_step": 8
+        }
+      }
+    }
+  ],
+  "config": {
+    "model": "Qwen/Qwen2.5-7B",
+    "seq_len": 1024,
+    "prompt_len": 1024,
+    "max_new": 64,
+    "gpu_budget_mb": 50
+  }
+}

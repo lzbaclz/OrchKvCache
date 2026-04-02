@@ -203,6 +203,20 @@ void tm_set_usage(tiered_manager_t *m,
 void tm_set_policy(tiered_manager_t *m,
                    float alpha, float beta, float gamma);
 
+/* ---- Per-block query -------------------------------------------------- */
+
+/*
+ * Get the composite hotness score for a block from the classifier.
+ * Returns 0.0f if the block is not registered.
+ */
+float tm_get_block_score(const tiered_manager_t *m, uint64_t block_id);
+
+/*
+ * Get the heat level for a block (HOT / WARM / COLD).
+ * Returns HEAT_COLD if the block is not registered.
+ */
+HeatLevel tm_get_block_heat(const tiered_manager_t *m, uint64_t block_id);
+
 /* ---- Statistics ------------------------------------------------------- */
 
 void tm_get_stats(const tiered_manager_t *m, tm_stats_t *out);

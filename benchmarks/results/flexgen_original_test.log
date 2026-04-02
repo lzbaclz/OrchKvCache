@@ -1,0 +1,30 @@
+/home/lzq/miniconda3/envs/infinigen/lib/python3.9/site-packages/huggingface_hub/file_download.py:949: FutureWarning: `resume_download` is deprecated and will be removed in version 1.0.0. Downloads always resume when possible. If you want to force a new download, use `force_download=True`.
+  warnings.warn(
+Load the pre-trained pytorch weights of opt-1.3b from huggingface. The downloading and cpu loading can take dozens of minutes. If it seems to get stuck, you can monitor the progress by checking the memory usage of this process.
+Fetching 1 files:   0%|          | 0/1 [00:00<?, ?it/s]Fetching 1 files: 100%|██████████| 1/1 [00:00<00:00, 8473.34it/s]
+Convert format:   0%|          | 0/1 [00:00<?, ?it/s]
+  0%|          | 0/389 [00:00<?, ?it/s][A
+  0%|          | 1/389 [00:00<01:41,  3.84it/s][A
+  8%|▊         | 31/389 [00:00<00:03, 101.57it/s][A
+ 14%|█▍        | 55/389 [00:00<00:02, 143.74it/s][A
+ 21%|██        | 81/389 [00:00<00:01, 171.59it/s][A
+ 29%|██▉       | 113/389 [00:00<00:01, 200.60it/s][A
+ 37%|███▋      | 144/389 [00:00<00:01, 231.58it/s][A
+ 44%|████▎     | 170/389 [00:00<00:00, 236.28it/s][A
+ 50%|█████     | 195/389 [00:01<00:00, 229.29it/s][A
+ 57%|█████▋    | 223/389 [00:01<00:00, 243.47it/s][A
+ 65%|██████▍   | 251/389 [00:01<00:00, 253.02it/s][A
+ 71%|███████   | 277/389 [00:01<00:00, 244.63it/s][A
+ 78%|███████▊  | 303/389 [00:01<00:00, 247.03it/s][A
+ 86%|████████▌ | 335/389 [00:01<00:00, 257.53it/s][A
+ 93%|█████████▎| 361/389 [00:01<00:00, 257.02it/s][A
+ 99%|█████████▉| 387/389 [00:01<00:00, 247.65it/s][A
+                                                  [AConvert format: 100%|██████████| 1/1 [00:06<00:00,  6.44s/it]Convert format: 100%|██████████| 1/1 [00:06<00:00,  6.44s/it]
+/home/lzq/miniconda3/envs/infinigen/lib/python3.9/site-packages/torch/distributed/distributed_c10d.py:293: UserWarning: torch.distributed.reduce_op is deprecated, please use torch.distributed.ReduceOp instead
+  warnings.warn(
++++++++++++++++++++++++++++++++++++++++++++++++++
+FlexGen
+input: 512 output: 64 bsz: 2
++++++++++++++++++++++++++++++++++++++++++++++++++
+Total: 3.606001085601747 Prefill: 0.10861709387972951 Decode: 3.4973839917220175
+=================================================

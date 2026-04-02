@@ -1,0 +1,16 @@
+/home/lzq/miniconda3/envs/infinigen/lib/python3.9/site-packages/huggingface_hub/file_download.py:949: FutureWarning: `resume_download` is deprecated and will be removed in version 1.0.0. Downloads always resume when possible. If you want to force a new download, use `force_download=True`.
+  warnings.warn(
+/home/lzq/codes/InfiniGen/speedup/flexgen/flexgen/pytorch_backend.py:970: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.clone().detach() or sourceTensor.clone().detach().requires_grad_(True), rather than torch.tensor(sourceTensor).
+  least_recent = torch.tensor(dst.data[oldest]).unsqueeze(0).to(dst.data.device)
+/home/lzq/codes/InfiniGen/speedup/flexgen/flexgen/pytorch_backend.py:993: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.clone().detach() or sourceTensor.clone().detach().requires_grad_(True), rather than torch.tensor(sourceTensor).
+  least_recent = torch.tensor(src.data[oldest]).unsqueeze(0).to(dst.data.device)
+/home/lzq/miniconda3/envs/infinigen/lib/python3.9/site-packages/torch/distributed/distributed_c10d.py:293: UserWarning: torch.distributed.reduce_op is deprecated, please use torch.distributed.ReduceOp instead
+  warnings.warn(
+/home/lzq/codes/InfiniGen/speedup/flexgen/flexgen/utils.py:132: UserWarning: TypedStorage is deprecated. It will be removed in the future and UntypedStorage will be the only storage class. This should only matter to you if you are using storages directly.  To access UntypedStorage directly, use tensor.untyped_storage() instead of tensor.storage()
+  data_ptr = tensor.storage().data_ptr()
++++++++++++++++++++++++++++++++++++++++++++++++++
+FlexGen + H2O
+input: 1536 output: 128 bsz: 4
++++++++++++++++++++++++++++++++++++++++++++++++++
+Total: 10.93689346453175 Prefill: 0.2682981500402093 Decode: 10.66859531449154
+=================================================

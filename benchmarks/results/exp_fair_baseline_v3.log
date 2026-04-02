@@ -1,0 +1,44 @@
+`torch_dtype` is deprecated! Use `dtype` instead!
+
+=================================================================
+  Model: Qwen2.5-7B  seq=1024  budget=50MB  gen=64
+=================================================================
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:01<00:03,  1.10s/it]Loading checkpoint shards:  50%|█████     | 2/4 [00:02<00:02,  1.03s/it]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:03<00:00,  1.02it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:03<00:00,  1.09it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:03<00:00,  1.04it/s]
+  GPU-Only (eager):          707.2 tok/s
+  Fast-FIFO (eager):         578.1 tok/s  match=100.00%  evict=1876
+  Fast-OrchKv (eager):       234.4 tok/s  match=100.00%  evict=14336
+  >>> Policy speedup: 0.405x  Eviction reduction: 0.1x
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:01<00:03,  1.06s/it]Loading checkpoint shards:  50%|█████     | 2/4 [00:02<00:02,  1.00s/it]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:02<00:00,  1.03it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:03<00:00,  1.09it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:03<00:00,  1.05it/s]
+  GPU-Only (SDPA):           931.7 tok/s  (ceiling)
+  Overhead vs SDPA:  FIFO=37.9%  OrchKv=74.8%
+
+=================================================================
+  Model: Llama-2-7b-hf  seq=1024  budget=50MB  gen=64
+=================================================================
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards:  50%|█████     | 1/2 [00:03<00:03,  3.11s/it]Loading checkpoint shards: 100%|██████████| 2/2 [00:04<00:00,  1.93s/it]Loading checkpoint shards: 100%|██████████| 2/2 [00:04<00:00,  2.10s/it]
+  GPU-Only (eager):          809.1 tok/s
+  Fast-FIFO (eager):         408.1 tok/s  match=100.00%  evict=2144
+  Fast-OrchKv (eager):       108.9 tok/s  match=100.00%  evict=16384
+  >>> Policy speedup: 0.267x  Eviction reduction: 0.1x
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards:  50%|█████     | 1/2 [00:03<00:03,  3.11s/it]Loading checkpoint shards: 100%|██████████| 2/2 [00:04<00:00,  1.96s/it]Loading checkpoint shards: 100%|██████████| 2/2 [00:04<00:00,  2.13s/it]
+  GPU-Only (SDPA):           886.8 tok/s  (ceiling)
+  Overhead vs SDPA:  FIFO=54.0%  OrchKv=87.7%
+
+=================================================================
+  Oracle Upper Bound (trace simulation)
+=================================================================
+  FIFO migrations:   0
+  EMA migrations:    0  (0.0x reduction)
+  Oracle migrations: 0  (0.0x reduction)
+  EMA optimality:    0% of oracle
+
+=================================================================
+  FAIR BASELINE SUMMARY
+=================================================================
+  Model                   SDPA   Eager  F-FIFO  F-Orch  Policy  Evict
+                          ceil    ceil                   spdup  reduc
+  Qwen2.5-7B               932     707     578     234  0.405x   0.1x
+  Llama-2-7b-hf            887     809     408     109  0.267x   0.1x
+[bench] saved → /home/lzq/codes/orchkv/OrchKvCache/benchmarks/results/exp_fair_baseline.json
+
+Saved to /home/lzq/codes/orchkv/OrchKvCache/benchmarks/results/exp_fair_baseline.json

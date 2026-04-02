@@ -1,0 +1,48 @@
+{
+  "results": [
+    {
+      "model": "Qwen2.5-7B",
+      "prompt_len": 1024,
+      "max_new": 64,
+      "budget_mb": 50,
+      "gpu_only_eager": 796.2,
+      "fast_fifo": 578.4,
+      "fast_fifo_match": 1.0,
+      "fast_fifo_evictions": 1876,
+      "fast_orchkv": 234.4,
+      "fast_orchkv_match": 1.0,
+      "fast_orchkv_evictions": 14336,
+      "policy_speedup": 0.405,
+      "eviction_reduction": 0.1,
+      "gpu_only_sdpa": 933.5,
+      "overhead_fifo_vs_sdpa": 38.0,
+      "overhead_orchkv_vs_sdpa": 74.9
+    },
+    {
+      "model": "Llama-2-7b-hf",
+      "prompt_len": 1024,
+      "max_new": 64,
+      "budget_mb": 50,
+      "gpu_only_eager": 804.2,
+      "fast_fifo": 439.7,
+      "fast_fifo_match": 1.0,
+      "fast_fifo_evictions": 2144,
+      "fast_orchkv": 116.9,
+      "fast_orchkv_match": 1.0,
+      "fast_orchkv_evictions": 16384,
+      "policy_speedup": 0.266,
+      "eviction_reduction": 0.1,
+      "gpu_only_sdpa": 891.2,
+      "overhead_fifo_vs_sdpa": 50.7,
+      "overhead_orchkv_vs_sdpa": 86.9
+    }
+  ],
+  "oracle": {
+    "fifo_migrations": 0,
+    "ema_migrations": 0,
+    "oracle_migrations": 0,
+    "ema_vs_fifo_reduction": 0.0,
+    "oracle_vs_fifo_reduction": 0.0,
+    "ema_optimality": 0
+  }
+}

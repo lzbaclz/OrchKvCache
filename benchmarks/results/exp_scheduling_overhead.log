@@ -1,0 +1,37 @@
+`torch_dtype` is deprecated! Use `dtype` instead!
+=================================================================
+  Part 1: Pure C-side scheduling overhead
+=================================================================
+  n_blocks=  64:  total=   21.5μs  (report=18.5μs  schedule=2.6μs)
+  n_blocks= 128:  total=   40.7μs  (report=36.5μs  schedule=3.6μs)
+  n_blocks= 256:  total=   65.8μs  (report=60.8μs  schedule=4.2μs)
+  n_blocks= 512:  total=   88.5μs  (report=82.8μs  schedule=4.4μs)
+
+=================================================================
+  Part 2: E2E Python overhead breakdown
+=================================================================
+
+  Qwen2.5-7B (seq=1024, budget=50MB):
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:01<00:03,  1.31s/it]Loading checkpoint shards:  50%|█████     | 2/4 [00:02<00:02,  1.32s/it]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:03<00:01,  1.26s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:04<00:00,  1.16s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:04<00:00,  1.21s/it]
+    forward:          34.36 ms/step
+    report_attn:       5.46 ms/step
+    step_done:        0.038 ms/step
+    schedule:         26.31 ms/step
+    build_past_kv:    18.58 ms/step
+    ---
+    total:            84.74 ms/step
+    Python sched:     31.81 ms/step (37.5%)
+
+  Llama-2-7b-hf (seq=1024, budget=50MB):
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards:  50%|█████     | 1/2 [00:02<00:02,  2.94s/it]Loading checkpoint shards: 100%|██████████| 2/2 [00:04<00:00,  1.84s/it]Loading checkpoint shards: 100%|██████████| 2/2 [00:04<00:00,  2.01s/it]
+    forward:          28.46 ms/step
+    report_attn:       6.04 ms/step
+    step_done:        0.044 ms/step
+    schedule:        105.87 ms/step
+    build_past_kv:    26.51 ms/step
+    ---
+    total:           166.93 ms/step
+    Python sched:    111.95 ms/step (67.1%)
+[bench] saved → /home/lzq/codes/orchkv/OrchKvCache/benchmarks/results/exp_scheduling_overhead.json
+
+Saved to /home/lzq/codes/orchkv/OrchKvCache/benchmarks/results/exp_scheduling_overhead.json

@@ -1,0 +1,154 @@
+{
+  "c_overhead_64blocks": {
+    "n_blocks": 64,
+    "n_steps": 200,
+    "report_attn_us": {
+      "mean": 18.5,
+      "p50": 18.0,
+      "p99": 30.1
+    },
+    "step_done_us": {
+      "mean": 0.5,
+      "p50": 0.4,
+      "p99": 1.3
+    },
+    "schedule_once_us": {
+      "mean": 2.6,
+      "p50": 2.4,
+      "p99": 5.6
+    },
+    "total_c_per_step_us": {
+      "mean": 21.5
+    }
+  },
+  "c_overhead_128blocks": {
+    "n_blocks": 128,
+    "n_steps": 200,
+    "report_attn_us": {
+      "mean": 36.5,
+      "p50": 35.6,
+      "p99": 48.4
+    },
+    "step_done_us": {
+      "mean": 0.7,
+      "p50": 0.6,
+      "p99": 1.2
+    },
+    "schedule_once_us": {
+      "mean": 3.6,
+      "p50": 3.5,
+      "p99": 8.2
+    },
+    "total_c_per_step_us": {
+      "mean": 40.7
+    }
+  },
+  "c_overhead_256blocks": {
+    "n_blocks": 256,
+    "n_steps": 200,
+    "report_attn_us": {
+      "mean": 60.8,
+      "p50": 66.0,
+      "p99": 83.8
+    },
+    "step_done_us": {
+      "mean": 0.9,
+      "p50": 0.8,
+      "p99": 1.7
+    },
+    "schedule_once_us": {
+      "mean": 4.2,
+      "p50": 3.7,
+      "p99": 10.0
+    },
+    "total_c_per_step_us": {
+      "mean": 65.8
+    }
+  },
+  "c_overhead_512blocks": {
+    "n_blocks": 512,
+    "n_steps": 200,
+    "report_attn_us": {
+      "mean": 82.8,
+      "p50": 82.2,
+      "p99": 88.6
+    },
+    "step_done_us": {
+      "mean": 1.3,
+      "p50": 1.3,
+      "p99": 1.5
+    },
+    "schedule_once_us": {
+      "mean": 4.4,
+      "p50": 4.4,
+      "p99": 4.7
+    },
+    "total_c_per_step_us": {
+      "mean": 88.5
+    }
+  },
+  "e2e_Qwen2.5-7B": {
+    "model": "Qwen2.5-7B",
+    "seq_len": 1024,
+    "budget_mb": 50,
+    "max_new": 64,
+    "forward_ms": {
+      "mean": 34.36,
+      "p50": 20.42
+    },
+    "report_ms": {
+      "mean": 5.46,
+      "p50": 0.0
+    },
+    "step_done_ms": {
+      "mean": 0.038,
+      "p50": 0.031
+    },
+    "schedule_ms": {
+      "mean": 26.31,
+      "p50": 25.61
+    },
+    "build_kv_ms": {
+      "mean": 18.58,
+      "p50": 17.64
+    },
+    "total_ms": {
+      "mean": 84.74
+    },
+    "python_sched_overhead_ms": {
+      "mean": 31.81
+    }
+  },
+  "e2e_Llama-2-7b-hf": {
+    "model": "Llama-2-7b-hf",
+    "seq_len": 1024,
+    "budget_mb": 50,
+    "max_new": 64,
+    "forward_ms": {
+      "mean": 28.46,
+      "p50": 21.06
+    },
+    "report_ms": {
+      "mean": 6.04,
+      "p50": 0.0
+    },
+    "step_done_ms": {
+      "mean": 0.044,
+      "p50": 0.033
+    },
+    "schedule_ms": {
+      "mean": 105.87,
+      "p50": 82.77
+    },
+    "build_kv_ms": {
+      "mean": 26.51,
+      "p50": 22.73
+    },
+    "total_ms": {
+      "mean": 166.93
+    },
+    "python_sched_overhead_ms": {
+      "mean": 111.95
+    }
+  }
+}
