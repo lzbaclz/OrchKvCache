@@ -1,0 +1,8 @@
+sample_interval,label,attn_impl,avg_throughput_tok_s,avg_step_ms,evictions,promotions,total_migrations,blocks_gpu,blocks_dram,gpu_kv_mb,token_match_rate,sampling_overhead_pct,status,speedup_vs_n1
+0,no-sample,sdpa,1658.4,19.895,0,0,0,0,0,0,1.0,0.0,ok,9.213
+1,N=1,sdpa,180.0,183.392,512,512,1024,3696,0,115.5,1.0,100.0,ok,1.0
+2,N=2,sdpa,182.7,180.616,512,512,1024,3696,0,115.5,1.0,50.0,ok,1.015
+5,N=5,sdpa,182.4,180.89,512,512,1024,3696,0,115.5,1.0,20.0,ok,1.013
+10,N=10,sdpa,182.5,180.776,512,512,1024,3696,0,115.5,1.0,10.0,ok,1.014
+20,N=20,sdpa,181.6,181.749,512,512,1024,3696,0,115.5,1.0,5.0,ok,1.009
+50,N=50,sdpa,182.9,180.44,512,512,1024,3696,0,115.5,1.0,2.0,ok,1.016

@@ -615,6 +615,296 @@ def plot_e6():
 
 
 # ═══════════════════════════════════════════════════════════════════
+#  E10-S: Attention Sampling Sensitivity — Fig.15 + Fig.16
+# ═══════════════════════════════════════════════════════════════════
+
+def plot_e10_sampling():
+    sim = load_json("exp_e10_sampling_sim")
+    e2e = load_json("exp_e10_sampling_e2e")
+
+    has_sim = sim and "summary" in sim and sim["summary"]
+    has_e2e = e2e and "results" in e2e
+
+    if not has_sim and not has_e2e:
+        print("  [skip] E10-S: no data")
+        return
+
+    # ── Fig.15: dual-axis (throughput + classification accuracy) ──
+    fig, ax1 = plt.subplots(figsize=(7.5, 5))
+
+    plotted_anything = False
+
+    if has_e2e:
+        ok = [r for r in e2e["results"]
+              if r.get("status") == "ok" and r["sample_interval"] > 0]
+        if ok:
+            Ns = [r["sample_interval"] for r in ok]
+            thrs = [r["avg_throughput_tok_s"] for r in ok]
+            ax1.plot(Ns, thrs, "o-", color=COLORS["orchkv"],
+                     label="Throughput (tok/s)", markersize=8, linewidth=2.2)
+            for x, y in zip(Ns, thrs):
+                ax1.annotate(f"{y:.0f}", (x, y), textcoords="offset points",
+                             xytext=(0, 10), ha="center", fontsize=8.5,
+                             color=COLORS["orchkv"])
+            ax1.set_ylabel("Throughput (tok/s)", color=COLORS["orchkv"])
+            ax1.tick_params(axis="y", labelcolor=COLORS["orchkv"])
+            plotted_anything = True
+
+            no_sample = next((r for r in e2e["results"]
+                              if r["sample_interval"] == 0
+                              and r.get("status") == "ok"), None)
+            if no_sample:
+                ax1.axhline(y=no_sample["avg_throughput_tok_s"],
+                            color=COLORS["orchkv"], linestyle=":", alpha=0.4)
+                ax1.text(1, no_sample["avg_throughput_tok_s"] * 1.02,
+                         f"GPU-Only {no_sample['avg_throughput_tok_s']:.0f}",
+                         fontsize=8, color=COLORS["orchkv"], alpha=0.6)
+
+    if has_sim:
+        sm = sim["summary"]
+        Ns_s = [r["sample_interval"] for r in sm]
+        acc_key = "gt_accuracy" if "gt_accuracy" in sm[0] else "classification_accuracy"
+        accs = [r[acc_key] * 100 for r in sm]
+
+        if plotted_anything:
+            ax2 = ax1.twinx()
+        else:
+            ax2 = ax1
+
+        ax2.plot(Ns_s, accs, "s--", color=COLORS["accent3"],
+                 label="Classification Accuracy (%)", markersize=7, linewidth=1.8)
+        for x, y in zip(Ns_s, accs):
+            ax2.annotate(f"{y:.1f}", (x, y), textcoords="offset points",
+                         xytext=(0, -14), ha="center", fontsize=8.5,
+                         color=COLORS["accent3"])
+        ax2.set_ylabel("Classification Accuracy (%)", color=COLORS["accent3"])
+        ax2.tick_params(axis="y", labelcolor=COLORS["accent3"])
+        ax2.set_ylim(50, 105)
+        plotted_anything = True
+
+    ax1.set_xlabel("Sampling Interval N (steps)")
+    ax1.set_xscale("log", base=2)
+    ax1.xaxis.set_major_formatter(
+        mticker.FuncFormatter(lambda x, _: f"{int(x)}"))
+    ax1.set_xticks([1, 2, 5, 10, 20, 50])
+    ax1.get_xaxis().set_major_formatter(mticker.ScalarFormatter())
+    ax1.set_title("Fig.15: Attention Sampling — Throughput vs. Accuracy")
+
+    lines1, labels1 = ax1.get_legend_handles_labels()
+    if has_sim and has_e2e:
+        lines2, labels2 = ax2.get_legend_handles_labels()
+        ax1.legend(lines1 + lines2, labels1 + labels2, loc="center right")
+    else:
+        ax1.legend(loc="best")
+
+    fig.tight_layout()
+    save_fig(fig, "fig15_attn_sampling_tradeoff")
+
+    # ── Fig.16: classification quality breakdown ──
+    if has_sim:
+        sm = sim["summary"]
+        Ns_s = [r["sample_interval"] for r in sm]
+        gt_vals = [r.get("gt_accuracy", r.get("classification_accuracy", 0)) * 100
+                   for r in sm]
+
+        fig, ax = plt.subplots(figsize=(7, 4.5))
+        x = np.arange(len(Ns_s))
+        width = 0.38
+
+        ax.bar(x, gt_vals, width, label="vs. Ground Truth",
+               color=COLORS["orchkv"], alpha=0.85)
+
+        if "baseline_agreement" in sm[0]:
+            bl_vals = [r["baseline_agreement"] * 100 for r in sm]
+            ax.bar(x + width, bl_vals, width, label="vs. N=1 Baseline",
+                   color=COLORS["accent1"], alpha=0.85)
+
+        for i, v in enumerate(gt_vals):
+            ax.text(i, v + 1, f"{v:.1f}", ha="center", fontsize=8.5)
+
+        ax.set_xticks(x + width / 2)
+        ax.set_xticklabels([f"N={n}" for n in Ns_s])
+        ax.set_xlabel("Sampling Interval N")
+        ax.set_ylabel("Classification Accuracy (%)")
+        ax.set_ylim(0, 110)
+        ax.legend(loc="upper right")
+        ax.set_title("Fig.16: Classification Quality vs. Sampling Interval")
+        fig.tight_layout()
+        save_fig(fig, "fig16_classification_quality")
+
+
+# ═══════════════════════════════════════════════════════════════════
+#  E11: Hyperparameter Sensitivity — Fig.17
+# ═══════════════════════════════════════════════════════════════════
+
+def plot_e11():
+    data = load_json("exp_e11_hyperparam")
+    if not data:
+        print("  [skip] E11: no data")
+        return
+
+    has_lam = "ema_lambda" in data and data["ema_lambda"]
+    has_tau = "recency_tau" in data and data["recency_tau"]
+    has_cd  = "cooldown" in data and data["cooldown"]
+    has_comb = "combined" in data and data["combined"]
+
+    if not any([has_lam, has_tau, has_cd, has_comb]):
+        print("  [skip] E11: no sweep data")
+        return
+
+    fig, axes = plt.subplots(2, 2, figsize=(11, 8.5))
+
+    # (a) λ sensitivity: accuracy + migrations
+    ax = axes[0, 0]
+    if has_lam:
+        rows = data["ema_lambda"]
+        xs = [r["value"] for r in rows]
+        accs = [r["accuracy"] * 100 for r in rows]
+        migs = [r["total_migrations"] for r in rows]
+
+        ax.plot(xs, accs, "o-", color=COLORS["orchkv"],
+                markersize=7, linewidth=2, label="Accuracy (%)")
+        for x, y in zip(xs, accs):
+            ax.annotate(f"{y:.1f}", (x, y), textcoords="offset points",
+                        xytext=(0, 8), ha="center", fontsize=8,
+                        color=COLORS["orchkv"])
+
+        ax2 = ax.twinx()
+        ax2.bar(xs, migs, width=0.06, alpha=0.35,
+                color=COLORS["accent3"], label="Migrations")
+        ax2.set_ylabel("Total Migrations", color=COLORS["accent3"], fontsize=10)
+        ax2.tick_params(axis="y", labelcolor=COLORS["accent3"])
+
+        default_lam = 0.9
+        ax.axvline(x=default_lam, color="gray", linestyle=":", alpha=0.5)
+        ax.text(default_lam + 0.02, min(accs) + 1, "default",
+                fontsize=8, color="gray", rotation=90)
+    else:
+        ax.text(0.5, 0.5, "No data", transform=ax.transAxes,
+                ha="center", va="center", fontsize=12, color="gray")
+
+    ax.set_xlabel("EMA Decay Factor λ")
+    ax.set_ylabel("Classification Accuracy (%)", color=COLORS["orchkv"])
+    ax.tick_params(axis="y", labelcolor=COLORS["orchkv"])
+    ax.set_title("(a) EMA Decay Factor (λ)", fontsize=11, fontweight="bold")
+
+    # (b) cooldown sensitivity: oscillations + threshold adjustments
+    ax = axes[0, 1]
+    if has_cd:
+        rows = data["cooldown"]
+        xs = [r["value"] for r in rows]
+        oscs = [r["oscillations"] for r in rows]
+        adjs = [r.get("threshold_adj_total", 0) for r in rows]
+        x_labels = [f"{v:.3g}" for v in xs]
+
+        x_pos = range(len(xs))
+        width = 0.35
+        ax.bar([p - width/2 for p in x_pos], oscs, width,
+               label="Oscillations", color=COLORS["warm"], alpha=0.85)
+        ax.bar([p + width/2 for p in x_pos], adjs, width,
+               label="Threshold Adj.", color=COLORS["accent1"], alpha=0.85)
+
+        for i, (o, a) in enumerate(zip(oscs, adjs)):
+            if o > 0:
+                ax.text(i - width/2, o + 0.3, f"{o:.0f}",
+                        ha="center", fontsize=8)
+            if a > 0:
+                ax.text(i + width/2, a + 0.3, f"{a:.0f}",
+                        ha="center", fontsize=8)
+
+        ax.set_xticks(list(x_pos))
+        ax.set_xticklabels(x_labels, fontsize=9)
+        ax.legend(loc="upper right", fontsize=8.5)
+    else:
+        ax.text(0.5, 0.5, "No data", transform=ax.transAxes,
+                ha="center", va="center", fontsize=12, color="gray")
+
+    ax.set_xlabel("Cooldown (seconds)")
+    ax.set_ylabel("Count")
+    ax.set_title("(b) Threshold Cooldown", fontsize=11, fontweight="bold")
+
+    # (c) τ sensitivity: accuracy + hot_std
+    ax = axes[1, 0]
+    if has_tau:
+        rows = data["recency_tau"]
+        xs = [r["value"] for r in rows]
+        accs = [r["accuracy"] * 100 for r in rows]
+        stds = [r["hot_std"] for r in rows]
+
+        ax.plot(xs, accs, "o-", color=COLORS["orchkv"],
+                markersize=7, linewidth=2, label="Accuracy (%)")
+        for x, y in zip(xs, accs):
+            ax.annotate(f"{y:.1f}", (x, y), textcoords="offset points",
+                        xytext=(0, 8), ha="center", fontsize=8,
+                        color=COLORS["orchkv"])
+
+        ax2 = ax.twinx()
+        ax2.plot(xs, stds, "^--", color=COLORS["accent2"],
+                 markersize=6, linewidth=1.5, label="Hot Std Dev")
+        ax2.set_ylabel("Hot Count Std Dev", color=COLORS["accent2"], fontsize=10)
+        ax2.tick_params(axis="y", labelcolor=COLORS["accent2"])
+
+        default_tau = 50
+        ax.axvline(x=default_tau, color="gray", linestyle=":", alpha=0.5)
+        ax.text(default_tau + 2, min(accs) + 1, "default",
+                fontsize=8, color="gray", rotation=90)
+
+        lines1, labels1 = ax.get_legend_handles_labels()
+        lines2, labels2 = ax2.get_legend_handles_labels()
+        ax.legend(lines1 + lines2, labels1 + labels2,
+                  loc="lower right", fontsize=8.5)
+    else:
+        ax.text(0.5, 0.5, "No data", transform=ax.transAxes,
+                ha="center", va="center", fontsize=12, color="gray")
+
+    ax.set_xlabel("Recency Time Constant τ (steps)")
+    ax.set_ylabel("Classification Accuracy (%)", color=COLORS["orchkv"])
+    ax.tick_params(axis="y", labelcolor=COLORS["orchkv"])
+    ax.set_title("(c) Recency Time Constant (τ)", fontsize=11, fontweight="bold")
+
+    # (d) Combined λ × τ heatmap
+    ax = axes[1, 1]
+    if has_comb:
+        rows = data["combined"]
+        lambdas = sorted(set(r["ema_lambda"] for r in rows))
+        taus = sorted(set(r["recency_tau"] for r in rows))
+
+        grid = np.zeros((len(lambdas), len(taus)))
+        for r in rows:
+            li = lambdas.index(r["ema_lambda"])
+            ti = taus.index(r["recency_tau"])
+            grid[li, ti] = r["accuracy"] * 100
+
+        im = ax.imshow(grid, cmap="RdYlGn", aspect="auto",
+                       origin="lower", vmin=grid.min() - 5, vmax=grid.max() + 2)
+        ax.set_xticks(range(len(taus)))
+        ax.set_xticklabels([str(int(t)) for t in taus], fontsize=9)
+        ax.set_yticks(range(len(lambdas)))
+        ax.set_yticklabels([f"{l:.1f}" for l in lambdas], fontsize=9)
+
+        for i in range(grid.shape[0]):
+            for j in range(grid.shape[1]):
+                val = grid[i, j]
+                color = "white" if val < (grid.min() + grid.max()) / 2 else "black"
+                ax.text(j, i, f"{val:.1f}", ha="center", va="center",
+                        fontsize=8.5, color=color, fontweight="bold")
+
+        fig.colorbar(im, ax=ax, shrink=0.8, label="Accuracy (%)")
+    else:
+        ax.text(0.5, 0.5, "No data", transform=ax.transAxes,
+                ha="center", va="center", fontsize=12, color="gray")
+
+    ax.set_xlabel("Recency τ (steps)")
+    ax.set_ylabel("EMA Decay λ")
+    ax.set_title("(d) Joint λ × τ Sensitivity", fontsize=11, fontweight="bold")
+
+    fig.suptitle("Fig.17: Hyperparameter Sensitivity (E11, 256 blocks, 200 steps)",
+                 fontsize=13, y=1.01)
+    fig.tight_layout()
+    save_fig(fig, "fig17_hyperparam_sensitivity")
+
+
+# ═══════════════════════════════════════════════════════════════════
 #  E10: Quality Verification — Tab.1
 # ═══════════════════════════════════════════════════════════════════
 
@@ -765,6 +1055,8 @@ PLOTTERS = {
     "e8": plot_e8,
     "e9": plot_e9,
     "e10": plot_e10,
+    "e10s": plot_e10_sampling,
+    "e11": plot_e11,
     "summary": plot_summary_table,
 }
 

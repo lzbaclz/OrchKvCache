@@ -1,0 +1,77 @@
+{
+  "model": "Qwen/Qwen2.5-7B",
+  "prompts": [
+    {
+      "prompt_len": 256,
+      "n_decode_steps": 10,
+      "gini_range": [
+        0.459,
+        0.976
+      ],
+      "gini_mean": 0.906,
+      "top10_range": [
+        0.448,
+        0.98
+      ],
+      "top10_mean": 0.892,
+      "block_top10_range": [
+        0.232,
+        0.964
+      ],
+      "block_top10_mean": 0.765,
+      "jaccard_range": [
+        0.041,
+        0.821
+      ],
+      "jaccard_mean": 0.668
+    },
+    {
+      "prompt_len": 512,
+      "n_decode_steps": 10,
+      "gini_range": [
+        0.447,
+        0.978
+      ],
+      "gini_mean": 0.913,
+      "top10_range": [
+        0.436,
+        0.975
+      ],
+      "top10_mean": 0.9,
+      "block_top10_range": [
+        0.288,
+        0.959
+      ],
+      "block_top10_mean": 0.822,
+      "jaccard_range": [
+        0.011,
+        0.792
+      ],
+      "jaccard_mean": 0.619
+    },
+    {
+      "prompt_len": 1024,
+      "n_decode_steps": 10,
+      "gini_range": [
+        0.454,
+        0.98
+      ],
+      "gini_mean": 0.918,
+      "top10_range": [
+        0.444,
+        0.977
+      ],
+      "top10_mean": 0.906,
+      "block_top10_range": [
+        0.331,
+        0.965
+      ],
+      "block_top10_mean": 0.83,
+      "jaccard_range": [
+        0.011,
+        0.827
+      ],
+      "jaccard_mean": 0.636
+    }
+  ]
+}

@@ -220,7 +220,9 @@ PYBIND11_MODULE(orchkv_core, m) {
              float gpu_hwm, float gpu_lwm,
              float dram_hwm, float dram_lwm,
              uint32_t max_blocks,
-             float threshold_to_gpu, float threshold_to_dram) -> uintptr_t {
+             float threshold_to_gpu, float threshold_to_dram,
+             float recency_tau, double cooldown_sec,
+             float adjust_step) -> uintptr_t {
               auto *m_ptr = new tiered_manager_t();
               tm_config_t cfg;
               tm_config_default(&cfg);
@@ -229,13 +231,16 @@ PYBIND11_MODULE(orchkv_core, m) {
               cfg.hcc_params.alpha      = alpha;
               cfg.hcc_params.beta       = beta;
               cfg.hcc_params.gamma      = gamma;
+              cfg.hcc_params.recency_tau = recency_tau;
               cfg.prefetch_budget       = prefetch_budget;
               cfg.schedule_interval_us  = schedule_interval_us;
               cfg.auto_schedule         = false;
-              cfg.athresh_params.gpu_hwm  = gpu_hwm;
-              cfg.athresh_params.gpu_lwm  = gpu_lwm;
-              cfg.athresh_params.dram_hwm = dram_hwm;
-              cfg.athresh_params.dram_lwm = dram_lwm;
+              cfg.athresh_params.gpu_hwm      = gpu_hwm;
+              cfg.athresh_params.gpu_lwm      = gpu_lwm;
+              cfg.athresh_params.dram_hwm     = dram_hwm;
+              cfg.athresh_params.dram_lwm     = dram_lwm;
+              cfg.athresh_params.cooldown_sec = cooldown_sec;
+              cfg.athresh_params.adjust_step  = adjust_step;
               cfg.max_blocks              = max_blocks;
               cfg.threshold_to_gpu        = threshold_to_gpu;
               cfg.threshold_to_dram       = threshold_to_dram;
@@ -260,6 +265,9 @@ PYBIND11_MODULE(orchkv_core, m) {
           py::arg("max_blocks") = 8192,
           py::arg("threshold_to_gpu") = 0.5f,
           py::arg("threshold_to_dram") = 0.2f,
+          py::arg("recency_tau") = 50.0f,
+          py::arg("cooldown_sec") = 0.5,
+          py::arg("adjust_step") = 0.02f,
           "Create a tiered_manager (returns opaque handle)");
 
     m.def("tm_destroy",
@@ -363,8 +371,9 @@ PYBIND11_MODULE(orchkv_core, m) {
 
     m.def("tm_get_stats",
           [](uintptr_t tm_ptr) -> py::dict {
+              auto *m_ptr = reinterpret_cast<tiered_manager_t*>(tm_ptr);
               tm_stats_t s;
-              tm_get_stats(reinterpret_cast<tiered_manager_t*>(tm_ptr), &s);
+              tm_get_stats(m_ptr, &s);
               py::dict d;
               d["schedule_cycles"]       = s.schedule_cycles;
               d["gpu_demotes"]           = s.gpu_demotes;
@@ -380,6 +389,10 @@ PYBIND11_MODULE(orchkv_core, m) {
               d["n_hot"]                 = s.hcc_stats.n_hot;
               d["n_warm"]               = s.hcc_stats.n_warm;
               d["n_cold"]                = s.hcc_stats.n_cold;
+              d["threshold_adj_up"]      = m_ptr->threshold.adjustments_up;
+              d["threshold_adj_down"]    = m_ptr->threshold.adjustments_down;
+              d["threshold_hot"]         = m_ptr->threshold.threshold_hot;
+              d["threshold_warm"]        = m_ptr->threshold.threshold_warm;
               return d;
           },
           py::arg("tm"),

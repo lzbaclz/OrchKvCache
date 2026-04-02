@@ -1,0 +1,14 @@
+{
+  "model": "meta-llama/Llama-2-7b-hf",
+  "dataset": "wikitext-2",
+  "seq_len": 2048,
+  "n_samples": 40,
+  "gpu_budget": 0.8,
+  "ppl_full_cache": 5.8229,
+  "ppl_orchkv": 5.823,
+  "ppl_delta": 5.7e-05,
+  "lossless": true,
+  "total_offloaded_blocks": 33280,
+  "time_full_s": 8.5,
+  "time_orchkv_s": 10.7
+}

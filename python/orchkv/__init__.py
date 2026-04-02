@@ -12,8 +12,6 @@ Usage:
 
 try:
     from orchkv_core import *  # noqa: F401,F403
-except ImportError as e:
-    raise ImportError(
-        "orchkv_core C extension not found. "
-        "Build with: cmake --build build && cp build/bindings/orchkv_core*.so python/orchkv/"
-    ) from e
+    _HAS_CORE = True
+except ImportError:
+    _HAS_CORE = False

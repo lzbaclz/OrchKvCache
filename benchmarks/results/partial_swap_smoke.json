@@ -1,0 +1,42 @@
+[
+  {
+    "mode": "fifo",
+    "model": "meta-llama/Llama-2-7b-hf",
+    "gpu_util": 0.25,
+    "num_prompts": 16,
+    "total_tokens": 1024,
+    "elapsed_s": 4.7,
+    "throughput_tok_s": 217.88,
+    "preemptions": 1
+  },
+  {
+    "mode": "orchkv-request",
+    "model": "meta-llama/Llama-2-7b-hf",
+    "gpu_util": 0.25,
+    "num_prompts": 16,
+    "total_tokens": 1024,
+    "elapsed_s": 4.25,
+    "throughput_tok_s": 240.88,
+    "preemptions": 1
+  },
+  {
+    "mode": "orchkv-block",
+    "model": "meta-llama/Llama-2-7b-hf",
+    "gpu_util": 0.25,
+    "num_prompts": 16,
+    "total_tokens": 1024,
+    "elapsed_s": 4.21,
+    "throughput_tok_s": 243.43,
+    "preemptions": 1,
+    "block_scorer": {
+      "score_calls": 3,
+      "victims_selected": 1,
+      "tracker": {
+        "reports": 0,
+        "steps": 0,
+        "tracked_blocks": 0,
+        "current_step": 0
+      }
+    }
+  }
+]
