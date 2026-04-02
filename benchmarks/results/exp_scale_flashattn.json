@@ -1,0 +1,74 @@
+[
+  {
+    "model": "Qwen2.5-7B",
+    "seq_len": 2048,
+    "actual_len": 2048,
+    "budget_mb": 50,
+    "max_new": 32,
+    "gpu_only_tok_s": 1587.0,
+    "orchkv_tok_s": 312.6,
+    "orchkv_attn": "eager",
+    "evictions": 256,
+    "token_match": 0.0
+  },
+  {
+    "model": "Qwen2.5-7B",
+    "seq_len": 4096,
+    "actual_len": 4096,
+    "budget_mb": 50,
+    "max_new": 32,
+    "gpu_only_tok_s": 4428.1,
+    "orchkv_tok_s": 320.8,
+    "orchkv_attn": "eager",
+    "evictions": 256,
+    "token_match": 0.0
+  },
+  {
+    "model": "Qwen2.5-7B",
+    "seq_len": 8192,
+    "actual_len": 8192,
+    "budget_mb": 50,
+    "max_new": 32,
+    "gpu_only_tok_s": 6165.0,
+    "orchkv_tok_s": 367.9,
+    "orchkv_attn": "sdpa",
+    "evictions": 256,
+    "token_match": 1.0
+  },
+  {
+    "model": "Llama-2-7b-hf",
+    "seq_len": 2048,
+    "actual_len": 2048,
+    "budget_mb": 50,
+    "max_new": 32,
+    "gpu_only_tok_s": 2558.8,
+    "orchkv_tok_s": 269.5,
+    "orchkv_attn": "eager",
+    "evictions": 256,
+    "token_match": 1.0
+  },
+  {
+    "model": "Llama-2-7b-hf",
+    "seq_len": 4096,
+    "actual_len": 4096,
+    "budget_mb": 50,
+    "max_new": 32,
+    "gpu_only_tok_s": 3626.1,
+    "orchkv_tok_s": 276.1,
+    "orchkv_attn": "eager",
+    "evictions": 256,
+    "token_match": 1.0
+  },
+  {
+    "model": "Llama-2-7b-hf",
+    "seq_len": 8192,
+    "actual_len": 8192,
+    "budget_mb": 100,
+    "max_new": 32,
+    "gpu_only_tok_s": 4527.2,
+    "orchkv_tok_s": 309.3,
+    "orchkv_attn": "sdpa",
+    "evictions": 256,
+    "token_match": 1.0
+  }
+]
