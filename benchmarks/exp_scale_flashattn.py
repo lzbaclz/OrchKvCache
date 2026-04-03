@@ -25,7 +25,7 @@ try:
 except ImportError:
     _C = None
 
-from orchkv.kvcache_manager import KVCacheManager
+from orchkv.kvcache_manager import KVCacheManager, NaiveOffloadManager
 
 
 def load_model(name, attn_impl="sdpa", device_map="cuda:0"):
@@ -53,6 +53,39 @@ def bench_gpu_only(model, input_ids, max_new=32):
     elapsed = time.perf_counter() - t0
     thr = (input_ids.shape[1] + max_new) / elapsed
     return thr, tokens
+
+
+def bench_fifo(model, input_ids, max_new, budget_mb):
+    cfg = model.config
+    mgr = NaiveOffloadManager(
+        n_layers=cfg.num_hidden_layers,
+        n_kv_heads=getattr(cfg, 'num_key_value_heads', cfg.num_attention_heads),
+        head_dim=cfg.hidden_size // cfg.num_attention_heads,
+        block_size=16, dtype=torch.float16,
+        gpu_budget_bytes=budget_mb * (1 << 20),
+    )
+    tokens = []
+    cur, past = input_ids.clone(), None
+    torch.cuda.synchronize(); t0 = time.perf_counter()
+    for s in range(max_new):
+        with torch.no_grad():
+            out = model(cur, past_key_values=past, use_cache=True)
+        if s == 0:
+            mgr.ingest_step(out.past_key_values)
+        else:
+            mgr.append_token(out.past_key_values)
+        mgr.step_done()
+        mgr.schedule()
+        past = mgr.build_past_kv()
+        cur = out.logits[:, -1, :].argmax(dim=-1, keepdim=True)
+        tokens.append(cur.item())
+    torch.cuda.synchronize()
+    elapsed = time.perf_counter() - t0
+    thr = (input_ids.shape[1] + max_new) / elapsed
+    stats = mgr.get_stats()
+    evict = stats.get("gpu_to_dram", 0)
+    mgr.destroy()
+    return thr, tokens, evict
 
 
 def bench_orchkv(model, input_ids, max_new, budget_mb, sample_interval=10):
@@ -104,24 +137,50 @@ def run_experiment(model_name, seq_len, budget_mb, max_new=32, device="cuda:0"):
     actual_len = ids.shape[1]
     print(f"    actual tokens: {actual_len}")
 
+    orch_attn = "eager" if seq_len <= 4096 else "sdpa"
     result = {"model": model_name.split("/")[-1], "seq_len": seq_len,
-              "actual_len": actual_len, "budget_mb": budget_mb, "max_new": max_new}
+              "actual_len": actual_len, "budget_mb": budget_mb, "max_new": max_new,
+              "attn_impl": orch_attn}
 
-    # GPU-Only
+    # GPU-Only (SDPA ceiling)
     gc.collect(); torch.cuda.empty_cache()
     try:
-        t_gpu, ref = bench_gpu_only(model, ids, max_new)
-        result["gpu_only_tok_s"] = round(t_gpu, 1)
-        print(f"    GPU-Only (SDPA):  {t_gpu:.1f} tok/s")
+        t_gpu_sdpa, _ = bench_gpu_only(model, ids, max_new)
+        result["gpu_only_sdpa_tok_s"] = round(t_gpu_sdpa, 1)
+        print(f"    GPU-Only (SDPA):  {t_gpu_sdpa:.1f} tok/s")
     except (RuntimeError, torch.cuda.OutOfMemoryError) as e:
-        print(f"    GPU-Only: OOM — {str(e)[:80]}")
+        print(f"    GPU-Only (SDPA): OOM — {str(e)[:80]}")
+        result["gpu_only_sdpa_tok_s"] = "OOM"
+
+    # GPU-Only (same attn as OrchKv — for token match comparison)
+    del model; gc.collect(); torch.cuda.empty_cache()
+    model_ref, _ = load_model(model_name, orch_attn, device)
+    gc.collect(); torch.cuda.empty_cache()
+    try:
+        t_gpu, ref = bench_gpu_only(model_ref, ids, max_new)
+        result["gpu_only_tok_s"] = round(t_gpu, 1)
+        print(f"    GPU-Only ({orch_attn}):  {t_gpu:.1f} tok/s")
+    except (RuntimeError, torch.cuda.OutOfMemoryError) as e:
+        print(f"    GPU-Only ({orch_attn}): OOM — {str(e)[:80]}")
         result["gpu_only_tok_s"] = "OOM"
         ref = []
 
-    # OrchKvCache — use eager for short contexts (attention reporting),
-    # SDPA for long contexts (no attention reporting, recency/frequency only)
-    del model; gc.collect(); torch.cuda.empty_cache()
-    orch_attn = "eager" if seq_len <= 4096 else "sdpa"
+    # FIFO Offload (same attn impl as OrchKv for fair comparison)
+    gc.collect(); torch.cuda.empty_cache()
+    try:
+        t_fifo, tok_fifo, ev_fifo = bench_fifo(model_ref, ids, max_new, budget_mb)
+        match_fifo = sum(a == b for a, b in zip(ref, tok_fifo)) / max(len(ref), 1) if ref else -1
+        result["fifo_tok_s"] = round(t_fifo, 1)
+        result["fifo_evictions"] = ev_fifo
+        result["fifo_match"] = round(match_fifo, 4) if match_fifo >= 0 else "N/A"
+        print(f"    FIFO ({orch_attn}):      {t_fifo:.1f} tok/s  evict={ev_fifo}  match={match_fifo:.2%}" if match_fifo >= 0
+              else f"    FIFO ({orch_attn}):      {t_fifo:.1f} tok/s  evict={ev_fifo}")
+    except (RuntimeError, torch.cuda.OutOfMemoryError) as e:
+        print(f"    FIFO: OOM — {str(e)[:80]}")
+        result["fifo_tok_s"] = "OOM"
+
+    # OrchKvCache
+    del model_ref; gc.collect(); torch.cuda.empty_cache()
     model_orch, _ = load_model(model_name, orch_attn, device)
     gc.collect(); torch.cuda.empty_cache()
     try:

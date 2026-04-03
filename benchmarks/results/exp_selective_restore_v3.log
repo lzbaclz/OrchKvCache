@@ -1,0 +1,46 @@
+`torch_dtype` is deprecated! Use `dtype` instead!
+=================================================================
+  Improvement 8b: Attention Weight Coverage by EMA Score
+=================================================================
+
+  Qwen2.5-7B  seq=1024  gen=64  budget=50MB
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:01<00:03,  1.19s/it]Loading checkpoint shards:  50%|█████     | 2/4 [00:02<00:02,  1.13s/it]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:03<00:01,  1.10s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:04<00:00,  1.04s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:04<00:00,  1.08s/it]
+
+    Coverage (excluding sink, non-sink blocks only):
+      Top-K%       EMA    Random    Gain
+    Top- 1%    100.0%      1.6%  +98.4%
+    Top- 3%    100.0%      1.6%  +98.4%
+    Top- 5%    100.0%      4.7%  +95.3%
+    Top-10%    100.0%     15.6%  +84.4%
+    Top-20%    100.0%     26.6%  +73.4%
+    Top-30%    100.0%     40.6%  +59.4%
+    Top-50%    100.0%     53.1%  +46.9%
+    Top-70%    100.0%     75.0%  +25.0%
+    Top-90%    100.0%     92.2%   +7.8%
+
+  Llama-2-7b-hf  seq=1024  gen=64  budget=50MB
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards:  50%|█████     | 1/2 [00:03<00:03,  3.38s/it]Loading checkpoint shards: 100%|██████████| 2/2 [00:04<00:00,  2.14s/it]Loading checkpoint shards: 100%|██████████| 2/2 [00:04<00:00,  2.33s/it]
+
+    Coverage (excluding sink, non-sink blocks only):
+      Top-K%       EMA    Random    Gain
+    Top- 1%    100.0%      1.6%  +98.4%
+    Top- 3%    100.0%      1.6%  +98.4%
+    Top- 5%    100.0%      4.7%  +95.3%
+    Top-10%    100.0%     10.9%  +89.1%
+    Top-20%    100.0%     23.4%  +76.6%
+    Top-30%    100.0%     32.8%  +67.2%
+    Top-50%    100.0%     46.9%  +53.1%
+    Top-70%    100.0%     67.2%  +32.8%
+    Top-90%    100.0%     89.1%  +10.9%
+
+=================================================================
+  SUMMARY: EMA vs Random Coverage (non-sink blocks)
+=================================================================
+  Model              Metric   t1%   t3%   t5%  t10%  t30%  t50%  t90%
+  Qwen2.5-7B            EMA  100%  100%  100%  100%  100%  100%  100%
+                       Rand    2%    2%    5%   16%   41%   53%   92%
+  Llama-2-7b-hf         EMA  100%  100%  100%  100%  100%  100%  100%
+                       Rand    2%    2%    5%   11%   33%   47%   89%
+[bench] saved → /home/lzq/codes/orchkv/OrchKvCache/benchmarks/results/exp_selective_restore.json
+
+Saved to /home/lzq/codes/orchkv/OrchKvCache/benchmarks/results/exp_selective_restore.json

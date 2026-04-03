@@ -127,7 +127,7 @@ def run_coverage_experiment(model_name, seq_len=1024, max_new=64, budget_mb=50):
                     cum_rand = np.cumsum(nonsink_attn[rand_order]) / total_nonsink
 
                     step_coverage = {"step": s, "n_blocks": int(len(nonsink_idx))}
-                    for pct in [10, 20, 30, 50, 70, 90]:
+                    for pct in [1, 3, 5, 10, 20, 30, 50, 70, 90]:
                         k = max(1, int(len(nonsink_idx) * pct / 100))
                         idx = min(k - 1, len(cum_ema) - 1)
                         step_coverage[f"ema_top{pct}pct"] = round(float(cum_ema[idx]) * 100, 2)
@@ -146,7 +146,7 @@ def run_coverage_experiment(model_name, seq_len=1024, max_new=64, budget_mb=50):
 
     avg_ema = {}
     avg_rand = {}
-    for pct in [10, 20, 30, 50, 70, 90]:
+    for pct in [1, 3, 5, 10, 20, 30, 50, 70, 90]:
         ema_key = f"ema_top{pct}pct"
         rand_key = f"rand_top{pct}pct"
         ema_vals = [c[ema_key] for c in coverage_per_step if ema_key in c]
@@ -184,7 +184,7 @@ def main():
             rnd = r["avg_random_coverage"]
             print(f"\n    Coverage (excluding sink, non-sink blocks only):")
             print(f"    {'Top-K%':>8s}  {'EMA':>8s}  {'Random':>8s}  {'Gain':>6s}")
-            for pct in [10, 20, 30, 50, 70, 90]:
+            for pct in [1, 3, 5, 10, 20, 30, 50, 70, 90]:
                 key = f"top{pct}pct"
                 gain = ema[key] - rnd[key]
                 print(f"    Top-{pct:>2d}%  {ema[key]:>7.1f}%  {rnd[key]:>7.1f}%  {gain:>+5.1f}%")
@@ -192,14 +192,14 @@ def main():
     print(f"\n{'=' * 65}")
     print(f"  SUMMARY: EMA vs Random Coverage (non-sink blocks)")
     print(f"{'=' * 65}")
-    print(f"  {'Model':<18s} {'Metric':>6s}  {'t10%':>6s} {'t30%':>6s} {'t50%':>6s} {'t70%':>6s} {'t90%':>6s}")
+    print(f"  {'Model':<18s} {'Metric':>6s} {'t1%':>5s} {'t3%':>5s} {'t5%':>5s} {'t10%':>5s} {'t30%':>5s} {'t50%':>5s} {'t90%':>5s}")
     for r in results:
         e = r["avg_ema_coverage"]
         rd = r["avg_random_coverage"]
-        print(f"  {r['model']:<18s}  {'EMA':>6s} {e['top10pct']:>5.1f}% {e['top30pct']:>5.1f}% "
-              f"{e['top50pct']:>5.1f}% {e['top70pct']:>5.1f}% {e['top90pct']:>5.1f}%")
-        print(f"  {'':18s}  {'Rand':>6s} {rd['top10pct']:>5.1f}% {rd['top30pct']:>5.1f}% "
-              f"{rd['top50pct']:>5.1f}% {rd['top70pct']:>5.1f}% {rd['top90pct']:>5.1f}%")
+        print(f"  {r['model']:<18s}  {'EMA':>5s} {e['top1pct']:>4.0f}% {e['top3pct']:>4.0f}% {e['top5pct']:>4.0f}% "
+              f"{e['top10pct']:>4.0f}% {e['top30pct']:>4.0f}% {e['top50pct']:>4.0f}% {e['top90pct']:>4.0f}%")
+        print(f"  {'':18s}  {'Rand':>5s} {rd['top1pct']:>4.0f}% {rd['top3pct']:>4.0f}% {rd['top5pct']:>4.0f}% "
+              f"{rd['top10pct']:>4.0f}% {rd['top30pct']:>4.0f}% {rd['top50pct']:>4.0f}% {rd['top90pct']:>4.0f}%")
 
     save_json(results, "exp_selective_restore")
     print(f"\nSaved to {RESULTS_DIR}/exp_selective_restore.json")
