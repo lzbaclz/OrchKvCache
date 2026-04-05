@@ -45,9 +45,9 @@ KV cache, large language model inference, tiered storage, heterogeneous IO, atte
 \section{Introduction}
 %% ====================================================================
 
-Large language models (LLMs) power an expanding range of applications---from multi-turn conversational assistants and code-completion engines to retrieval-augmented generation over long documents~\cite{llama2,llama3}. Deploying these models at scale demands high-throughput inference systems that can serve hundreds of concurrent requests with stringent latency service-level objectives. A critical performance limiter in all Transformer-based~\cite{transformer} LLM serving systems is the \emph{Key-Value cache} (KV cache): during autoregressive decoding, every previously generated token's key and value projections must be retained so that the self-attention mechanism can attend over the full context without recomputing these projections~\cite{vllm}.
+Large language models (LLMs) power an expanding range of applications---from multi-turn conversational assistants and code-completion engines to retrieval-augmented generation over long documents~\cite{gpt4,llama2,llama3}. Deploying these models at scale demands high-throughput inference systems that can serve hundreds of concurrent requests with stringent latency service-level objectives. A critical performance limiter in all Transformer-based~\cite{transformer} LLM serving systems is the \emph{Key-Value cache} (KV cache): during autoregressive decoding, every previously generated token's key and value projections must be retained so that the self-attention mechanism can attend over the full context without recomputing these projections~\cite{vllm}.
 
-The KV cache poses a growing memory challenge. Its footprint scales as $2\,L\,n_{kv}\,s\,d\;\text{sizeof(dtype)}$, where $L$ is the layer count, $n_{kv}$ the number of KV heads, $s$ the sequence length, and $d$ the head dimension. For a LLaMA-2-7B model (32 layers, 32 MHA heads, $d{=}128$, FP16), each token adds 0.5\,MB. Even with Grouped-Query Attention (GQA)~\cite{gqa}, the problem persists: LLaMA-3-8B's KV cache at 128K context would equal its 16\,GB model weight. Critically, memory pressure already manifests at moderate context lengths: in batch serving, a modest batch of 16 requests at 4K context already consumes 32\,GB of KV cache on LLaMA-2-7B---leaving minimal headroom on an 80\,GB GPU. Our evaluation (\S\ref{sec:e2e}) focuses on this practically relevant regime of 2K--8K tokens per request with 1--16 concurrent requests.
+The KV cache poses a growing memory challenge. Its footprint scales as $2\,L\,n_{kv}\,s\,d\;\text{sizeof(dtype)}$, where $L$ is the layer count, $n_{kv}$ the number of KV heads, $s$ the sequence length, and $d$ the head dimension. For a LLaMA-2-7B model (32 layers, 32 MHA heads, $d{=}128$, FP16), each token adds 0.5\,MB. Even with Grouped-Query Attention (GQA)~\cite{gqa} (an evolution of MQA~\cite{mqa}), the problem persists: LLaMA-3-8B's KV cache at 128K context would equal its 16\,GB model weight. Critically, memory pressure already manifests at moderate context lengths: in batch serving, a modest batch of 16 requests at 4K context already consumes 32\,GB of KV cache on LLaMA-2-7B---leaving minimal headroom on an 80\,GB GPU. Our evaluation (\S\ref{sec:e2e}) focuses on this practically relevant regime of 2K--8K tokens per request with 1--16 concurrent requests.
 
 
 The systems community has responded with several families of solutions, each representing a different point in the design space (Table~\ref{tab:paradigm}):
@@ -109,7 +109,7 @@ We implement OrchKvCache in ${\sim}$4,500 lines of C/CUDA plus ${\sim}$1,200 lin
 
 \subsection{Transformer Inference and the KV Cache}
 
-Modern LLMs use the Transformer architecture~\cite{transformer}, computing attention as:
+Modern LLMs use the Transformer architecture~\cite{transformer} with rotary position embeddings~\cite{rope}, computing attention as:
 \begin{equation}
 \text{Attention}(Q, K, V) = \text{softmax}\!\left(\frac{QK^\top}{\sqrt{d}}\right) V
 \end{equation}
@@ -380,7 +380,7 @@ We evaluate OrchKvCache on \textbf{four models} spanning two attention architect
 
 \textbf{Software.} Ubuntu 22.04, Linux 6.8, CUDA 12.0, Python 3.11, PyTorch 2.5.1+cu121, HuggingFace transformers 4.57.
 
-\textbf{Models.} We evaluate four models with deliberately varied KV-cache footprints:
+\textbf{Models.} We evaluate four models with deliberately varied KV-cache footprints.  Qwen2.5-7B~\cite{qwen2.5} and Mistral-7B~\cite{mistral} use GQA~\cite{gqa} (derived from MQA~\cite{mqa}); LLaMA-2~\cite{llama2} uses full MHA:
 
 \begin{table}[t]
 \centering
@@ -877,13 +877,15 @@ Note that InfiniGen and OrchKvCache target different frameworks (FlexGen vs.\ Hu
 \section{Related Work}
 %% ====================================================================
 
-\textbf{KV-Cache Management.} vLLM~\cite{vllm} introduced PagedAttention for KV-cache paging. FlexGen~\cite{flexgen} formulated offline three-tier offloading. InfiniGen~\cite{infinigen} pioneered cross-layer prefetching with speculative KV selection, achieving 1.41--2.18$\times$ speedup on OPT-1.3B in our reproduction (Table~\ref{tab:infinigen-throughput}); we provide a detailed comparison in \S\ref{sec:infinigen-comparison}. vTensor~\cite{vtensor} provides virtual tensor management. Mooncake~\cite{mooncake} deploys datacenter-scale KV-cache pooling. Infinite-LLM~\cite{infinitellm} distributes KV-cache across GPU clusters. OrchKvCache adds \emph{attention-driven, per-block classification} with heterogeneous IO adaptation.
+\textbf{KV-Cache Management.} vLLM~\cite{vllm} introduced PagedAttention for KV-cache paging. FlexGen~\cite{flexgen} formulated offline three-tier offloading. InfiniGen~\cite{infinigen} pioneered cross-layer prefetching with speculative KV selection; we provide a detailed comparison in \S\ref{sec:infinigen-comparison}. AttentionStore~\cite{attentionstore} and CacheBlend~\cite{cacheblend} reuse prefix KV caches across multi-turn conversations and RAG pipelines; ContiguousKV~\cite{contiguouskv} aligns KV pruning granularity with I/O operations to eliminate read amplification. vTensor~\cite{vtensor} provides virtual tensor management. Mooncake~\cite{mooncake} deploys datacenter-scale KV-cache pooling. Infinite-LLM~\cite{infinitellm} distributes KV-cache across GPU clusters. OrchKvCache adds \emph{attention-driven, per-block classification} with heterogeneous IO adaptation.
 
 \textbf{Lossy KV-Cache Compression.} H2O~\cite{h2o} retains Heavy Hitters plus a recent window. ScissorHands~\cite{scissorhands} exploits persistence of importance. StreamingLLM~\cite{streamingllm} keeps 4 sink tokens plus a sliding window. SqueezeAttention~\cite{squeezeattention} allocates per-layer budgets. Quest~\cite{quest} uses page-level min/max statistics for query-aware selection. PyramidKV~\cite{pyramidkv} and SnapKV~\cite{snapkv} exploit pyramidal and pre-generation patterns. Keyformer~\cite{keyformer} selects key tokens. KIVI~\cite{kivi} applies asymmetric 2-bit quantization. CacheGen~\cite{cachegen} compresses KV for streaming. All are \emph{lossy or approximate}; OrchKvCache is \emph{lossless}.
 
-\textbf{LLM Serving Systems.} Orca~\cite{orca} introduced continuous batching. DistServe~\cite{distserve} and Splitwise~\cite{splitwise} disaggregate prefill and decode. Sarathi-Serve~\cite{sarathi} uses chunked prefill. FlashAttention~\cite{flashattn,flashattn2} provides IO-aware tiled attention. SGLang~\cite{sglang} optimizes multi-call programs. DeepSpeed-Inference~\cite{deepspeed-inf} supports heterogeneous inference at trillion-parameter scale. ZeRO~\cite{zero} and DeepSpeed~\cite{deepspeed} optimize training memory.
+\textbf{LLM Serving Systems.} Orca~\cite{orca} introduced continuous batching. DistServe~\cite{distserve} and Splitwise~\cite{splitwise} disaggregate prefill and decode. Sarathi-Serve~\cite{sarathi} uses chunked prefill. FlashAttention~\cite{flashattn,flashattn2} provides IO-aware tiled attention. SGLang~\cite{sglang} optimizes multi-call programs. Speculative decoding~\cite{speculative} reduces latency via draft-verify parallelism. Megatron-LM~\cite{megatron} enables multi-GPU tensor parallelism. DeepSpeed-Inference~\cite{deepspeed-inf} and DeepSpeed~\cite{deepspeed} support heterogeneous inference at trillion-parameter scale. ZeRO~\cite{zero} optimises training memory via partitioning.
 
-\textbf{Heterogeneous Storage and Prefix-KV Management.} Strata~\cite{strata} pioneered NVM+SSD cross-media file systems. SPFS~\cite{spfs} stacks PM on SSD file systems. OrchFS~\cite{orchfs} introduced alignment-based write partitioning. TPP~\cite{tpp} manages CXL-attached tiered memory. IMPRESS~\cite{impress} addresses the prefix-KV \emph{Re-Prefill} bottleneck via importance-guided selective loading and KV reordering, achieving 2.8$\times$ TTFT reduction; however, it targets prefix reuse across requests (not runtime decode-phase management) and is lossy (loads only important tokens). OrchKvCache addresses the complementary decode-phase problem: \emph{runtime} placement of \emph{all} KV blocks across GPU/DRAM/SSD with attention-driven scheduling and lossless integrity.
+\textbf{Model Compression.} AWQ~\cite{awq} applies activation-aware weight quantization for on-device deployment. KIVI~\cite{kivi} quantizes KV caches asymmetrically. These are orthogonal to OrchKvCache's lossless migration and could be composed with it.
+
+\textbf{Heterogeneous Storage and Prefix-KV Management.} Strata~\cite{strata} pioneered NVM+SSD cross-media file systems. SPFS~\cite{spfs} stacks PM on SSD file systems. OrchFS~\cite{orchfs} introduced alignment-based write partitioning. TPP~\cite{tpp} manages CXL-attached tiered memory. IMPRESS~\cite{impress} addresses the prefix-KV \emph{Re-Prefill} bottleneck via importance-guided selective loading, achieving 2.8$\times$ TTFT reduction; ContiguousKV~\cite{contiguouskv} further improves Re-Prefill by 3.85$\times$ via granularity-aligned I/O. However, both target prefix reuse (not runtime decode-phase management) and are lossy. OrchKvCache addresses the complementary decode-phase problem: \emph{runtime} placement of \emph{all} KV blocks across GPU/DRAM/SSD with attention-driven scheduling and lossless integrity.
 
 \textbf{Near-Storage Inference.} InstInfer~\cite{instinfer} offloads attention to computational SSDs. HeteGen~\cite{hetegen} exploits CPU-GPU parallelism. PowerInfer~\cite{powerinfer} uses activation locality for neuron placement.
 
@@ -958,7 +960,7 @@ The core C/CUDA classifier already runs in $<$\,40\,$\mu$s (\S\ref{sec:prefetch-
 \label{sec:discussion}
 Our vLLM integration (\S\ref{sec:vllm-integration}) reveals that attention-driven scheduling benefits LLM inference at \emph{two distinct levels}. At the \emph{victim selection} level, block-level aggregate scoring provides 1.12$\times$ throughput over FIFO within vLLM's existing request-level swap architecture. At the \emph{data migration} level, our block-level prototype achieves 1.28--1.77$\times$ by selectively evicting only cold blocks. However, transplanting this to vLLM requires supporting mixed GPU/CPU block tables in the attention kernel---a non-trivial change because PagedAttention currently assumes all blocks of a RUNNING sequence reside on GPU. Our attempt at intra-request partial swap confirmed this: the evict-restore cycle is zero-sum under vLLM's current constraint. Modifying the attention kernel to prefetch cold blocks on-the-fly (e.g., by extending FlashAttention with an asynchronous block-fetch stage) is the natural path forward.
 
-\textbf{Multi-GPU extension.} OrchKvCache's per-block tier management naturally extends to multi-GPU configurations. Under tensor parallelism (TP=2), each GPU rank runs an independent OrchKvCache instance managing its own KV head partition---requiring only the \texttt{g\_sys} singleton to be refactored into per-instance handles. A more aggressive design treats a second GPU as an intermediate storage tier (GPU$_0$ HBM $\to$ GPU$_1$ HBM $\to$ DRAM $\to$ SSD), exploiting NVLink's 600\,GB/s bidirectional bandwidth as a low-latency warm tier between HBM and DRAM. We leave this four-tier disaggregated architecture to future work.
+\textbf{Multi-GPU extension.} OrchKvCache's per-block tier management naturally extends to multi-GPU configurations. Under tensor parallelism~\cite{megatron} (TP=2), each GPU rank runs an independent OrchKvCache instance managing its own KV head partition---requiring only the \texttt{g\_sys} singleton to be refactored into per-instance handles. A more aggressive design treats a second GPU as an intermediate storage tier (GPU$_0$ HBM $\to$ GPU$_1$ HBM $\to$ DRAM $\to$ SSD), exploiting NVLink's 600\,GB/s bidirectional bandwidth as a low-latency warm tier between HBM and DRAM. We leave this four-tier disaggregated architecture to future work.
 
 \textbf{Attention collection overhead analysis.}
 Varying the sampling interval $N$ on Qwen2.5-7B (Table~\ref{tab:sampling}) confirms the diagnosis: pure SDPA achieves 1,658\,tok/s; $N{=}1$ drops to 180\,tok/s; $N{=}50$ stays at 183\,tok/s.  Attention extraction itself is only 3.8\% of per-step time at $N{=}10$ (Table~\ref{tab:overhead-breakdown}).  The gap is dominated by KV-cache reconstruction (59.5\%) and the Python scheduling loop (11.6\%).  The fair-baseline experiment (Table~\ref{tab:fair-baseline}) further shows that when reconstruction is eliminated, the scheduling loop becomes the primary bottleneck.
@@ -998,7 +1000,7 @@ A systematic overhead analysis decomposes the throughput gap into three independ
 %% ====================================================================
 \balance
 \bibliographystyle{IEEEtran}
-\begin{thebibliography}{44}
+\begin{thebibliography}{50}
 
 \bibitem{vllm} W.~Kwon et~al., ``Efficient Memory Management for Large Language Model Serving with PagedAttention,'' in \textit{Proc.\ SOSP}, 2023.
 
@@ -1077,6 +1079,28 @@ A systematic overhead analysis decomposes the throughput gap into three independ
 \bibitem{zero} S.~Rajbhandari et~al., ``ZeRO: Memory Optimizations Toward Training Trillion Parameter Models,'' in \textit{Proc.\ SC}, 2020.
 
 \bibitem{deepspeed} J.~Rasley et~al., ``DeepSpeed: System Optimizations Enable Training Deep Learning Models with Over 100 Billion Parameters,'' in \textit{Proc.\ KDD}, 2020.
+
+\bibitem{qwen2.5} Qwen Team, ``Qwen2.5 Technical Report,'' \textit{arXiv:2412.15115}, 2024.
+
+\bibitem{mistral} A.~Jiang et~al., ``Mistral 7B,'' \textit{arXiv:2310.06825}, 2023.
+
+\bibitem{mqa} N.~Shazeer, ``Fast Transformer Decoding: One Write-Head Is All You Need,'' \textit{arXiv:1911.02150}, 2019.
+
+\bibitem{megatron} M.~Shoeybi et~al., ``Megatron-LM: Training Multi-Billion Parameter Language Models Using Model Parallelism,'' \textit{arXiv:1909.08053}, 2019.
+
+\bibitem{attentionstore} B.~Gao et~al., ``AttentionStore: Cost-effective Attention Reuse across Multi-turn Conversations in Large Language Model Serving,'' \textit{arXiv:2403.19708}, 2024.
+
+\bibitem{cacheblend} J.~Yao et~al., ``CacheBlend: Fast Large Language Model Serving for RAG with Cached Knowledge Fusion,'' in \textit{Proc.\ EuroSys}, 2025.
+
+\bibitem{speculative} Y.~Leviathan et~al., ``Fast Inference from Transformers via Speculative Decoding,'' in \textit{Proc.\ ICML}, 2023.
+
+\bibitem{awq} J.~Lin et~al., ``AWQ: Activation-aware Weight Quantization for On-Device LLM Compression and Acceleration,'' in \textit{Proc.\ MLSys}, 2024.
+
+\bibitem{rope} J.~Su et~al., ``RoFormer: Enhanced Transformer with Rotary Position Embedding,'' \textit{Neurocomputing}, vol.~568, 2024.
+
+\bibitem{gpt4} OpenAI, ``GPT-4 Technical Report,'' \textit{arXiv:2303.08774}, 2023.
+
+\bibitem{contiguouskv} J.~Zou et~al., ``ContiguousKV: Accelerating LLM Prefill with Granularity-Aligned KV Cache Management,'' \textit{arXiv:2601.13631}, 2025.
 
 \end{thebibliography}
 
