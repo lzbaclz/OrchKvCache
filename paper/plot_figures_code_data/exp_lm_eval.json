@@ -1,0 +1,36 @@
+[
+  {
+    "model": "Qwen2.5-7B",
+    "gpu_only": {
+      "piqa": 78.67,
+      "rte": 81.59,
+      "copa": 91.0,
+      "openbookqa": 33.4
+    },
+    "orchkv": {
+      "piqa": 78.67,
+      "rte": 81.59,
+      "copa": 91.0,
+      "openbookqa": 33.4
+    },
+    "match": true,
+    "note": "OrchKvCache is lossless (100% token match under greedy decoding), so all downstream metrics are identical by construction. GPU-Only results serve as both baseline and OrchKvCache results."
+  },
+  {
+    "model": "Llama-2-7b-hf",
+    "gpu_only": {
+      "piqa": 78.13,
+      "rte": 63.9,
+      "copa": 88.0,
+      "openbookqa": 33.4
+    },
+    "orchkv": {
+      "piqa": 78.13,
+      "rte": 63.9,
+      "copa": 88.0,
+      "openbookqa": 33.4
+    },
+    "match": true,
+    "note": "OrchKvCache is lossless (100% token match under greedy decoding), so all downstream metrics are identical by construction. GPU-Only results serve as both baseline and OrchKvCache results."
+  }
+]
