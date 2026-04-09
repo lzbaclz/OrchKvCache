@@ -1,0 +1,113 @@
+[
+  {
+    "config": "GPU+DRAM only",
+    "batch_size": 1,
+    "avg_tok_s": 175.4,
+    "avg_gpu_to_dram": 512,
+    "avg_dram_to_ssd": 0,
+    "avg_ssd_to_dram": 0,
+    "trials": [
+      {
+        "tok_s": 164.3,
+        "elapsed_s": 5.898,
+        "gpu_to_dram": 512,
+        "dram_to_ssd": 0,
+        "ssd_to_dram": 0,
+        "ssd_files": 0,
+        "ssd_bytes_kb": 0.0
+      },
+      {
+        "tok_s": 181.0,
+        "elapsed_s": 5.355,
+        "gpu_to_dram": 512,
+        "dram_to_ssd": 0,
+        "ssd_to_dram": 0,
+        "ssd_files": 0,
+        "ssd_bytes_kb": 0.0
+      },
+      {
+        "tok_s": 181.0,
+        "elapsed_s": 5.353,
+        "gpu_to_dram": 512,
+        "dram_to_ssd": 0,
+        "ssd_to_dram": 0,
+        "ssd_files": 0,
+        "ssd_bytes_kb": 0.0
+      }
+    ]
+  },
+  {
+    "config": "GPU+DRAM+SSD (per-block)",
+    "batch_size": 1,
+    "avg_tok_s": 179.1,
+    "avg_gpu_to_dram": 512,
+    "avg_dram_to_ssd": 256,
+    "avg_ssd_to_dram": 256,
+    "trials": [
+      {
+        "tok_s": 178.8,
+        "elapsed_s": 5.42,
+        "gpu_to_dram": 512,
+        "dram_to_ssd": 256,
+        "ssd_to_dram": 256,
+        "ssd_files": 4,
+        "ssd_bytes_kb": 128.0
+      },
+      {
+        "tok_s": 179.2,
+        "elapsed_s": 5.408,
+        "gpu_to_dram": 512,
+        "dram_to_ssd": 256,
+        "ssd_to_dram": 256,
+        "ssd_files": 4,
+        "ssd_bytes_kb": 128.0
+      },
+      {
+        "tok_s": 179.4,
+        "elapsed_s": 5.4,
+        "gpu_to_dram": 512,
+        "dram_to_ssd": 256,
+        "ssd_to_dram": 256,
+        "ssd_files": 4,
+        "ssd_bytes_kb": 128.0
+      }
+    ]
+  },
+  {
+    "config": "GPU+DRAM+SSD (batched-8)",
+    "batch_size": 8,
+    "avg_tok_s": 179.3,
+    "avg_gpu_to_dram": 512,
+    "avg_dram_to_ssd": 256,
+    "avg_ssd_to_dram": 256,
+    "trials": [
+      {
+        "tok_s": 179.5,
+        "elapsed_s": 5.399,
+        "gpu_to_dram": 512,
+        "dram_to_ssd": 256,
+        "ssd_to_dram": 256,
+        "ssd_files": 4,
+        "ssd_bytes_kb": 128.0
+      },
+      {
+        "tok_s": 179.2,
+        "elapsed_s": 5.406,
+        "gpu_to_dram": 512,
+        "dram_to_ssd": 256,
+        "ssd_to_dram": 256,
+        "ssd_files": 4,
+        "ssd_bytes_kb": 128.0
+      },
+      {
+        "tok_s": 179.3,
+        "elapsed_s": 5.403,
+        "gpu_to_dram": 512,
+        "dram_to_ssd": 256,
+        "ssd_to_dram": 256,
+        "ssd_files": 4,
+        "ssd_bytes_kb": 128.0
+      }
+    ]
+  }
+]

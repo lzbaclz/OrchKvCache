@@ -1,0 +1,104 @@
+[
+  {
+    "gpu_util": 0.2,
+    "num_prompts": 64,
+    "strategy": "fifo",
+    "avg_throughput": 2748.2,
+    "std_throughput": 1.7,
+    "min_throughput": 2747.1,
+    "max_throughput": 2750.1,
+    "avg_preemptions": 18.0,
+    "min_preemptions": 18,
+    "max_preemptions": 18,
+    "n_trials": 3,
+    "prompt_stats": {
+      "min": 106,
+      "max": 2238,
+      "mean": 557.8,
+      "median": 366
+    },
+    "scorer_stats": {}
+  },
+  {
+    "gpu_util": 0.2,
+    "num_prompts": 64,
+    "strategy": "progress",
+    "avg_throughput": 2669.5,
+    "std_throughput": 2.0,
+    "min_throughput": 2667.5,
+    "max_throughput": 2671.4,
+    "avg_preemptions": 14.0,
+    "min_preemptions": 14,
+    "max_preemptions": 14,
+    "n_trials": 3,
+    "prompt_stats": {
+      "min": 106,
+      "max": 2238,
+      "mean": 557.8,
+      "median": 366
+    },
+    "scorer_stats": {
+      "score_calls": 75,
+      "victims_selected": 12
+    }
+  },
+  {
+    "gpu_util": 0.2,
+    "num_prompts": 64,
+    "strategy": "block_v2",
+    "avg_throughput": 2642.0,
+    "std_throughput": 1.0,
+    "min_throughput": 2641.4,
+    "max_throughput": 2643.1,
+    "avg_preemptions": 14.0,
+    "min_preemptions": 14,
+    "max_preemptions": 14,
+    "n_trials": 3,
+    "prompt_stats": {
+      "min": 106,
+      "max": 2238,
+      "mean": 557.8,
+      "median": 366
+    },
+    "scorer_stats": {
+      "score_calls": 77,
+      "victims_selected": 13,
+      "tracker": {
+        "registry_updates": 13,
+        "blocks_tracked": 36
+      }
+    }
+  },
+  {
+    "gpu_util": 0.2,
+    "num_prompts": 64,
+    "strategy": "hybrid",
+    "avg_throughput": 2640.3,
+    "std_throughput": 1.1,
+    "min_throughput": 2639.1,
+    "max_throughput": 2641.2,
+    "avg_preemptions": 14.0,
+    "min_preemptions": 14,
+    "max_preemptions": 14,
+    "n_trials": 3,
+    "prompt_stats": {
+      "min": 106,
+      "max": 2238,
+      "mean": 557.8,
+      "median": 366
+    },
+    "scorer_stats": {
+      "score_calls": 77,
+      "victims_selected": 13,
+      "weights": {
+        "block": 0.35,
+        "progress": 0.45,
+        "memory": 0.2
+      },
+      "tracker": {
+        "registry_updates": 13,
+        "blocks_tracked": 36
+      }
+    }
+  }
+]

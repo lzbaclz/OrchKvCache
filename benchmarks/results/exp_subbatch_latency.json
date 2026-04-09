@@ -1,0 +1,54 @@
+[
+  {
+    "sub_k": 1,
+    "throughput": 290.4,
+    "evictions": 0,
+    "step_latency_p50_ms": 21.72,
+    "step_latency_p95_ms": 51.22,
+    "step_latency_p99_ms": 57.59,
+    "req_completion_mean_ms": 1602.0,
+    "req_completion_max_ms": 1640.2,
+    "req_completion_min_ms": 1579.6,
+    "jains_fairness": 0.9998,
+    "label": "round-robin"
+  },
+  {
+    "sub_k": 2,
+    "throughput": 177.6,
+    "evictions": 52500,
+    "step_latency_p50_ms": 42.61,
+    "step_latency_p95_ms": 65.34,
+    "step_latency_p99_ms": 82.21,
+    "req_completion_mean_ms": 2619.8,
+    "req_completion_max_ms": 3421.8,
+    "req_completion_min_ms": 1827.8,
+    "jains_fairness": 0.9371,
+    "label": "K=2"
+  },
+  {
+    "sub_k": 4,
+    "throughput": 118.5,
+    "evictions": 116480,
+    "step_latency_p50_ms": 58.64,
+    "step_latency_p95_ms": 84.12,
+    "step_latency_p99_ms": 87.19,
+    "req_completion_mean_ms": 3928.3,
+    "req_completion_max_ms": 3945.9,
+    "req_completion_min_ms": 3909.5,
+    "jains_fairness": 1.0,
+    "label": "K=4"
+  },
+  {
+    "sub_k": 8,
+    "throughput": 118.5,
+    "evictions": 116480,
+    "step_latency_p50_ms": 58.58,
+    "step_latency_p95_ms": 84.03,
+    "step_latency_p99_ms": 87.01,
+    "req_completion_mean_ms": 3926.3,
+    "req_completion_max_ms": 3952.5,
+    "req_completion_min_ms": 3908.0,
+    "jains_fairness": 1.0,
+    "label": "full-batch"
+  }
+]

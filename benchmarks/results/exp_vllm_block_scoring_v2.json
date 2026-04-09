@@ -1,0 +1,142 @@
+[
+  {
+    "gpu_util": 0.2,
+    "num_prompts": 16,
+    "strategy": "fifo",
+    "avg_throughput": 3512.6,
+    "std_throughput": 174.4,
+    "min_throughput": 3407.9,
+    "max_throughput": 3713.9,
+    "avg_preemptions": 0.0,
+    "n_trials": 3,
+    "scorer_stats": {}
+  },
+  {
+    "gpu_util": 0.2,
+    "num_prompts": 16,
+    "strategy": "progress",
+    "avg_throughput": 4293.4,
+    "std_throughput": 4.5,
+    "min_throughput": 4288.3,
+    "max_throughput": 4296.7,
+    "avg_preemptions": 0.0,
+    "n_trials": 3,
+    "scorer_stats": {
+      "score_calls": 0,
+      "victims_selected": 0
+    }
+  },
+  {
+    "gpu_util": 0.2,
+    "num_prompts": 16,
+    "strategy": "block_v2",
+    "avg_throughput": 3992.4,
+    "std_throughput": 514.0,
+    "min_throughput": 3398.9,
+    "max_throughput": 4295.1,
+    "avg_preemptions": 0.0,
+    "n_trials": 3,
+    "scorer_stats": {
+      "score_calls": 0,
+      "victims_selected": 0,
+      "tracker": {
+        "registry_updates": 0,
+        "blocks_tracked": 0
+      }
+    }
+  },
+  {
+    "gpu_util": 0.2,
+    "num_prompts": 16,
+    "strategy": "hybrid",
+    "avg_throughput": 4297.4,
+    "std_throughput": 2.3,
+    "min_throughput": 4295.3,
+    "max_throughput": 4299.9,
+    "avg_preemptions": 0.0,
+    "n_trials": 3,
+    "scorer_stats": {
+      "score_calls": 0,
+      "victims_selected": 0,
+      "weights": {
+        "block": 0.35,
+        "progress": 0.45,
+        "memory": 0.2
+      },
+      "tracker": {
+        "registry_updates": 0,
+        "blocks_tracked": 0
+      }
+    }
+  },
+  {
+    "gpu_util": 0.2,
+    "num_prompts": 32,
+    "strategy": "fifo",
+    "avg_throughput": 3977.1,
+    "std_throughput": 565.7,
+    "min_throughput": 3323.9,
+    "max_throughput": 4303.7,
+    "avg_preemptions": 0.0,
+    "n_trials": 3,
+    "scorer_stats": {}
+  },
+  {
+    "gpu_util": 0.2,
+    "num_prompts": 32,
+    "strategy": "progress",
+    "avg_throughput": 3977.1,
+    "std_throughput": 562.8,
+    "min_throughput": 3327.3,
+    "max_throughput": 4302.7,
+    "avg_preemptions": 0.0,
+    "n_trials": 3,
+    "scorer_stats": {
+      "score_calls": 0,
+      "victims_selected": 0
+    }
+  },
+  {
+    "gpu_util": 0.2,
+    "num_prompts": 32,
+    "strategy": "block_v2",
+    "avg_throughput": 4005.4,
+    "std_throughput": 513.8,
+    "min_throughput": 3412.1,
+    "max_throughput": 4303.2,
+    "avg_preemptions": 0.0,
+    "n_trials": 3,
+    "scorer_stats": {
+      "score_calls": 0,
+      "victims_selected": 0,
+      "tracker": {
+        "registry_updates": 0,
+        "blocks_tracked": 0
+      }
+    }
+  },
+  {
+    "gpu_util": 0.2,
+    "num_prompts": 32,
+    "strategy": "hybrid",
+    "avg_throughput": 4300.3,
+    "std_throughput": 1.7,
+    "min_throughput": 4298.9,
+    "max_throughput": 4302.2,
+    "avg_preemptions": 0.0,
+    "n_trials": 3,
+    "scorer_stats": {
+      "score_calls": 0,
+      "victims_selected": 0,
+      "weights": {
+        "block": 0.35,
+        "progress": 0.45,
+        "memory": 0.2
+      },
+      "tracker": {
+        "registry_updates": 0,
+        "blocks_tracked": 0
+      }
+    }
+  }
+]

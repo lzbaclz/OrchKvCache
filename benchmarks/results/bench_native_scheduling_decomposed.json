@@ -1,0 +1,135 @@
+[
+  {
+    "n_blocks": 64,
+    "n_report": 19,
+    "phase_a_report_us": {
+      "mean": 5.7,
+      "median": 5.6,
+      "p99": 8.3
+    },
+    "phase_b_sched_us": {
+      "mean": 1.9,
+      "median": 1.6,
+      "p99": 2.8
+    },
+    "total_us": {
+      "mean": 7.5,
+      "median": 7.3,
+      "p99": 10.6
+    }
+  },
+  {
+    "n_blocks": 128,
+    "n_report": 38,
+    "phase_a_report_us": {
+      "mean": 9.8,
+      "median": 9.7,
+      "p99": 10.6
+    },
+    "phase_b_sched_us": {
+      "mean": 2.7,
+      "median": 2.5,
+      "p99": 3.6
+    },
+    "total_us": {
+      "mean": 12.5,
+      "median": 12.4,
+      "p99": 16.7
+    }
+  },
+  {
+    "n_blocks": 256,
+    "n_report": 76,
+    "phase_a_report_us": {
+      "mean": 20.8,
+      "median": 20.7,
+      "p99": 26.0
+    },
+    "phase_b_sched_us": {
+      "mean": 4.5,
+      "median": 4.3,
+      "p99": 5.4
+    },
+    "total_us": {
+      "mean": 25.3,
+      "median": 25.1,
+      "p99": 30.4
+    }
+  },
+  {
+    "n_blocks": 512,
+    "n_report": 153,
+    "phase_a_report_us": {
+      "mean": 37.4,
+      "median": 37.3,
+      "p99": 42.6
+    },
+    "phase_b_sched_us": {
+      "mean": 8.5,
+      "median": 8.2,
+      "p99": 11.4
+    },
+    "total_us": {
+      "mean": 45.9,
+      "median": 45.6,
+      "p99": 51.0
+    }
+  },
+  {
+    "n_blocks": 1024,
+    "n_report": 307,
+    "phase_a_report_us": {
+      "mean": 82.8,
+      "median": 82.3,
+      "p99": 88.8
+    },
+    "phase_b_sched_us": {
+      "mean": 16.4,
+      "median": 16.2,
+      "p99": 22.1
+    },
+    "total_us": {
+      "mean": 99.2,
+      "median": 98.7,
+      "p99": 106.2
+    }
+  },
+  {
+    "n_blocks": 2048,
+    "n_report": 614,
+    "phase_a_report_us": {
+      "mean": 150.6,
+      "median": 150.3,
+      "p99": 156.4
+    },
+    "phase_b_sched_us": {
+      "mean": 34.5,
+      "median": 34.2,
+      "p99": 39.1
+    },
+    "total_us": {
+      "mean": 185.1,
+      "median": 185.1,
+      "p99": 191.5
+    }
+  },
+  {
+    "n_blocks": 4096,
+    "n_report": 1228,
+    "phase_a_report_us": {
+      "mean": 338.9,
+      "median": 338.2,
+      "p99": 352.7
+    },
+    "phase_b_sched_us": {
+      "mean": 71.8,
+      "median": 71.5,
+      "p99": 76.6
+    },
+    "total_us": {
+      "mean": 410.6,
+      "median": 410.0,
+      "p99": 424.1
+    }
+  }
+]

@@ -1,18 +1,21 @@
 """
 D2: Register OrchKvCache backends into vLLM.
 
-Two integration modes:
+Three integration modes:
 
   1. KV Offloading Connector (V1 API) — routes KV save/load through
      OrchKvCache tiered storage.
 
-  2. Block-Level Partial Swap — patches the scheduler to evict cold
-     blocks instead of whole requests when GPU memory is tight.
+  2. Block-Level Scoring — patches the scheduler to use block-level
+     hotness for victim selection instead of LIFO.
+
+  3. Hybrid Scoring — combines block-level hotness with progress ratio
+     and memory-efficiency signal.
 
 Usage:
     import os
     os.environ["ORCHKV_SWAP"] = "1"          # enable attention-aware swap
-    os.environ["ORCHKV_PARTIAL_SWAP"] = "1"   # enable block-level partial swap
+    os.environ["ORCHKV_BLOCK_SCORE"] = "2"   # 1=V1, 2=V2 fast, 3=hybrid
 
     from orchkv.vllm_integration.engine_patch import (
         register_orchkv_backend,
@@ -23,7 +26,7 @@ Usage:
     from vllm import LLM
     llm = LLM(model="meta-llama/Llama-2-7b-hf", swap_space=32, ...)
 
-    # After engine creation, install partial swap on the scheduler:
+    # After engine creation, install block-level scoring:
     install_block_level_swap(llm.llm_engine.scheduler[0])
 """
 from __future__ import annotations

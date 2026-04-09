@@ -1,0 +1,53 @@
+{
+  "task": "w4",
+  "results": [
+    {
+      "model": "Qwen2.5-7B",
+      "seq_len": 8192,
+      "actual_len": 8192,
+      "budget_mb": 50,
+      "max_new": 32,
+      "attn_impl": "sdpa",
+      "gpu_only_tok_s": 4431.4,
+      "fifo_tok_s": 253.0,
+      "fifo_evictions": 0,
+      "fifo_match": 1.0,
+      "orchkv_tok_s": 381.3,
+      "orchkv_evictions": 256,
+      "orchkv_match": 1.0,
+      "orch_vs_fifo": 1.51
+    },
+    {
+      "model": "Qwen2.5-7B",
+      "seq_len": 16384,
+      "actual_len": 16384,
+      "budget_mb": 50,
+      "max_new": 32,
+      "attn_impl": "sdpa",
+      "gpu_only_tok_s": 7404.3,
+      "fifo_tok_s": 239.8,
+      "fifo_evictions": 0,
+      "fifo_match": 1.0,
+      "orchkv_tok_s": 366.9,
+      "orchkv_evictions": 256,
+      "orchkv_match": 1.0,
+      "orch_vs_fifo": 1.53
+    },
+    {
+      "model": "Qwen2.5-7B",
+      "seq_len": 32768,
+      "actual_len": 32768,
+      "budget_mb": 50,
+      "max_new": 32,
+      "attn_impl": "sdpa",
+      "gpu_only_tok_s": 7207.3,
+      "fifo_tok_s": 237.3,
+      "fifo_evictions": 0,
+      "fifo_match": 1.0,
+      "orchkv_tok_s": 366.8,
+      "orchkv_evictions": 256,
+      "orchkv_match": 1.0,
+      "orch_vs_fifo": 1.55
+    }
+  ]
+}

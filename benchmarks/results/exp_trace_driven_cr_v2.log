@@ -1,0 +1,89 @@
+`torch_dtype` is deprecated! Use `dtype` instead!
+======================================================================
+  Trace-Driven Competitive Ratio & Signal Ablation (v2)
+  Cost model: weighted attention miss + migration cost
+======================================================================
+
+============================================================
+  Model: Qwen2.5-7B
+============================================================
+  Collecting trace: Qwen2.5-7B seq=2048 gen=64
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:01<00:04,  1.53s/it]Loading checkpoint shards:  50%|█████     | 2/4 [00:02<00:02,  1.42s/it]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:04<00:01,  1.34s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:05<00:00,  1.26s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:05<00:00,  1.31s/it]
+  Trace: 64 steps, 132 blocks
+
+  Capacity: 10% (13/132 blocks)
+    CR(cost): FIFO=0.00  LRU=nan  LFU=39200000000.00  EMA=0.00  OPT=1.00
+
+  Capacity: 20% (26/132 blocks)
+    CR(cost): FIFO=0.00  LRU=nan  LFU=75600000000.00  EMA=0.00  OPT=1.00
+
+  Capacity: 30% (39/132 blocks)
+    CR(cost): FIFO=0.00  LRU=nan  LFU=112000000000.00  EMA=0.00  OPT=1.00
+
+  Capacity: 50% (66/132 blocks)
+    CR(cost): FIFO=0.00  LRU=nan  LFU=184800000000.00  EMA=0.00  OPT=1.00
+
+  Capacity: 70% (92/132 blocks)
+    CR(cost): FIFO=0.00  LRU=6899200000000.00  LFU=112000000000.00  EMA=0.00  OPT=1.00
+
+  Signal ablation (capacity=30%, 39 blocks):
+    Full EMA            cost=     0.0  CR=0.000
+    No-attn             cost=     0.0  CR=0.000
+    Recency-only        cost=     0.0  CR=0.000
+    Frequency-only      cost=     0.0  CR=0.000
+
+============================================================
+  Model: Llama-2-7b-hf
+============================================================
+  Collecting trace: Llama-2-7b-hf seq=2048 gen=64
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards:  50%|█████     | 1/2 [00:03<00:03,  3.24s/it]Loading checkpoint shards: 100%|██████████| 2/2 [00:04<00:00,  1.95s/it]Loading checkpoint shards: 100%|██████████| 2/2 [00:04<00:00,  2.14s/it]
+  Trace: 64 steps, 132 blocks
+
+  Capacity: 10% (13/132 blocks)
+    CR(cost): FIFO=0.00  LRU=91929600000000.02  LFU=39200000000.00  EMA=0.00  OPT=1.00
+
+  Capacity: 20% (26/132 blocks)
+    CR(cost): FIFO=0.00  LRU=94259199999999.98  LFU=75600000000.00  EMA=0.00  OPT=1.00
+
+  Capacity: 30% (39/132 blocks)
+    CR(cost): FIFO=0.00  LRU=96588800000000.00  LFU=112000000000.00  EMA=0.00  OPT=1.00
+
+  Capacity: 50% (66/132 blocks)
+    CR(cost): FIFO=0.00  LRU=28358410000000.00  LFU=184800000000.00  EMA=0.00  OPT=1.00
+
+  Capacity: 70% (92/132 blocks)
+    CR(cost): FIFO=0.00  LRU=6899200000000.00  LFU=112000000000.00  EMA=0.00  OPT=1.00
+
+  Signal ablation (capacity=30%, 39 blocks):
+    Full EMA            cost=     0.0  CR=0.000
+    No-attn             cost=     0.0  CR=0.000
+    Recency-only        cost=     0.0  CR=0.000
+    Frequency-only      cost=     0.0  CR=0.000
+
+======================================================================
+  SUMMARY: Competitive Ratio (weighted cost)
+======================================================================
+  Model               Cap%   FIFO    LRU    LFU    EMA    OPT
+  Qwen2.5-7B           10%   0.00    nan 39200000000.00   0.00   1.00
+  Qwen2.5-7B           20%   0.00    nan 75600000000.00   0.00   1.00
+  Qwen2.5-7B           30%   0.00    nan 112000000000.00   0.00   1.00
+  Qwen2.5-7B           50%   0.00    nan 184800000000.00   0.00   1.00
+  Qwen2.5-7B           70%   0.00 6899200000000.00 112000000000.00   0.00   1.00
+  Llama-2-7b-hf        10%   0.00 91929600000000.02 39200000000.00   0.00   1.00
+  Llama-2-7b-hf        20%   0.00 94259199999999.98 75600000000.00   0.00   1.00
+  Llama-2-7b-hf        30%   0.00 96588800000000.00 112000000000.00   0.00   1.00
+  Llama-2-7b-hf        50%   0.00 28358410000000.00 184800000000.00   0.00   1.00
+  Llama-2-7b-hf        70%   0.00 6899200000000.00 112000000000.00   0.00   1.00
+
+  Signal Ablation (30% capacity, weighted cost CR)
+  Model              Config                   Cost     CR
+  Qwen2.5-7B         Full EMA                  0.0  0.000
+  Qwen2.5-7B         No-attn                   0.0  0.000
+  Qwen2.5-7B         Recency-only              0.0  0.000
+  Qwen2.5-7B         Frequency-only            0.0  0.000
+  Llama-2-7b-hf      Full EMA                  0.0  0.000
+  Llama-2-7b-hf      No-attn                   0.0  0.000
+  Llama-2-7b-hf      Recency-only              0.0  0.000
+  Llama-2-7b-hf      Frequency-only            0.0  0.000
+
+Saved to /home/lzq/codes/orchkv/OrchKvCache/benchmarks/results/exp_trace_driven_cr.json and /home/lzq/codes/orchkv/OrchKvCache/benchmarks/results/exp_signal_ablation.json

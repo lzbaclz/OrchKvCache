@@ -1,0 +1,125 @@
+[
+  {
+    "config": "GPU+DRAM only",
+    "model": "LLaMA-2-7B",
+    "seq_len": 2048,
+    "budget_mb": 10,
+    "batch_size": 1,
+    "avg_tok_s": 163.0,
+    "avg_gpu_to_dram": 512,
+    "avg_dram_to_ssd": 0,
+    "avg_ssd_to_dram": 0,
+    "avg_ssd_bytes_kb": 0.0,
+    "trials": [
+      {
+        "tok_s": 154.3,
+        "elapsed_s": 13.688,
+        "gpu_to_dram": 512,
+        "dram_to_ssd": 0,
+        "ssd_to_dram": 0,
+        "ssd_files": 0,
+        "ssd_bytes_kb": 0.0
+      },
+      {
+        "tok_s": 166.7,
+        "elapsed_s": 12.666,
+        "gpu_to_dram": 512,
+        "dram_to_ssd": 0,
+        "ssd_to_dram": 0,
+        "ssd_files": 0,
+        "ssd_bytes_kb": 0.0
+      },
+      {
+        "tok_s": 167.9,
+        "elapsed_s": 12.578,
+        "gpu_to_dram": 512,
+        "dram_to_ssd": 0,
+        "ssd_to_dram": 0,
+        "ssd_files": 0,
+        "ssd_bytes_kb": 0.0
+      }
+    ]
+  },
+  {
+    "config": "GPU+DRAM+SSD (per-block)",
+    "model": "LLaMA-2-7B",
+    "seq_len": 2048,
+    "budget_mb": 10,
+    "batch_size": 1,
+    "avg_tok_s": 165.3,
+    "avg_gpu_to_dram": 512,
+    "avg_dram_to_ssd": 256,
+    "avg_ssd_to_dram": 256,
+    "avg_ssd_bytes_kb": 1024.0,
+    "trials": [
+      {
+        "tok_s": 164.7,
+        "elapsed_s": 12.82,
+        "gpu_to_dram": 512,
+        "dram_to_ssd": 256,
+        "ssd_to_dram": 256,
+        "ssd_files": 4,
+        "ssd_bytes_kb": 1024.0
+      },
+      {
+        "tok_s": 165.0,
+        "elapsed_s": 12.801,
+        "gpu_to_dram": 512,
+        "dram_to_ssd": 256,
+        "ssd_to_dram": 256,
+        "ssd_files": 4,
+        "ssd_bytes_kb": 1024.0
+      },
+      {
+        "tok_s": 166.1,
+        "elapsed_s": 12.719,
+        "gpu_to_dram": 512,
+        "dram_to_ssd": 256,
+        "ssd_to_dram": 256,
+        "ssd_files": 4,
+        "ssd_bytes_kb": 1024.0
+      }
+    ]
+  },
+  {
+    "config": "GPU+DRAM+SSD (batched-8)",
+    "model": "LLaMA-2-7B",
+    "seq_len": 2048,
+    "budget_mb": 10,
+    "batch_size": 8,
+    "avg_tok_s": 165.5,
+    "avg_gpu_to_dram": 512,
+    "avg_dram_to_ssd": 256,
+    "avg_ssd_to_dram": 256,
+    "avg_ssd_bytes_kb": 1024.0,
+    "trials": [
+      {
+        "tok_s": 165.6,
+        "elapsed_s": 12.756,
+        "gpu_to_dram": 512,
+        "dram_to_ssd": 256,
+        "ssd_to_dram": 256,
+        "ssd_files": 4,
+        "ssd_bytes_kb": 1024.0
+      },
+      {
+        "tok_s": 165.2,
+        "elapsed_s": 12.787,
+        "gpu_to_dram": 512,
+        "dram_to_ssd": 256,
+        "ssd_to_dram": 256,
+        "ssd_files": 4,
+        "ssd_bytes_kb": 1024.0
+      },
+      {
+        "tok_s": 165.7,
+        "elapsed_s": 12.744,
+        "gpu_to_dram": 512,
+        "dram_to_ssd": 256,
+        "ssd_to_dram": 256,
+        "ssd_files": 4,
+        "ssd_bytes_kb": 1024.0
+      }
+    ]
+  }
+]

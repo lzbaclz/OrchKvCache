@@ -1,0 +1,63 @@
+`torch_dtype` is deprecated! Use `dtype` instead!
+======================================================================
+  Trace-Driven CR (v4): Multi-Request Interleaved Traces
+======================================================================
+  Collecting multi-request trace: Qwen2.5-7B
+    4 requests × 16 steps, seq_len=512
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:01<00:04,  1.40s/it]Loading checkpoint shards:  50%|█████     | 2/4 [00:02<00:02,  1.33s/it]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:03<00:01,  1.31s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:05<00:00,  1.23s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:05<00:00,  1.27s/it]
+    Total blocks across all requests: 132
+    Interleaved steps: 64
+  Avg request size: 1.0 blocks/step
+  cap= 10%  FIFO=1.00  LRU=1.00  LFU=1.00  EMA=1.00  OPT=1.00  (miss: 4/4/4/4/4)
+  cap= 20%  FIFO=1.00  LRU=1.00  LFU=1.00  EMA=1.00  OPT=1.00  (miss: 4/4/4/4/4)
+  cap= 30%  FIFO=1.00  LRU=1.00  LFU=1.00  EMA=1.00  OPT=1.00  (miss: 4/4/4/4/4)
+  cap= 50%  FIFO=1.00  LRU=1.00  LFU=1.00  EMA=1.00  OPT=1.00  (miss: 4/4/4/4/4)
+  cap= 70%  FIFO=1.00  LRU=1.00  LFU=1.00  EMA=1.00  OPT=1.00  (miss: 4/4/4/4/4)
+
+  Signal ablation (30% cap):
+    Full EMA          misses=    4  CR=1.000
+    No-attn           misses=    4  CR=1.000
+    Recency-only      misses=    4  CR=1.000
+    Freq-only         misses=    4  CR=1.000
+  Collecting multi-request trace: Llama-2-7b-hf
+    4 requests × 16 steps, seq_len=512
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards:  50%|█████     | 1/2 [00:03<00:03,  3.25s/it]Loading checkpoint shards: 100%|██████████| 2/2 [00:04<00:00,  1.96s/it]Loading checkpoint shards: 100%|██████████| 2/2 [00:04<00:00,  2.15s/it]
+    Total blocks across all requests: 132
+    Interleaved steps: 64
+  Avg request size: 1.0 blocks/step
+  cap= 10%  FIFO=1.00  LRU=1.00  LFU=1.00  EMA=1.00  OPT=1.00  (miss: 8/8/8/8/8)
+  cap= 20%  FIFO=1.00  LRU=1.00  LFU=1.00  EMA=1.00  OPT=1.00  (miss: 8/8/8/8/8)
+  cap= 30%  FIFO=1.00  LRU=1.00  LFU=1.00  EMA=1.00  OPT=1.00  (miss: 8/8/8/8/8)
+  cap= 50%  FIFO=1.00  LRU=1.00  LFU=1.00  EMA=1.00  OPT=1.00  (miss: 8/8/8/8/8)
+  cap= 70%  FIFO=1.00  LRU=1.00  LFU=1.00  EMA=1.00  OPT=1.00  (miss: 8/8/8/8/8)
+
+  Signal ablation (30% cap):
+    Full EMA          misses=    8  CR=1.000
+    No-attn           misses=    8  CR=1.000
+    Recency-only      misses=    8  CR=1.000
+    Freq-only         misses=    8  CR=1.000
+
+======================================================================
+  CR SUMMARY (multi-request real traces)
+======================================================================
+  Model               Cap   FIFO    LRU    LFU    EMA    OPT
+  Qwen2.5-7B          10%   1.00   1.00   1.00   1.00   1.00
+  Qwen2.5-7B          20%   1.00   1.00   1.00   1.00   1.00
+  Qwen2.5-7B          30%   1.00   1.00   1.00   1.00   1.00
+  Qwen2.5-7B          50%   1.00   1.00   1.00   1.00   1.00
+  Qwen2.5-7B          70%   1.00   1.00   1.00   1.00   1.00
+  Llama-2-7b-hf       10%   1.00   1.00   1.00   1.00   1.00
+  Llama-2-7b-hf       20%   1.00   1.00   1.00   1.00   1.00
+  Llama-2-7b-hf       30%   1.00   1.00   1.00   1.00   1.00
+  Llama-2-7b-hf       50%   1.00   1.00   1.00   1.00   1.00
+  Llama-2-7b-hf       70%   1.00   1.00   1.00   1.00   1.00
+
+  ABLATION
+  Qwen2.5-7B         Full EMA         miss=    4 CR=1.000
+  Qwen2.5-7B         No-attn          miss=    4 CR=1.000
+  Qwen2.5-7B         Recency-only     miss=    4 CR=1.000
+  Qwen2.5-7B         Freq-only        miss=    4 CR=1.000
+  Llama-2-7b-hf      Full EMA         miss=    8 CR=1.000
+  Llama-2-7b-hf      No-attn          miss=    8 CR=1.000
+  Llama-2-7b-hf      Recency-only     miss=    8 CR=1.000
+  Llama-2-7b-hf      Freq-only        miss=    8 CR=1.000

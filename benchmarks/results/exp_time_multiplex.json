@@ -1,0 +1,23 @@
+{
+  "model": "Qwen/Qwen2.5-7B",
+  "seq_len": 1024,
+  "max_new": 64,
+  "n_requests": 4,
+  "total_budget_mb": 50,
+  "isolated": {
+    "mode": "isolated",
+    "tok_s": 117.3,
+    "elapsed": 15.791,
+    "evictions": 58240,
+    "per_req_budget_mb": 12.5
+  },
+  "shared_pool": {
+    "mode": "shared_pool",
+    "tok_s": 309.4,
+    "elapsed": 5.985,
+    "evictions": 0,
+    "per_req_budget_mb": 50
+  },
+  "speedup": 2.638,
+  "eviction_reduction": 58240.0
+}

@@ -1,0 +1,46 @@
+[
+  {
+    "sub_k": 1,
+    "label": "round-robin",
+    "budget_per_group_mb": 50.0,
+    "budget_kv_pct": 89.0,
+    "tok_s": 327.5,
+    "elapsed": 11.373,
+    "evictions": 0,
+    "budget_per_mgr_mb": 50.0,
+    "speedup_vs_fullbatch": 2.72
+  },
+  {
+    "sub_k": 2,
+    "label": "sub-batch K=2",
+    "budget_per_group_mb": 25.0,
+    "budget_kv_pct": 45.0,
+    "tok_s": 183.5,
+    "elapsed": 20.29,
+    "evictions": 52500,
+    "budget_per_mgr_mb": 25.0,
+    "speedup_vs_fullbatch": 1.52
+  },
+  {
+    "sub_k": 4,
+    "label": "sub-batch K=4",
+    "budget_per_group_mb": 12.5,
+    "budget_kv_pct": 22.0,
+    "tok_s": 117.7,
+    "elapsed": 31.636,
+    "evictions": 116480,
+    "budget_per_mgr_mb": 12.5,
+    "speedup_vs_fullbatch": 0.98
+  },
+  {
+    "sub_k": 8,
+    "label": "full-batch K=8",
+    "budget_per_group_mb": 6.2,
+    "budget_kv_pct": 11.0,
+    "tok_s": 120.5,
+    "elapsed": 30.899,
+    "evictions": 116480,
+    "budget_per_mgr_mb": 6.2,
+    "speedup_vs_fullbatch": 1.0
+  }
+]
