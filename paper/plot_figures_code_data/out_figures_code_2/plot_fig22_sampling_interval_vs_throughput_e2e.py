@@ -1,0 +1,74 @@
+#!/usr/bin/env python3
+from __future__ import annotations
+import json
+from collections import defaultdict
+from pathlib import Path
+
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+import numpy as np
+
+BASE = Path(__file__).resolve().parent.parent  # points to plot_figures_code_data/
+OUT = Path(__file__).resolve().parent           # output in same dir as this script
+
+C_GPU = "#A8D5BA";  EC_GPU = "#6BA882"
+C_FIFO = "#E8B4A8"; EC_FIFO = "#C07868"
+C_ORKV = "#9CC0D8"; EC_ORKV = "#5A90B0"
+C_GRAY = "#C8C8C8"; EC_GRAY = "#909090"
+C_ORANGE = "#E8C8A0"; EC_ORANGE = "#C09060"
+C_PURPLE = "#C8B8D8"; EC_PURPLE = "#9080A8"
+
+BAR_KW = dict(linewidth=0.7)
+
+plt.rcParams.update({
+    "font.size": 10,
+    "font.family": "serif",
+    "figure.dpi": 150,
+    "savefig.dpi": 300,
+    "savefig.bbox": "tight",
+    "axes.spines.top": False,
+    "axes.spines.right": False,
+})
+
+def _load(name: str):
+    with open(BASE / name) as f:
+        return json.load(f)
+
+def _save(fig, stem: str):
+    OUT.mkdir(parents=True, exist_ok=True)
+    for ext in ("pdf", "png"):
+        fig.savefig(OUT / f"{stem}.{ext}")
+    plt.close(fig)
+    print(f"Wrote {OUT}/{stem}.pdf/png")
+
+def _top_legend(ax, ncol=3):
+    ax.legend(
+        loc="lower center", bbox_to_anchor=(0.5, 1.0),
+        ncol=ncol, frameon=False, fontsize=9, columnspacing=1.5,
+    )
+
+def _short(m: str) -> str:
+    return (m.replace("Qwen2.5-", "Qwen ").replace("Llama-2-7b-hf", "LLaMA-2-7B")
+             .replace("LLaMA-2-", "LLaMA ").replace("meta-llama/", "")
+             .replace("-7B", " 7B").replace("-13B", " 13B").strip())
+
+def fig22():
+    data = _load("exp_e10_sampling_e2e.json")
+    results = sorted(data["results"], key=lambda r: r["sample_interval"])
+    results = [r for r in results if r["sample_interval"] > 0]
+    ivs = [r["sample_interval"] for r in results]
+    tps = [r["avg_throughput_tok_s"] for r in results]
+
+    fig, ax = plt.subplots(figsize=(6, 3.2))
+    ax.plot(ivs, tps, marker="o", markersize=5, color=EC_ORKV, linewidth=2)
+    for a, b in zip(ivs, tps):
+        ax.annotate(f"{b:.0f}", (a, b), textcoords="offset points", xytext=(0, 8), ha="center", fontsize=7)
+    ax.set_xlabel("Sampling interval (N)"); ax.set_ylabel("Throughput (tok/s)")
+    ax.grid(alpha=0.3)
+    _save(fig, "fig22_sampling_e2e_throughput")
+
+
+
+if __name__ == "__main__":
+    fig22()

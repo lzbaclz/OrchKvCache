@@ -1,0 +1,267 @@
+{
+  "config": {
+    "n_blocks": 256,
+    "n_steps": 200,
+    "n_runs": 3,
+    "seed": 42
+  },
+  "ema_lambda": [
+    {
+      "param": "ema_lambda",
+      "value": 0.1,
+      "accuracy": 0.4816,
+      "oscillations": 0.7,
+      "migrations": 106.3
+    },
+    {
+      "param": "ema_lambda",
+      "value": 0.3,
+      "accuracy": 0.4813,
+      "oscillations": 0.3,
+      "migrations": 106.3
+    },
+    {
+      "param": "ema_lambda",
+      "value": 0.5,
+      "accuracy": 0.4809,
+      "oscillations": 0,
+      "migrations": 101.3
+    },
+    {
+      "param": "ema_lambda",
+      "value": 0.7,
+      "accuracy": 0.4799,
+      "oscillations": 0.3,
+      "migrations": 105.3
+    },
+    {
+      "param": "ema_lambda",
+      "value": 0.9,
+      "accuracy": 0.478,
+      "oscillations": 0,
+      "migrations": 106.3
+    },
+    {
+      "param": "ema_lambda",
+      "value": 0.95,
+      "accuracy": 0.477,
+      "oscillations": 0.3,
+      "migrations": 112.3
+    }
+  ],
+  "recency_tau": [
+    {
+      "param": "recency_tau",
+      "value": 5,
+      "accuracy": 0.5649,
+      "oscillations": 0.3,
+      "migrations": 97.7
+    },
+    {
+      "param": "recency_tau",
+      "value": 10,
+      "accuracy": 0.5554,
+      "oscillations": 0.3,
+      "migrations": 101.7
+    },
+    {
+      "param": "recency_tau",
+      "value": 25,
+      "accuracy": 0.5246,
+      "oscillations": 0.3,
+      "migrations": 109.7
+    },
+    {
+      "param": "recency_tau",
+      "value": 50,
+      "accuracy": 0.478,
+      "oscillations": 0,
+      "migrations": 106.3
+    },
+    {
+      "param": "recency_tau",
+      "value": 100,
+      "accuracy": 0.3878,
+      "oscillations": 0.7,
+      "migrations": 267.7
+    },
+    {
+      "param": "recency_tau",
+      "value": 200,
+      "accuracy": 0.197,
+      "oscillations": 1.3,
+      "migrations": 384.3
+    }
+  ],
+  "cooldown": [
+    {
+      "param": "cooldown",
+      "value": 0.0,
+      "accuracy": 0.4527,
+      "oscillations": 0.3,
+      "migrations": 322.3
+    },
+    {
+      "param": "cooldown",
+      "value": 0.01,
+      "accuracy": 0.4527,
+      "oscillations": 0.3,
+      "migrations": 322.3
+    },
+    {
+      "param": "cooldown",
+      "value": 0.05,
+      "accuracy": 0.4527,
+      "oscillations": 0.3,
+      "migrations": 322.3
+    },
+    {
+      "param": "cooldown",
+      "value": 0.1,
+      "accuracy": 0.4527,
+      "oscillations": 0.3,
+      "migrations": 322.3
+    },
+    {
+      "param": "cooldown",
+      "value": 0.5,
+      "accuracy": 0.478,
+      "oscillations": 0,
+      "migrations": 106.3
+    },
+    {
+      "param": "cooldown",
+      "value": 1.0,
+      "accuracy": 0.4966,
+      "oscillations": 0,
+      "migrations": 98.3
+    }
+  ],
+  "combined": [
+    {
+      "ema_lambda": 0.1,
+      "recency_tau": 5,
+      "accuracy": 0.5655
+    },
+    {
+      "ema_lambda": 0.1,
+      "recency_tau": 10,
+      "accuracy": 0.5566
+    },
+    {
+      "ema_lambda": 0.1,
+      "recency_tau": 25,
+      "accuracy": 0.5267
+    },
+    {
+      "ema_lambda": 0.1,
+      "recency_tau": 50,
+      "accuracy": 0.4816
+    },
+    {
+      "ema_lambda": 0.1,
+      "recency_tau": 100,
+      "accuracy": 0.3905
+    },
+    {
+      "ema_lambda": 0.3,
+      "recency_tau": 5,
+      "accuracy": 0.5654
+    },
+    {
+      "ema_lambda": 0.3,
+      "recency_tau": 10,
+      "accuracy": 0.5564
+    },
+    {
+      "ema_lambda": 0.3,
+      "recency_tau": 25,
+      "accuracy": 0.5265
+    },
+    {
+      "ema_lambda": 0.3,
+      "recency_tau": 50,
+      "accuracy": 0.4813
+    },
+    {
+      "ema_lambda": 0.3,
+      "recency_tau": 100,
+      "accuracy": 0.3904
+    },
+    {
+      "ema_lambda": 0.5,
+      "recency_tau": 5,
+      "accuracy": 0.5652
+    },
+    {
+      "ema_lambda": 0.5,
+      "recency_tau": 10,
+      "accuracy": 0.5562
+    },
+    {
+      "ema_lambda": 0.5,
+      "recency_tau": 25,
+      "accuracy": 0.5261
+    },
+    {
+      "ema_lambda": 0.5,
+      "recency_tau": 50,
+      "accuracy": 0.4809
+    },
+    {
+      "ema_lambda": 0.5,
+      "recency_tau": 100,
+      "accuracy": 0.3901
+    },
+    {
+      "ema_lambda": 0.7,
+      "recency_tau": 5,
+      "accuracy": 0.5651
+    },
+    {
+      "ema_lambda": 0.7,
+      "recency_tau": 10,
+      "accuracy": 0.5558
+    },
+    {
+      "ema_lambda": 0.7,
+      "recency_tau": 25,
+      "accuracy": 0.5255
+    },
+    {
+      "ema_lambda": 0.7,
+      "recency_tau": 50,
+      "accuracy": 0.4799
+    },
+    {
+      "ema_lambda": 0.7,
+      "recency_tau": 100,
+      "accuracy": 0.3895
+    },
+    {
+      "ema_lambda": 0.9,
+      "recency_tau": 5,
+      "accuracy": 0.5649
+    },
+    {
+      "ema_lambda": 0.9,
+      "recency_tau": 10,
+      "accuracy": 0.5554
+    },
+    {
+      "ema_lambda": 0.9,
+      "recency_tau": 25,
+      "accuracy": 0.5246
+    },
+    {
+      "ema_lambda": 0.9,
+      "recency_tau": 50,
+      "accuracy": 0.478
+    },
+    {
+      "ema_lambda": 0.9,
+      "recency_tau": 100,
+      "accuracy": 0.3878
+    }
+  ]
+}

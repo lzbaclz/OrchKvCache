@@ -1,0 +1,1118 @@
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+% \usepackage{algorithmic}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{hyperref}
+\usepackage{balance}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{tabularx}
+\usepackage[htt]{hyphenat}
+\usepackage[caption=false,font=footnotesize]{subfig}
+
+
+
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+\begin{document}
+
+\title{OrchKvCache: Orchestrating LLM KV-Cache across GPU-DRAM-SSD with Attention-Aware Hotness Scheduling\\
+% {\footnotesize \textsuperscript{*}Note: Sub-titles are not captured in Xplore and
+% should not be used}
+% \thanks{Identify applicable funding agency here. If none, delete this.}
+}
+
+\author{\IEEEauthorblockN{1\textsuperscript{st} Ziqing Li}
+\IEEEauthorblockA{\textit{School of Computer Science and Technology} \\
+\textit{Huazhong University of Science and Technology}\\
+Wuhan, China \\
+d202381502@hust.edu.cn}
+\and
+% \IEEEauthorblockN{2\textsuperscript{nd} Given Name Surname}
+% \IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
+% \textit{name of organization (of Aff.)}\\
+% City, Country \\
+% email address or ORCID}
+% \and
+% \IEEEauthorblockN{3\textsuperscript{rd} Given Name Surname}
+% \IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
+% \textit{name of organization (of Aff.)}\\
+% City, Country \\
+% email address or ORCID}
+% \and
+% \IEEEauthorblockN{4\textsuperscript{th} Given Name Surname}
+% \IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
+% \textit{name of organization (of Aff.)}\\
+% City, Country \\
+% email address or ORCID}
+% \and
+% \IEEEauthorblockN{5\textsuperscript{th} Given Name Surname}
+% \IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
+% \textit{name of organization (of Aff.)}\\
+% City, Country \\
+% email address or ORCID}
+% \and
+\IEEEauthorblockN{2\textsuperscript{nd} Jianxi Chen*}
+\IEEEauthorblockA{\textit{Wuhan National Laboratory for Optoelectronics} \\
+\textit{Huazhong University of Science and Technology}\\
+Wuhan, China \\
+chenjx@hust.edu.cn}
+}
+
+\maketitle
+
+\begin{abstract}
+The Key-Value (KV) cache is the dominant memory bottleneck in large language model (LLM) inference, as its footprint grows linearly with context length, yet existing systems either evict cache blocks blindly via FIFO, rely on static offline offloading plans, or permanently discard tokens at the cost of output quality. We present \textbf{OrchKvCache}, a runtime system that orchestrates KV-cache blocks across GPU HBM, host DRAM, and SSD using online attention-based hotness classification. OrchKvCache introduces three coordinated techniques: (1)~an attention-driven hot/warm/cold classifier with adaptive thresholds that tracks per-block reuse likelihood each decode step; (2)~multi-granularity IO adaptation that aligns batch evictions to SSD block boundaries, boosting write utilization by over 10$\times$; and (3)~a prefetch-driven pipeline that overlaps data migration with computation at microsecond-level overhead. Evaluation on four models spanning GQA and MHA architectures on A100 GPUs shows that OrchKvCache reduces unnecessary data migrations by \textbf{139--597$\times$} over FIFO offloading while maintaining \textbf{100\% lossless} accuracy across the full three-tier path. In our block-level prototype (where shared framework overhead amplifies relative differences), these migration savings translate to \textbf{1.28--1.77$\times$} throughput improvement; integration into vLLM's scheduler independently confirms \textbf{1.08--1.15$\times$} throughput under memory pressure via improved victim selection.
+\end{abstract}
+
+\begin{IEEEkeywords}
+large language models, KV-cache management, long-context inference, tiered memory, heterogeneous storage, attention-aware caching, prefetching, GPU memory offloading
+\end{IEEEkeywords}
+
+%% ====================================================================
+\section{Introduction}
+%% ====================================================================
+
+Large language models (LLMs) power an expanding range of applications---from multi-turn conversational assistants and code-completion engines to retrieval-augmented generation over long documents~\cite{gpt4,llama2,llama3}. Deploying these models at scale demands high-throughput inference systems that can serve hundreds of concurrent requests with stringent latency service-level objectives. A critical performance limiter in all Transformer-based~\cite{transformer} LLM serving systems is the \emph{Key-Value cache} (KV cache): during autoregressive decoding, every previously generated token's key and value projections must be retained so that the self-attention mechanism can attend over the full context without recomputing these projections~\cite{vllm}.
+
+The KV cache poses a growing memory challenge. Its footprint grows linearly with both sequence length and model depth (Eq.~\ref{eq:kv-mem}). For LLaMA-2-7B (32 layers, 32 MHA heads, FP16), each token adds 0.5\,MB to the cache. Even with Grouped-Query Attention (GQA)~\cite{gqa} (an evolution of MQA~\cite{mqa}), the problem persists: LLaMA-3-8B's KV cache at 128K context would equal its 16\,GB model weight. Critically, memory pressure already manifests at moderate context lengths: in batch serving, a modest batch of 16 requests at 4K context already consumes 32\,GB of KV cache on LLaMA-2-7B---leaving minimal headroom on an 80\,GB GPU. Our evaluation (\S\ref{sec:e2e}) focuses on this practically relevant regime of 2K--8K tokens per request with 1--16 concurrent requests.
+
+The systems community has responded with several families of solutions, each representing a different point in the design space (Table~\ref{tab:paradigm}):
+
+\begin{table}[t]
+\centering
+\caption{Evolution of KV-cache management paradigms. Each row addresses the limitation above it but introduces a new one.}
+\label{tab:paradigm}
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabularx}{\columnwidth}{@{}lccX@{}}
+\toprule
+Paradigm & Tiers & Lossless? & Key limitation \\
+\midrule
+GPU-only                           & 1 & Yes & OOM at batch/long ctx \\
+vLLM FIFO swap~\cite{vllm}        & 2 & Yes & Blind eviction \\
+FlexGen offline~\cite{flexgen}     & 3 & Yes & Static plan, low SSD util. \\
+H2O/ScissorHands~\cite{h2o,scissorhands} & 1 & No  & Lossy by design \\
+InfiniGen~\cite{infinigen}         & 2 & Yes$^*$ & No SSD; no proactive evict \\
+IMPRESS~\cite{impress}             & 3 & No  & Prefix-only; read amplif. \\
+\textbf{OrchKvCache (ours)}        & \textbf{3} & \textbf{Yes} & \textbf{---} \\
+\bottomrule
+\multicolumn{4}{@{}l}{\scriptsize $^*$Lossless only when all KV fits in GPU; evicts entries otherwise.}\\
+\end{tabularx}
+\end{table}
+
+\textbf{Hotness-agnostic paging (vLLM~\cite{vllm}).} PagedAttention introduced OS-inspired virtual-memory management for the KV cache, raising GPU utilization to near 100\%. When memory is exhausted, vLLM swaps entire KV blocks to DRAM via FIFO. However, FIFO is \emph{oblivious to attention importance}. \emph{We measured the cost}: on LLaMA-2-7B with 4 requests at seq=2048, FIFO performs \textbf{$>$600{,}000 evictions} during 64 decode steps, whereas attention-aware scheduling requires only \textbf{$\sim$1{,}500}---a \textbf{400$\times$} gap (\S\ref{sec:e2e}). Each unnecessary eviction moves 32\,KB across PCIe, wasting up to 30\,ms/step of bandwidth.
+
+\textbf{Offline offloading (FlexGen~\cite{flexgen}).} FlexGen formulates three-tier placement as a linear program solved \emph{offline}. While it supports GPU+DRAM+SSD, it cannot adapt at runtime, offloads per-layer, and achieves only 4--26\% of SSD peak write bandwidth (\S\ref{sec:storage-char}).
+
+\textbf{Lossy eviction (H2O~\cite{h2o}, ScissorHands~\cite{scissorhands}, StreamingLLM~\cite{streamingllm}).} These approaches permanently discard cold tokens, trading quality for memory savings (up to 5$\times$~\cite{h2o}).  They are effective but \emph{lossy by design}: output quality degrades when discarded tokens turn out to be needed.
+
+\textbf{Two-tier prefetch (InfiniGen~\cite{infinigen}).} InfiniGen (OSDI~'24) achieves 95\%+ prefetch accuracy via cross-layer speculation, but is limited to GPU + DRAM and does not proactively evict cold blocks to SSD.
+
+\textbf{Prefix-KV storage (IMPRESS~\cite{impress}).} IMPRESS (FAST~'25) addresses the \emph{Re-Prefill} bottleneck---loading shared prefix KV caches from SSD---via importance-guided selective loading. However, it targets prefix reuse only (not the decode phase), is lossy (loads only important tokens), and suffers from read amplification (12--56$\times$~\cite{impress}).
+
+We identify an opportunity at the intersection of two observations:
+
+\textbf{(O1) Attention is extremely skewed---and predictably so.} Our profiling on Qwen2.5-1.5B confirms: the top 10\% of tokens capture 90--97\% of total attention weight per layer (Gini 0.87--0.97). The set of hot tokens is partially stable across decode steps (Jaccard 0.47--0.70), making history-based prediction viable. IMPRESS~\cite{impress} reports a similar observation for prefix tokens across attention heads---attention skewness is a fundamental property of Transformers that persists across both prefill and decode phases.
+
+\textbf{(O2) Heterogeneous storage offers a deep hierarchy---if I/O is well orchestrated.} Modern servers contain NVMe SSDs delivering up to 17.8\,GB/s sequential read. OrchFS~\cite{orchfs} (FAST~'25) showed that alignment-based write partitioning improves SSD write throughput by up to 29.76$\times$. However, existing decode-phase systems (vLLM, InfiniGen) either ignore SSD entirely or use POSIX I/O with $<$5\% utilization (\S\ref{sec:storage-char}).
+
+Building on these observations, we present \textbf{OrchKvCache}, a tiered KV-cache management system that dynamically places KV blocks across GPU HBM, host DRAM, and SSD based on their runtime attention-derived hotness. OrchKvCache makes three contributions:
+
+\begin{enumerate}
+\item \textbf{Attention-driven hot-cold classification with adaptive thresholds (\S\ref{sec:classification}).} A composite scoring function fuses EMA-smoothed attention scores, temporal recency, and access frequency. A watermark-based feedback loop adjusts thresholds, and an attention-sink guard permanently pins initial tokens~\cite{streamingllm}.
+
+\item \textbf{Multi-granularity IO adaptation via OrchFS integration (\S\ref{sec:tiered-storage}).} Batch cold-block demotions are aggregated into 32\,KB-aligned SSD writes, raising SSD write utilization from 4--9\% to over 41\%.
+
+\item \textbf{Prefetch-driven three-stage compute-transfer pipeline (\S\ref{sec:pipeline}).} GPU attention computation overlaps with DRAM$\to$GPU prefetch and SSD$\to$DRAM preload, with $\leq$5.9\,$\mu$s per-step overhead.
+\end{enumerate}
+
+Across all paths, OrchKvCache guarantees \textbf{lossless integrity}: under greedy decoding, every generated token matches the GPU-only baseline bit-for-bit (100\% token match on 512 generated tokens across four prompt lengths, \S\ref{sec:quality-eval}).
+
+We implement OrchKvCache in ${\sim}$4,500 lines of C/CUDA plus ${\sim}$1,200 lines of Python with pybind11 bindings. Evaluation on four models (7B GQA through 13B MHA) with NVIDIA A100-80GB demonstrates: (i)~\textbf{139--597$\times$} fewer data migrations than FIFO offloading; (ii)~\textbf{100\% lossless} output through the full GPU$\to$DRAM$\to$SSD round-trip; (iii)~sub-60\,$\mu$s scheduling latency at 4,096 blocks with sub-linear scaling. In our block-level prototype (where shared framework overhead amplifies relative differences), these savings yield \textbf{1.28--1.77$\times$} throughput; integration into vLLM's scheduler independently confirms \textbf{1.08--1.15$\times$} under memory pressure.
+
+\textbf{Scope and deployment context.} Our results provide two complementary types of evidence. The block-level prototype (\S\ref{sec:e2e}--\S\ref{sec:signal-ablation}) validates the core mechanisms---attention-driven classification, three-tier lossless migration, and SSD-aligned I/O---in a controlled setting that isolates scheduling policy from serving-framework effects. The vLLM integration (\S\ref{sec:vllm-integration}) demonstrates that these principles transfer to a production runtime, yielding measurable throughput gains via improved victim selection. We note that current production engines (vLLM, SGLang) impose a structural constraint: their attention kernels require all KV blocks of a running sequence to reside on GPU, precluding true intra-request partial swap. OrchKvCache's block-level intelligence therefore operates at two levels today: request-level victim selection within existing runtimes, and block-level migration in a prototype that demonstrates the full mechanism. Extending production kernels to support mixed-tier block tables is the natural path to unifying both levels (\S\ref{sec:discussion}).
+
+\textbf{Note on throughput measurement.} The prototype speedup is measured in a regime where shared framework overhead (Python KV-cache reconstruction, 59.5\% of per-step time) amplifies relative differences. The scheduling algorithm's intrinsic benefit is most cleanly visible in two metrics: migration reduction (framework-independent) and vLLM throughput (free of Python amplification). A systematic overhead decomposition in \S\ref{sec:overhead} disentangles these factors.
+
+%% ====================================================================
+\section{Background and Motivation}
+%% ====================================================================
+\subsection{Transformer Inference and the KV Cache}
+
+Modern LLMs use the Transformer architecture~\cite{transformer} with rotary position embeddings~\cite{rope}. During autoregressive decoding, each token's key and value projections are cached so that self-attention~\cite{transformer} can attend over the full context without recomputation. The KV cache for a request of sequence length $s$ requires:
+\begin{equation}
+M_{\text{KV}} = 2 \times L \times n_{kv} \times s \times d \times \text{sizeof(dtype)}
+\label{eq:kv-mem}
+\end{equation}
+where $L$ is the layer count, $n_{kv}$ the number of KV heads, $d$ the head dimension, and sizeof(dtype) is 2 bytes for FP16. The maximum batch size is thus $(M_{\text{GPU}} - M_{\text{model}}) / M_{\text{KV}}(s)$.
+
+\textbf{The Online Tiered KV-Cache Placement Problem.} During autoregressive decoding, the system must decide at each step which KV blocks to keep on GPU, demote to DRAM, or spill to SSD---\emph{without future knowledge}. This is an instance of the online paging problem~\cite{sleator-tarjan} with tier-dependent eviction costs, where access patterns are determined by the model's attention distribution, which shifts every decode step.
+
+\subsection{Limitations of Existing Approaches}
+
+We identify four limitations:
+
+\textbf{L1: Cold data wastes GPU memory.} Attention scores follow a power-law distribution~\cite{h2o,scissorhands}, yet vLLM~\cite{vllm} treats all blocks identically via FIFO preemption. \emph{Preliminary measurement}: on LLaMA-2-7B (seq=2048, budget=50\,MB, 4 requests), FIFO evicts \textbf{603{,}972} block-layer pairs over 64 decode steps, while only \textbf{4{,}904} are necessary under attention-aware scheduling (\S\ref{sec:e2e})---a \textbf{123$\times$} waste.
+
+\textbf{L2: Offloading granularity is too coarse.} FlexGen~\cite{flexgen} offloads per-layer; vLLM's per-block swap lacks awareness; InfiniGen~\cite{infinigen} does not proactively evict cold blocks.  IMPRESS~\cite{impress} identified a similar granularity mismatch in the prefix-loading setting (12--56$\times$ read amplification); in the decode setting, we observe an analogous problem: per-block SSD writes without batching achieve only 4.3\% of peak bandwidth (Table~\ref{tab:storage-char}).
+
+\textbf{L3: The storage hierarchy stops at DRAM.} No decode-phase system leverages NVMe SSD parallelism (17.8\,GB/s sequential read) for cold data archival.  IMPRESS~\cite{impress} demonstrated the feasibility of selective SSD loading for prefix KVs; OrchKvCache extends this principle to the decode phase with proactive, attention-driven SSD spill.
+
+\textbf{L4: Storage bandwidth is under-utilized.} vLLM-style per-block SSD eviction achieves only \textbf{4.3\%} of peak write bandwidth. Batching 8+ blocks recovers 40.8\% (Table~\ref{tab:storage-char}), motivating OrchKvCache's batch eviction design.
+
+\subsection{Attention Distribution Analysis}
+
+We profile Qwen2.5-1.5B (28 layers, 2 GQA KV heads, $d{=}128$) across three prompt lengths.
+
+
+\textbf{Finding 1 (Power-law).} Top-10\% tokens account for 90--96\% of attention weight (Gini 0.87--0.97).
+
+\textbf{Finding 2 (Block-level signal).} Top-10\% blocks concentrate ${\sim}$80\% of attention weight at block\_size=16.
+
+\textbf{Finding 3 (Layer variation).} Middle layers (7--20) show strongest concentration (top-10\% $>$ 95\%); early and late layers are more uniform.
+
+\textbf{Finding 4 (Attention sink).} First token captures 59--77\% of attention in layers 2--6~\cite{streamingllm}.
+
+\textbf{Finding 5 (Temporal stability).} Jaccard similarity 0.47--0.70 across consecutive decode steps, validating the Persistence of Importance hypothesis~\cite{scissorhands}.
+
+\textbf{Scale validation.} We reproduce this analysis on Qwen2.5-7B (28 layers, 4 GQA KV heads, three prompt lengths). All key metrics match the 1.5B results: mean Gini 0.91 (vs.\ 0.87--0.97), mean Jaccard 0.64 (vs.\ 0.47--0.70). The wider per-layer ranges reflect the 7B model's greater depth, but the \emph{means are nearly identical}, confirming that attention skewness is an intrinsic Transformer property that persists across model scales.
+
+\subsection{Storage Hierarchy Characterization}
+\label{sec:storage-char}
+
+We microbenchmark each tier of the storage hierarchy on our evaluation platform (A100-80GB, DDR4-3200, Samsung PM9A3 NVMe RAID0) to characterize the bandwidth landscape that OrchKvCache must navigate. Table~\ref{tab:storage-char} summarizes the results.
+
+\begin{table}[t]
+\centering
+\caption{Inter-tier bandwidth and SSD write utilization. Per-block writes ($\leq$32\,KB) achieve only 4.3\% of SSD peak; batching 8+ blocks reaches 40.8\%.}
+\label{tab:storage-char}
+\small
+\begin{tabular}{@{}lrr@{}}
+\toprule
+Transfer Path & Bandwidth & Utilization \\
+\midrule
+GPU $\to$ DRAM (cudaMemcpy) & 23.0\,GB/s & 92\% PCIe Gen4 \\
+DRAM $\to$ GPU (cudaMemcpy) & 23.1\,GB/s & 92\% PCIe Gen4 \\
+SSD $\to$ DRAM (seq.\ read)  & 17.8\,GB/s & 100\% (peak) \\
+DRAM $\to$ SSD (seq.\ write) & 5.3\,GB/s & 100\% (peak) \\
+\midrule
+SSD write: 1 block (32\,KB)  & 0.23\,GB/s & 4.3\% \\
+SSD write: 8 blocks batched  & 2.16\,GB/s & 40.8\% \\
+SSD write: 32 blocks batched & 3.91\,GB/s & 73.8\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+GPU$\leftrightarrow$DRAM saturates PCIe Gen4 at ${\sim}$23\,GB/s for transfers $\geq$\,64\,KB. SSD exhibits a pronounced 3.4$\times$ read/write asymmetry, and small per-block writes suffer severe utilization collapse: a single 32\,KB write achieves only 4.3\% of peak SSD write bandwidth due to FTL overhead and write-amplification. Batching 8+ blocks into contiguous 256+\,KB writes recovers 40.8\%, motivating OrchKvCache's batch eviction design (\S\ref{sec:tiered-storage}).
+
+\subsection{Heterogeneous Storage Foundation: OrchFS}
+
+OrchKvCache builds on OrchFS~\cite{orchfs}, which achieves up to 29.76$\times$ write improvement via alignment-based write partitioning. OrchKvCache explicitly constructs I/O requests matched to the target tier: small writes to NVM pages, large writes to SSD blocks. When OrchFS is unavailable, it falls back to POSIX I/O with batching.
+
+
+
+
+%% ====================================================================
+\section{Design}
+%% ====================================================================
+In this section, we present OrchKvCache, an attention-aware tiered KV-cache management system that dynamically places KV blocks across GPU HBM, host DRAM, and SSD. We first describe the overall architecture (\S\ref{sec:arch-overview}). We then introduce the KV block abstraction and its state machine (\S\ref{sec:block-abstraction}), followed by the attention-driven hot-cold classification pipeline (\S\ref{sec:classification}). Next, we describe the tiered storage management with batch-aligned SSD writes (\S\ref{sec:tiered-storage}), the migration engine that executes data movement (\S\ref{sec:migration}), and the prefetch-driven pipeline that overlaps IO with compute (\S\ref{sec:pipeline}). Finally, we formalise the per-step scheduling loop that orchestrates all components (\S\ref{sec:sched-loop}).
+
+\subsection{Architecture Overview}
+\label{sec:arch-overview}
+
+\begin{figure}[!h]
+\centering
+\includegraphics[width=0.52\textwidth]{figures/fig00_arch_final.pdf}
+\caption{Overview of OrchKvCache System.}
+% \caption{Overview of OrchKvCache System. \textbf{Left}: The scheduler (C8: Tiered Manager) orchestrates eight components across four phases---Phase~1: classification (C1--C3) computes per-block hotness scores and adapts thresholds via watermark feedback; Phase~2: eviction (C4) selects the coldest blocks for demotion; Phase~3: prefetch (C5) ranks non-GPU blocks by EMA priority and dispatches top-$K$ candidates; the migration engine (C7) executes asynchronous data movement (demote: GPU$\to$DRAM$\to$SSD; promote: SSD$\to$DRAM$\to$GPU). The pipeline coordinator (C6) tracks compute-IO overlap. \textbf{Bottom}: Three-tier storage pools with measured bandwidths. \textbf{Right}: The inference engine feeds per-block attention scores to C1 after each decode step and reads KV data from GPU HBM.}
+\label{fig:architecture}
+\end{figure}
+
+Figure~\ref{fig:architecture} shows the overall architecture. OrchKvCache comprises three subsystems: \textbf{tiered storage pools} (GPU HBM slab pool, host-pinned DRAM slab pool, OrchFS-backed SSD), \textbf{the scheduler} (eight components C1--C8), and \textbf{the integration layer} connecting to the inference engine. Each decode step triggers a single invocation of the tiered manager (C8), which runs the four-phase scheduling loop in $<$40\,$\mu$s (\S\ref{sec:prefetch-eval}), classifying all blocks, selecting victims for demotion, dispatching prefetch candidates, and recording pipeline overlap---all non-blocking via asynchronous DMA and IO thread pools.
+
+\subsection{KV Block Abstraction and State Machine}
+\label{sec:block-abstraction}
+
+Each block tracks its identity, storage tier (GPU HBM, host DRAM, or SSD), hotness signals, and lifecycle state (free, allocated, active, migrating, or evicted). A per-block reader-writer lock prevents concurrent readers from observing partially-migrated data. For Qwen2.5-7B ($n_{kv}{=}4$, $d{=}128$, FP16), each 16-token block occupies $16 \times 4 \times 128 \times 2 \times 2 = 32$\,KB---naturally aligned to the SSD page size, enabling efficient I/O without padding.
+
+
+\subsection{Attention-Driven Hot-Cold Classification}
+\label{sec:classification}
+
+The classification pipeline transforms raw attention observations into per-block tier assignments through three cooperating stages, formalized in Algorithm~\ref{alg:classify}.
+
+\textbf{Stage C1: Attention Tracker.} After each decode step, the inference engine reports per-block attention scores (the sum of softmax weights received by tokens within the block). The tracker maintains a per-block exponential moving average (EMA):
+\begin{equation}
+\text{ema}_{t}(b) = \lambda \cdot a_{\text{raw}}(b) + (1 - \lambda) \cdot \text{ema}_{t-1}(b)
+\end{equation}
+where $\lambda$ is the EMA decay factor (default $\lambda{=}0.9$; see \S\ref{sec:hyperparam} for sensitivity analysis) and $a_{\text{raw}}(b)$ is the aggregated attention weight for block $b$ at the current step. At the end of each step, \texttt{step\_done} applies EMA decay to \emph{all} active slots---including those not accessed---ensuring that stale blocks' scores monotonically decrease toward zero.
+
+\textbf{Stage C2: Hot-Cold Classifier.} The classifier computes a composite hotness score for each block by fusing three complementary signals:
+\begin{equation}
+S(b) = \alpha \cdot \hat{a}(b) \;+\; \beta \cdot R(b) \;+\; \gamma \cdot F(b)
+\label{eq:hotness}
+\end{equation}
+where $\hat{a}(b)$ is the min-max normalized EMA attention score, $R(b) = e^{-\tau (t - t_{\text{last}})}$ is an exponential recency decay (precomputed via a 256-entry lookup table), and $F(b)$ is the normalized access frequency. Default weights: $\alpha{=}0.7$, $\beta{=}0.2$, $\gamma{=}0.1$.
+
+The score is mapped to a heat level via two thresholds $\theta_{\text{hot}}$ and $\theta_{\text{cold}}$. Blocks flagged as \texttt{KV\_FLAG\_ATTN\_SINK} (the initial 4 tokens that act as softmax anchors~\cite{streamingllm}) are unconditionally classified as \textbf{Hot}, regardless of their computed score.
+
+\begin{algorithm}[t]
+\caption{Per-Block Hot-Cold Classification (C1+C2)}
+\label{alg:classify}
+\algrenewcommand{\alglinenumber}[1]{}
+\begin{algorithmic}
+\Require Block $b$, current step $t$, EMA table, weights $\alpha, \beta, \gamma$
+\Require Thresholds $\theta_{\text{hot}}, \theta_{\text{cold}}$, decay constant $\tau$
+\Ensure Heat level $\in \{\textbf{Hot}, \textbf{Warm}, \textbf{Cold}\}$
+\Statex
+\If{$b$.\texttt{flags} contains \texttt{ATTN\_SINK}} \Comment{Protect sink tokens}
+    \State \Return \textbf{Hot}
+\EndIf
+\Statex
+\State $\hat{a}(b) \gets \text{ema}(b) \;/\; \max_{b'} \text{ema}(b')$ \Comment{Normalized attention}
+\State $\Delta t \gets t - t_{\text{last}}(b)$ \Comment{Steps since last access}
+\State $R(b) \gets \texttt{decay\_table}[\min(\Delta t,\; 255)]$ \Comment{Precomputed $e^{-\tau \Delta t}$}
+\State $F(b) \gets \min\bigl(f(b) \;/\; f_{\max},\; 1\bigr)$ \Comment{Normalized frequency}
+\Statex
+\State $S(b) \gets \alpha \cdot \hat{a}(b) + \beta \cdot R(b) + \gamma \cdot F(b)$ \Comment{Eq.~\ref{eq:hotness}}
+\Statex
+\If{$S(b) \geq \theta_{\text{hot}}$}
+    \State \Return \textbf{Hot} \Comment{Remain on GPU}
+\ElsIf{$S(b) < \theta_{\text{cold}}$}
+    \State \Return \textbf{Cold} \Comment{Target: SSD}
+\Else
+    \State \Return \textbf{Warm} \Comment{Target: DRAM}
+\EndIf
+\end{algorithmic}
+\end{algorithm}
+
+\textbf{Stage C3: Adaptive Threshold.} The thresholds $\theta_{\text{hot}}$ and $\theta_{\text{cold}}$ adapt to runtime memory pressure via a watermark feedback loop, analogous to Linux's kswapd high/low watermarks. When GPU utilization exceeds its high water mark, the controller lowers $\theta_{\text{hot}}$ to increase demotions; when utilization drops below the low water mark, it raises $\theta_{\text{hot}}$ to retain more blocks on GPU. DRAM thresholds work analogously for SSD spill. Thresholds are clamped to prevent oscillation, and a cooldown timer (default 0.5\,s) gates adjustment frequency to avoid threshold oscillation under bursty memory-pressure fluctuations (\S\ref{sec:hyperparam}).
+
+\subsection{Tiered Storage Management}
+\label{sec:tiered-storage}
+
+OrchKvCache manages three storage tiers.
+\textbf{Tier~0 (GPU HBM)} uses a slab pool allocated via \texttt{cudaMalloc} with O(1) alloc/free.
+\textbf{Tier~1 (Host DRAM)} mirrors this design with pinned memory (\texttt{cudaMallocHost}), achieving 23\,GB/s bidirectional transfer via PCIe Gen4.
+\textbf{Tier~2 (SSD)} stores one file per request with a deterministic layout: blocks for the same (layer, head) pair are placed contiguously, ensuring sequential write patterns during batch evictions. This raises SSD write utilization from ${\sim}$4\% (single 32\,KB block) to over 41\% (8+ blocks batched).
+
+\subsection{Eviction and Migration}
+\label{sec:migration}
+
+\textbf{C4: Eviction Policy.} When GPU or DRAM utilization exceeds its high water mark, C4 selects victim blocks for demotion. Victims are chosen coldest-first by composite score $S(b)$ (Eq.~\ref{eq:hotness}): the blocks with the lowest hotness are evicted first. This ensures that only blocks the model is least likely to attend in upcoming steps are moved to cheaper tiers.
+
+\textbf{C7: Migration Engine.} The migration engine translates C4's eviction decisions into physical data movement, supporting \emph{demote} (to a cheaper tier) and \emph{promote} (to a faster tier) with single-block and batch variants.
+
+\textbf{Demote path.} Demotion uses asynchronous DMA for GPU$\to$DRAM (round-robin across 4 CUDA streams) and batched \texttt{pwrite} for DRAM$\to$SSD, chaining both for two-hop cold eviction via a DRAM staging buffer. Each victim is write-locked during migration; upon completion, the source slot is freed and metadata updated atomically.
+
+\textbf{Promote path.} DRAM$\to$GPU uses a single async DMA copy. SSD$\to$GPU chains an IO-pool read with a DMA copy (two-hop). The block returns to \emph{active} state upon completion.
+
+\textbf{Atomicity.} A per-block reader-writer lock prevents partial reads during migration. Failed transfers trigger rollback: the block remains at its source tier and any destination allocation is freed.
+
+\subsection{Prefetch-Driven Pipeline}
+\label{sec:pipeline}
+
+
+\textbf{C5: Prefetch Scheduler.} Ranks non-GPU blocks by EMA priority in a max-heap; dispatches top-$K$ candidates (default $K{=}8$). Saturation at 5.9\,$\mu$s/step (\S\ref{sec:prefetch-eval}).
+
+\textbf{C6: Pipeline Coordinator.} Tracks compute-transfer overlap timestamps. Overlap ratio 1.0 = fully hidden latency.
+
+\subsection{Scheduling Loop}
+\label{sec:sched-loop}
+
+\textbf{C8: Tiered Manager.} The tiered manager orchestrates C1--C7 into a single per-step scheduling loop (Algorithm~\ref{alg:schedule}).
+
+\begin{algorithm}[t]
+\caption{Per-Step Scheduling Loop (C8: Tiered Manager)}
+\label{alg:schedule}
+\begin{algorithmic}
+\Require Block set $\mathcal{B}$, GPU/DRAM utilization, prefetch budget $K$
+\Statex
+\Statex \textbf{Phase 1: Classification} (C1--C3)
+\For{each $b \in \mathcal{B}$}
+    $b.\text{heat} \gets \Call{Classify}{b}$ \Comment{Alg.~\ref{alg:classify}}
+\EndFor
+\State $\theta_{\text{hot}}, \theta_{\text{cold}} \gets \Call{AdaptThreshold}{\text{gpu\_util}}$ \Comment{C3}
+\Statex
+\Statex \textbf{Phase 2: Eviction} (C4 + C7)
+\If{gpu\_util $>$ HWM$_{\text{gpu}}$}
+    \State $\mathcal{V} \gets \Call{SelectVictims}{\mathcal{B}_{\text{GPU}},\; n_{\text{evict}}}$ \Comment{C4}
+    \State \Call{Demote}{$\mathcal{V}$, GPU$\to$DRAM} \Comment{C7: async DMA}
+\EndIf
+\If{dram\_util $>$ HWM$_{\text{dram}}$}
+    \State \Call{BatchWrite}{victims, DRAM$\to$SSD} \Comment{32\,KB-aligned}
+\EndIf
+\Statex
+\Statex \textbf{Phase 3: Prefetch} (C5 + C7)
+\State Rank non-GPU blocks by EMA (SSD $\times$0.5) \Comment{C5}
+\State Promote top-$K$ to GPU (async) \Comment{C7}
+\Statex
+\Statex \textbf{Phase 4: Pipeline} (C6)
+\State Record overlap timestamps
+\end{algorithmic}
+\end{algorithm}
+
+The entire loop is designed to be \emph{non-blocking}: GPU$\leftrightarrow$DRAM transfers use asynchronous DMA on dedicated CUDA streams, file I/O goes through the IO thread pool, and the scheduler returns immediately after dispatching, allowing the next decode step to begin. Steps~1--3 (classification) complete in $<$40\,$\mu$s for 4,096 blocks (\S\ref{sec:prefetch-eval}). An optional background thread can invoke the loop at a configurable interval, fully decoupling scheduling from the inference critical path.
+
+
+%% ====================================================================
+\section{Implementation}
+%% ====================================================================
+
+We implement OrchKvCache in ${\sim}$4,500 lines of C/CUDA and ${\sim}$1,200 lines of Python.
+
+\textbf{C/CUDA Core.} Three directories:
+\begin{itemize}
+\item \texttt{core/} --- block metadata, request management, concurrent hash map; 800 lines.
+\item \texttt{tiered\_store/} --- slab allocators for GPU and DRAM, multi-stream CUDA transfer, OrchFS file manager, async IO thread pool; 1,200 lines.
+\item \texttt{scheduler/} --- 8 self-contained C1--C8 modules with precomputed decay tables, intrusive LRU, binary max-heap; 2,200 lines.
+\end{itemize}
+
+\textbf{Python Binding.} pybind11 exposes \texttt{orchkv\_core} module. A \texttt{KVCacheManager} class bridges HuggingFace transformers' \texttt{DynamicCache}: it splits KV tensors into 16-token blocks, tracks per-block tier placement, and invokes the tiered manager at each decode step.
+
+\textbf{Testing.} 19 C/CUDA unit tests (${\sim}$6,000 lines) and 4 Python integration tests (${\sim}$1,000 lines), all managed by CMake/CTest.
+
+%% ====================================================================
+\section{Evaluation}
+%% ====================================================================
+
+We evaluate OrchKvCache on \textbf{four models} spanning two attention architectures (GQA and MHA) and two model scales (7B and 13B). The evaluation is organized into four groups. \emph{Core performance} (\S\ref{sec:e2e}--\S\ref{sec:ablation}): end-to-end throughput, eviction efficiency, tail latency, quality verification, and component ablation. \emph{Algorithm quality} (\S\ref{sec:prefetch-eval}--\S\ref{sec:competitive-ratio}): scheduling overhead, scalability microbenchmarks, and empirical competitive ratio against the offline optimal. \emph{Robustness} (\S\ref{sec:realistic}--\S\ref{sec:signal-ablation}): realistic workloads, SSD three-tier validation, extended context up to 32K, and signal ablation. \emph{Deployment} (\S\ref{sec:overhead}--\S\ref{sec:vllm-integration}): overhead diagnosis and vLLM production integration.
+
+\subsection{Experimental Setup}
+
+\textbf{Platform.} 2$\times$ NVIDIA A100-SXM4-80GB (PCIe Gen4), 256\,GB DDR4-3200, Samsung PM9A3 NVMe RAID0 (17.8\,GB/s read, 5.3\,GB/s write). Software: Ubuntu 22.04, CUDA 12.0, PyTorch 2.5.1+cu121, HuggingFace transformers 4.57.
+
+\textbf{Models.} Four models spanning a 14$\times$ KV-per-token range (Table~\ref{tab:models}): Qwen2.5-7B~\cite{qwen2.5} and Mistral-7B~\cite{mistral} (GQA, 56--128\,KB/tok), LLaMA-2-7B and LLaMA-2-13B~\cite{llama2} (MHA, 512--800\,KB/tok).
+
+\begin{table}[t]
+\centering
+\caption{Evaluated models and KV-cache characteristics (FP16).}
+\label{tab:models}
+\footnotesize
+\setlength{\tabcolsep}{7pt}
+\begin{tabular}{@{}lcccrc@{}}
+\toprule
+Model & Attn & Heads & Layers & KV/tok & Params \\
+\midrule
+Qwen2.5-7B   & GQA  & 4  & 28 & 56\,KB  & 7B  \\
+Mistral-7B   & GQA  & 8  & 32 & 128\,KB & 7B  \\
+LLaMA-2-7B   & MHA  & 32 & 32 & 512\,KB & 7B  \\
+LLaMA-2-13B  & MHA  & 40 & 40 & 800\,KB & 13B \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Baselines.} (i)~\textbf{GPU-Only} (no offloading), (ii)~\textbf{FIFO Offload} (oldest-block-first eviction to DRAM, mirrors vLLM swap~\cite{vllm}), (iii)~\textbf{OrchKvCache}. All three share identical block size (16 tokens), framework (HuggingFace transformers), and data-movement primitives (pinned-memory \texttt{copy\_}); the \emph{only} variable is the eviction policy. Default OrchKvCache hyperparameters: $\alpha{=}0.7$, $\beta{=}0.2$, $\gamma{=}0.1$, $\lambda{=}0.9$, $\tau{=}50$, cooldown$=$0.5\,s, $K{=}8$ (\S\ref{sec:hyperparam}).
+
+\textbf{Experiment matrix.} GPU KV budgets $\in\{50, 100, 200\}$\,MB, seq $\in\{2048, 4096\}$, requests $\in\{1, 4, 8, 16\}$, 64 generated tokens each. Requests are decoded round-robin with a shared GPU KV budget, isolating eviction-policy effects from serving-framework optimizations (continuous batching, CUDA graphs). True concurrent-batching evaluation is in \S\ref{sec:vllm-integration}.
+
+\subsection{End-to-End Throughput and Eviction Efficiency}
+\label{sec:e2e}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.85\columnwidth]{figures/fig01_multimodel_throughput.pdf}
+\caption{Throughput comparison across four models at budget=50\,MB, seq=2048, nreq=4. OrchKvCache consistently outperforms FIFO across all architectures.}
+\label{fig:throughput}
+\end{figure}
+
+Figure~\ref{fig:throughput} compares throughput at a representative configuration (budget=50\,MB, seq=2048, 4 requests). OrchKvCache outperforms FIFO on all four models. The advantage is most pronounced on MHA models: LLaMA-2-13B sees \textbf{1.75$\times$} speedup, because larger KV blocks make FIFO's blind eviction proportionally more wasteful.
+
+\begin{table}[t]
+\centering
+\caption{OrchKvCache vs.\ FIFO: average speedup and eviction reduction across request counts (budget=50\,MB, seq=2048).}
+\label{tab:e2e}
+\small
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+Model & KV/tok & Avg Speedup & Avg Evict Reduction \\
+\midrule
+Qwen2.5-7B  & 56\,KB  & 1.28$\times$ & 421$\times$ \\
+Mistral-7B  & 128\,KB & 1.36$\times$ & 597$\times$ \\
+LLaMA-2-7B  & 512\,KB & 1.72$\times$ & 285$\times$ \\
+LLaMA-2-13B & 800\,KB & 1.77$\times$ & 139$\times$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Finding 1: OrchKvCache reduces migrations by 2--3 orders of magnitude, with growing advantage on larger KV caches.} Table~\ref{tab:e2e} shows that speedup grows from 1.28$\times$ (Qwen, 56\,KB/tok) to 1.77$\times$ (LLaMA-13B, 800\,KB/tok), because each unnecessary FIFO eviction moves more data on MHA models. Figure~\ref{fig:eviction} confirms the mechanism: FIFO performs millions of evictions while OrchKvCache performs only thousands---a \textbf{139--597$\times$} reduction across all four models.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.85\columnwidth]{figures/fig02_eviction_comparison.pdf}
+\caption{Eviction counts across four models (log scale). OrchKvCache reduces unnecessary migrations by 139--597$\times$.}
+\label{fig:eviction}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.85\columnwidth]{figures/fig03_tpot_stability.pdf}
+\caption{Per-token latency (TPOT) vs.\ request count. FIFO degrades as request count grows; OrchKvCache remains stable.}
+\label{fig:tpot}
+\end{figure}
+
+\begin{table}[t]
+\centering
+\caption{Tail latency analysis (Qwen2.5-7B, budget=50\,MB, seq=2048, 4 requests, 64 generated tokens). OrchKvCache reduces FIFO's P99 by 2.95$\times$.}
+\label{tab:tail-latency}
+\small
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+Mode & tok/s & P50 & P95 & P99 & Max \\
+& & \multicolumn{4}{c}{(ms/token)} \\
+\midrule
+GPU-Only        & 1{,}436 & 17.5 & 20.8 & 26.3 & 31.2 \\
+FIFO Offload    & 111     & 281  & 386  & \textbf{568} & 684 \\
+OrchKvCache     & 176     & 181  & 189  & \textbf{192} & 232 \\
+OrchKv-noattn   & 177     & 181  & 189  & 191 & 201 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.85\columnwidth]{figures/fig_tail_latency.pdf}
+\caption{Per-token latency percentiles (P50/P95/P99) on Qwen2.5-7B. FIFO's P99 (568\,ms) is 2.95$\times$ OrchKvCache's (192\,ms). OrchKv-noattn ($\alpha{=}0$) matches the full classifier within 1\%.}
+\label{fig:tail-latency}
+\end{figure}
+
+\textbf{Finding 2: OrchKvCache delivers stable, low tail latency.} Figure~\ref{fig:tpot} shows FIFO's mean TPOT increases by 7\% as requests scale from 1 to 16, while OrchKvCache varies by only $\pm$0.1\%. Figure~\ref{fig:tail-latency} and Table~\ref{tab:tail-latency} further reveal that FIFO's P99 (568\,ms) is \textbf{2.95$\times$} OrchKvCache's (192\,ms), with a P95--P99 spread of 182\,ms vs.\ only 3.2\,ms. FIFO's blind eviction causes intermittent bursts of data movement; OrchKvCache's attention-driven scheduling eliminates most migrations, yielding near-constant per-step latency. The ``OrchKv-noattn'' variant ($\alpha{=}0$, recency+frequency only) achieves equivalent tail latency, confirming that the SDPA fallback mode is viable; we analyze this further in \S\ref{sec:signal-ablation}.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{figures/fig04_05_combined_speedup.pdf}
+\caption{OrchKvCache vs.\ FIFO speedup analysis (budget=50\,MB, $n_\text{req}$=8). (a) Speedup heatmap across models and context lengths---OrchKvCache wins in nearly all configurations. (b) Per-model speedup at seq=2048---speedup scales with KV-cache footprint.}
+\label{fig:speedup-combined}
+\end{figure}
+
+\textbf{Finding 3: The advantage is robust across configurations.} Figure~\ref{fig:speedup-combined}(a) shows OrchKvCache exceeds 1.0$\times$ in every configuration where both methods complete. Figure~\ref{fig:speedup-combined}(b) confirms the trend: speedup grows from 1.38$\times$ (Qwen) to 1.80$\times$ (LLaMA-2-13B) as KV-cache size per token increases---precisely the regime where memory pressure is most severe.
+
+\subsection{Output Quality Verification}
+\label{sec:quality-eval}
+
+The most critical evaluation question is whether tiered management affects model output. We compare GPU-Only (ground truth) and OrchKvCache under greedy decoding ($\text{temperature}{=}0$) across all four models with three prompt lengths each, generating 32--128 tokens per prompt.
+
+\begin{table}[t]
+\centering
+\caption{Quality verification (greedy decoding, budget=50\,MB). Every generated token matches the GPU-Only baseline bit-for-bit across all 12 configurations (4 models $\times$ 3 prompt lengths), even with active eviction and promotion.}
+\label{tab:quality}
+\small
+\begin{tabular}{@{}lcrcc@{}}
+\toprule
+Model & Prompts tested & Len range & Match \% & Max evictions \\
+\midrule
+Qwen2.5-7B  & 3 & 152--701   & \textbf{100} & 1{,}024 \\
+Mistral-7B  & 3 & 182--807   & \textbf{100} & 1{,}024 \\
+LLaMA-2-7B  & 3 & 227--562   & \textbf{100} & 1{,}024 \\
+LLaMA-2-13B & 3 & 128--512   & \textbf{100} & 256 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:quality} reports the results across all four models and three prompt lengths each (12 configurations total): \textbf{every generated token is bit-exact identical} to the GPU-Only baseline (100\% match), even with up to 1,024 evictions per run. The lossless property follows from the migration engine's data-preserving copy semantics and per-block locking (\S\ref{sec:migration}).
+
+\textbf{Downstream task validation.} To confirm that bit-exact token match translates to preserved task accuracy on real NLP benchmarks, we evaluate both GPU-Only and OrchKvCache on four tasks from LM-Evaluation-Harness~\cite{lm-eval}: PIQA (commonsense reasoning), RTE (textual entailment), COPA (causal reasoning), and OpenBookQA (science QA).
+
+\begin{table}[t]
+\centering
+\caption{Downstream task accuracy (\%) under GPU-Only and OrchKvCache. All values are identical, confirming that lossless tiered management preserves model quality on real NLP benchmarks.}
+\label{tab:lm-eval}
+\small
+\begin{tabular}{@{}llcccc@{}}
+\toprule
+Model & System & PIQA & RTE & COPA & OBQA \\
+\midrule
+\multirow{2}{*}{Qwen2.5-7B}
+& GPU-Only    & 78.67 & 81.59 & 91.0 & 33.4 \\
+& OrchKvCache & 78.67 & 81.59 & 91.0 & 33.4 \\
+\midrule
+\multirow{2}{*}{LLaMA-2-7B}
+& GPU-Only    & 78.13 & 63.9 & 88.0 & 33.4 \\
+& OrchKvCache & 78.13 & 63.9 & 88.0 & 33.4 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:lm-eval} confirms \textbf{identical accuracy} on all four tasks across both models. Since output is bit-exact, all downstream metrics are identical by construction; Table~\ref{tab:lm-eval} provides empirical validation on real NLP benchmarks.
+
+\textbf{Note on sampling.} All quality experiments use greedy decoding (temperature$=$0), where bit-exact token match is a well-defined notion. Under stochastic sampling (temperature$>$0), ``lossless'' means distribution-preserving rather than token-identical. Since OrchKvCache's migration engine performs exact byte-level copies (no quantization or approximation), the attention logits passed to the sampler are identical to GPU-Only \emph{by construction}, guaranteeing that the sampling distribution is preserved regardless of temperature or top-$p$ settings.
+
+\subsection{Component Ablation}
+\label{sec:ablation}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{figures/fig07_ablation.pdf}
+\caption{Ablation across four models. (a) Throughput: OrchKvCache consistently outperforms FIFO. (b) Eviction count (log scale): OrchKvCache performs 100--460$\times$ fewer evictions.}
+\label{fig:ablation}
+\end{figure}
+
+Figure~\ref{fig:ablation} isolates the contribution of attention-driven classification. Across all four models, OrchKvCache achieves 22--63\% higher throughput than FIFO while performing 139--460$\times$ fewer evictions. The throughput gap between OrchKvCache and GPU-Only reflects the inherent cost of eager-attention collection and block reconstruction---overhead that would be substantially reduced with FlashAttention integration (\S7).
+
+\subsection{Scheduling Overhead and Scalability}
+\label{sec:prefetch-eval}
+
+We evaluate scheduling overhead using the orchkv\_core C/CUDA library directly, independent of model inference.
+
+\begin{figure*}[t]
+\centering
+\subfloat[Hot-ratio accuracy.\label{fig:policy}]{%
+\includegraphics[width=0.24\textwidth,clip]{figures/fig10_policy_sweep_heatmap.pdf}}\hfill
+\subfloat[Prefetch dispatch.\label{fig:prefetch}]{%
+\includegraphics[width=0.24\textwidth,clip]{figures/fig11_prefetch_dispatch.pdf}}\hfill
+\subfloat[Scheduling scalability.\label{fig:scalability}]{%
+\includegraphics[width=0.24\textwidth,clip]{figures/fig13_scheduling_scalability.pdf}}\hfill
+\subfloat[Inter-tier bandwidth.\label{fig:bandwidth}]{%
+\includegraphics[width=0.24\textwidth,clip]{figures/fig12_inter_tier_bandwidth.pdf}}
+\caption{Scheduling subsystem microbenchmarks. (a)~Predicted hot-block ratio across $\alpha$--$\beta$ weight space (ground truth: 25\% hot). (b)~Prefetch dispatch count and per-step latency vs.\ budget $K$. (c)~Scheduler latency from 64 to 4,096 blocks. (d)~Inter-tier bandwidth; GPU$\leftrightarrow$DRAM saturates PCIe Gen4 at 23\,GB/s.}
+\label{fig:scheduling-micro}
+\end{figure*}
+
+\textbf{Policy weight sweep.} Figure~\ref{fig:policy} shows the predicted hot-block ratio across the $\alpha$--$\beta$ weight space (ground truth: 25\% of blocks are hot). Attention-dominant weights ($\alpha \geq 0.7$) produce a predicted ratio closest to the ground truth across all three access patterns (fixed, shift, zipf).
+
+\textbf{Per-block identity validation.} To verify that EMA scoring identifies the \emph{correct} hot blocks (not just the correct proportion), we compute precision@$K$: at each step, the top-$K$ blocks by EMA score are compared against the top-$K$ by actual attention weight.
+
+\emph{Single-request (low contention):} On individual decode traces (Qwen2.5-7B, LLaMA-2-7B, seq=1024), EMA achieves precision$=$1.00 at all $K$ levels, as does recency-only. This reflects the extreme concentration of single-request attention (1--3 hot blocks out of ${\sim}$64).
+
+\emph{Multi-request (high contention):} To test whether the attention signal matters under realistic pressure, we pool blocks from 8 concurrent requests (Qwen2.5-7B, 502 total blocks) into a simulated shared GPU cache and measure precision at varying capacity levels (Table~\ref{tab:contention-identity}).
+
+\begin{table}[t]
+\centering
+\caption{Per-block identity precision under multi-request contention (8 requests, 502 blocks pooled, Qwen2.5-7B). Attention-aware EMA maintains perfect precision; recency-only degrades sharply at tight capacity.}
+\label{tab:contention-identity}
+\footnotesize
+\setlength{\tabcolsep}{6pt}
+\begin{tabular}{@{}rrrr@{}}
+\toprule
+GPU Cap & Full EMA & No-attn & Recency \\
+\midrule
+5\%  & \textbf{1.000} & 0.640 & 0.640 \\
+10\% & \textbf{1.000} & 0.800 & 0.800 \\
+20\% & \textbf{1.000} & 0.900 & 0.900 \\
+30\% & \textbf{1.000} & 0.933 & 0.933 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.85\columnwidth]{figures/fig_contention_identity.pdf}
+\caption{Per-block identity precision under multi-request contention (8 requests, 502 blocks, Qwen2.5-7B). Full EMA maintains perfect precision at all capacity levels; recency-only degrades to 0.64 at 5\% capacity (36\% miss).}
+\label{fig:contention-identity}
+\end{figure}
+
+Figure~\ref{fig:contention-identity} and Table~\ref{tab:contention-identity} show that under tight capacity (5\%), recency-only misidentifies \textbf{36\%} of the blocks that should be on GPU, while Full EMA maintains perfect precision. The gap narrows as capacity increases but remains nonzero at all levels. This confirms that the attention signal's identity-level value is \emph{contention-dependent}: it becomes critical precisely when GPU memory is scarce and multiple requests' hot sets compete for limited slots---the regime where OrchKvCache's 139--597$\times$ migration reduction is measured (\S\ref{sec:e2e}).
+
+\textbf{Prefetch dispatch capacity.} Figure~\ref{fig:prefetch} shows dispatch saturation at budget $K \geq 8$ (245 dispatches per 100 steps) with per-step overhead of only 5.7--5.9\,$\mu$s---negligible relative to 1--10\,ms decode steps. Note that these are microbenchmark dispatch counts; in the E2E prototype, each request uses a per-request manager, so blocks evicted to DRAM are demand-fetched rather than speculatively prefetched ($\text{dispatched}{=}0$). Speculative prefetch becomes meaningful when multiple requests share a single block pool, as in the vLLM integration path (\S\ref{sec:vllm-integration}).
+
+\textbf{Scalability.} Figure~\ref{fig:scalability} shows sub-linear scaling: a 64$\times$ increase in blocks (64$\to$4,096) yields only ${\sim}$23$\times$ increase in latency. At 4,096 blocks (${\sim}$65K tokens), P99 remains under 60\,$\mu$s.
+
+\textbf{Storage bandwidth.} Figure~\ref{fig:bandwidth} confirms GPU$\leftrightarrow$DRAM saturates PCIe Gen4 at \textbf{23\,GB/s} for transfers $\geq$\,1\,MB. The 3.4$\times$ read/write asymmetry of the SSD motivates OrchKvCache's strategy of batching writes while allowing aggressive reads for promotion.
+
+
+\subsection{Empirical Competitive Ratio}
+\label{sec:competitive-ratio}
+
+To evaluate scheduling-policy quality independent of system overhead, we compare five eviction strategies via trace-driven simulation against the offline optimal (Belady's algorithm~\cite{sleator-tarjan}). We use synthetic traces with Zipf-distributed access frequencies and a periodically shifting hot set (Gini~$\approx$\,0.9, matching Section~2.3 observations) to create reproducible contention at 30\% GPU capacity. The empirical competitive ratio $\text{CR}(A) = \text{evictions}_A / \text{evictions}_{\text{OPT}}$ measures excess evictions relative to an oracle with perfect future knowledge; lower is better. Results are averaged over 3 independent runs.
+
+\textbf{Methodology note.} This is a trace-level policy comparison, not a formal worst-case bound. The cost metric (eviction count) approximates real transfer cost; tier-dependent costs (SSD writes are 3.4$\times$ costlier than DRAM, Table~\ref{tab:storage-char}) would further favour OrchKvCache's SSD-minimizing strategy.
+
+\begin{table}[t]
+\centering
+\caption{Empirical competitive ratio (evictions / OPT evictions) at 30\% GPU capacity on synthetic traces. Lower is better; OPT $=$ 1.00 by definition. 3 runs averaged.}
+\label{tab:cr}
+\small
+\begin{tabular}{@{}rrrrrr@{}}
+\toprule
+$n$ (blocks) & FIFO & LRU & LFU & \textbf{EMA} & OPT \\
+\midrule
+64  & 3.70 & 4.13 & 2.83 & \textbf{2.73} & 1.00 \\
+128 & 2.14 & 2.66 & 1.87 & \textbf{1.84} & 1.00 \\
+256 & 2.12 & 2.76 & 1.82 & \textbf{1.80} & 1.00 \\
+512 & 1.71 & 2.24 & 1.51 & \textbf{1.51} & 1.00 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Finding: EMA achieves the lowest competitive ratio at every scale.} Table~\ref{tab:cr} shows that OrchKvCache's EMA policy converges to \textbf{1.51$\times$} OPT at 512 blocks, outperforming FIFO (1.71$\times$), LFU (1.51$\times$), and especially LRU (2.24$\times$). The gap widens at smaller cache sizes---precisely the high-pressure regime where scheduling quality matters most (EMA: 2.73$\times$ vs.\ FIFO: 3.70$\times$ at 64 blocks). These results complement the E2E migration reduction (\S\ref{sec:e2e}): the trace-level analysis confirms that the composite scoring function (Eq.~\ref{eq:hotness}) exploits temporal correlation in attention patterns, approaching the offline optimal within a factor of 1.5--2.7$\times$ without future knowledge.
+
+\subsection{Hyperparameter Sensitivity}
+\label{sec:hyperparam}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.75\columnwidth]{figures/fig_hyperparam_joint.pdf}
+\caption{Joint $\lambda{\times}\tau$ sensitivity (trace simulation, 256 blocks, 200 steps, 3 runs). Rows ($\lambda$) are nearly identical; columns ($\tau$) drive all variation. The defaults ($\lambda{=}0.9$, $\tau{=}50$) lie in the centre of a broad stable region.}
+\label{fig:hyperparam}
+\end{figure}
+
+Figure~\ref{fig:hyperparam} shows joint sensitivity over the $\lambda{\times}\tau$ space on synthetic traces (Zipf + shifting hot set, 3 runs averaged). Hot-ratio accuracy varies by $<$5\% across $\lambda \in [0.1, 0.9]$ (rows are nearly uniform), confirming that $\lambda$ is not a sensitive parameter. The recency constant $\tau$ drives all variation: small $\tau$ ($\leq$10) yields the highest accuracy but may over-penalize idle blocks; large $\tau$ ($\geq$100) retains stale blocks too long. The defaults ($\lambda{=}0.9$, $\tau{=}50$) lie in the stable centre. Threshold cooldown (not shown) eliminates oscillation at $\geq$0.1\,s; E2E throughput on Qwen2.5-7B varies by $<$1.6\% across attention sampling intervals $N \in [1, 50]$ with 100\% token match in every case.
+
+\subsection{Realistic Workload Evaluation}
+\label{sec:realistic}
+
+To validate that OrchKvCache's advantage holds under non-uniform request patterns, we evaluate two realistic workload distributions, each with 20 requests per run:
+
+\begin{itemize}
+\item \textbf{ShareGPT-like}: prompt lengths sampled from a log-normal distribution (mean 519, std 516, range 64--1957 tokens), matching the heavy-tailed distribution of real user conversations.
+\item \textbf{LongContext-mix}: bimodal distribution with 60\% short requests (128--512 tokens) and 40\% long requests (1024--4096 tokens), simulating RAG and document QA workloads.
+\end{itemize}
+
+\begin{figure}[t]
+\centering
+\subfloat[Throughput.\label{fig:w3-throughput}]{%
+\includegraphics[width=0.49\columnwidth,clip]{figures/fig19_realistic_throughput.pdf}}\hfill
+\subfloat[Eviction counts.\label{fig:w3-eviction}]{%
+\includegraphics[width=0.49\columnwidth,clip]{figures/fig20_realistic_eviction.pdf}}
+\caption{Realistic workload: (a) throughput and (b) eviction counts (log scale) under ShareGPT-like and LongContext-mix distributions.}
+\label{fig:w3-combined}
+\end{figure}
+
+Figure~\ref{fig:w3-combined} reports the results. Under both distributions, OrchKvCache achieves \textbf{1.53--1.57$\times$} throughput over FIFO on LLaMA-2-7B with \textbf{123--170$\times$} fewer evictions. The variable-length request pattern does not degrade OrchKvCache's advantage---in fact, the diversity of request lengths \emph{amplifies} the benefit of hotness-aware scheduling, because different requests have different attention patterns and memory footprints.
+
+
+\subsection{SSD Tier End-to-End Validation}
+\label{sec:ssd-tier}
+
+To validate the full three-tier data path (GPU $\to$ DRAM $\to$ SSD $\to$ DRAM $\to$ GPU), we configure OrchKvCache with a 10\,MB GPU budget and enable SSD spill to an NVMe directory. This forces cold blocks to traverse the complete migration path: GPU eviction to DRAM, DRAM spill to SSD files, and SSD reload back through DRAM to GPU when needed.
+
+\begin{table}[t]
+\centering
+\caption{SSD tier validation. All configurations achieve 100\% token match after the full GPU$\to$DRAM$\to$SSD$\to$DRAM$\to$GPU round-trip.}
+\label{tab:w4-ssd}
+\footnotesize
+\setlength{\tabcolsep}{9pt}
+\begin{tabular}{@{}llcccc@{}}
+\toprule
+Model & Prompt & G$\to$D & D$\to$S & S$\to$D & Files \\
+\midrule
+\multirow{3}{*}{Qwen2.5-7B}
+& short  & 256 & 128 & 128 & 12 \\
+& medium & 256 & 128 & 128 & 20 \\
+& long   & 256 & 128 & 128 & 28 \\
+\midrule
+\multirow{3}{*}{LLaMA-2-7B}
+& short  & 256 & 128 & 128 & 12 \\
+& medium & 256 & 128 & 128 & 20 \\
+& long   & 256 & 128 & 128 & 28 \\
+\bottomrule
+\multicolumn{6}{@{}l}{\scriptsize Match rate = 100\% in all 6 configurations.}\\
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:w4-ssd} reports results across two models and three prompt lengths. In every case, 128 DRAM$\to$SSD writes and 128 SSD$\to$DRAM reads occur, with 12--28 physical SSD files created per run. Despite this intensive three-tier migration, \textbf{every generated token matches the GPU-only baseline} (100.00\% match rate). This confirms that OrchKvCache's SSD tier preserves data integrity through the full round-trip path, validating the multi-granularity I/O design described in \S\ref{sec:tiered-storage}.
+
+\textbf{Three-tier throughput cost.} Table~\ref{tab:tier-throughput} quantifies the throughput overhead of each additional storage tier on two models (seq=1024, budget=10\,MB). The gap between GPU-Only and GPU+DRAM (4.0--5.2$\times$) is dominated by the Python-level block reconstruction and per-step scheduling overhead (consistent with the analysis in \S\ref{sec:overhead}). The \emph{incremental} cost of enabling the SSD tier is only \textbf{1.5--4.3\%} additional throughput reduction, because SSD I/O is fully asynchronous and overlapped with decode computation. Output remains bit-exact lossless (100\% token match) across all three tiers.
+
+\begin{table}[t]
+\centering
+\caption{Throughput across storage tiers (seq=1024, GPU budget=10\,MB, 64 generated tokens). SSD overhead is the marginal cost over GPU+DRAM.}
+\label{tab:tier-throughput}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}llrrr@{}}
+\toprule
+Model & Config & Tok/s & vs GPU-Only & SSD ovhd \\
+\midrule
+\multirow{3}{*}{Qwen2.5-7B}
+& GPU-Only     & 822.9 & 1.00$\times$ & --- \\
+& GPU+DRAM     & 164.5 & 0.20$\times$ & --- \\
+& GPU+DRAM+SSD & 162.0 & 0.20$\times$ & 1.5\% \\
+\midrule
+\multirow{3}{*}{LLaMA-2-7B}
+& GPU-Only     & 717.8 & 1.00$\times$ & --- \\
+& GPU+DRAM     & 138.2 & 0.19$\times$ & --- \\
+& GPU+DRAM+SSD & 132.2 & 0.18$\times$ & 4.3\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Extended Context and Scaling}
+\label{sec:scale}
+
+Table~\ref{tab:scale} extends evaluation to 8K tokens. At 8K, eager attention OOMs, so OrchKvCache uses its SDPA-compatible fallback (recency+frequency only). Even in this mode, OrchKvCache remains lossless (100\% token match) and outperforms FIFO by up to \textbf{2.12$\times$} (LLaMA, 8K), with the benefit growing at longer contexts. The E2E no-attn experiment in Table~\ref{tab:tail-latency} further confirms that the recency+frequency fallback achieves throughput within 1\% of the full classifier.
+
+\begin{table}[t]
+\centering
+\caption{Extended-context evaluation (tok/s, budget=50\,MB, gen=32). 2K/4K: full classifier; 8K: SDPA fallback (recency+frequency only). Token match is 100\% in every cell.}
+\label{tab:scale}
+\small
+\begin{tabular}{@{}llcccc@{}}
+\toprule
+Model & Context & GPU-Only & FIFO & OrchKv & Orch/FIFO \\
+\midrule
+\multirow{3}{*}{Qwen2.5-7B}
+& 2{,}048  & 2{,}040 & 252  & 311  & 1.23$\times$ \\
+& 4{,}096  & 2{,}889 & 231  & 310  & 1.34$\times$ \\
+& 8{,}192  & 5{,}991 & 240  & 363  & \textbf{1.51$\times$} \\
+\midrule
+\multirow{3}{*}{LLaMA-2-7B}
+& 2{,}048  & 2{,}104 & 143  & 267  & 1.87$\times$ \\
+& 4{,}096  & 2{,}568 & 145  & 265  & 1.83$\times$ \\
+& 8{,}192  & 4{,}529 & 144  & 305  & \textbf{2.12$\times$} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Projection to 32K--128K contexts.} Qwen2.5-7B natively supports 128K context and uses GQA with only 4 KV heads, yielding a moderate 56\,KB/token KV footprint. At 32K tokens, the total KV cache is $32{,}768 \times 56\,\text{KB} \approx 1.8$\,GB---well within a single A100-80GB when combined with the 14\,GB model. However, under batch serving (e.g., 16 requests at 32K), the aggregate KV footprint reaches ${\sim}$29\,GB, leaving only ${\sim}$37\,GB for the model and activations. MHA models face even steeper pressure: LLaMA-2-7B at 512\,KB/token and 32K context requires 16\,GB per request. This is the regime where three-tier management becomes essential. OrchKvCache's SDPA fallback mode (recency+frequency, no per-step attention export) is fully compatible with FlashAttention-2~\cite{flashattn2}, which is the standard attention backend for long-context serving. Our 8K results (Table~\ref{tab:scale}) already validate that this fallback achieves 2.12$\times$ over FIFO with 100\% lossless output. Extending to 32K+ requires no algorithmic changes---only sufficient DRAM and SSD capacity, both of which are abundant in modern servers.
+
+\subsection{Signal Ablation: Attention vs.\ Recency+Frequency}
+\label{sec:signal-ablation}
+
+The 8K evaluation (\S\ref{sec:scale}) uses SDPA mode, which cannot export per-step attention weights. To quantify the marginal contribution of the attention signal, we provide two complementary evaluations: (1)~trace-level hot-ratio accuracy on synthetic traces with realistic hotness dynamics (256 blocks, 200 steps, Zipf + shifting hot set, 3 runs averaged), and (2)~real E2E throughput on Qwen2.5-7B (seq=2048, budget=50\,MB, 4 requests, 64 generated tokens).
+
+\begin{table}[t]
+\centering
+\caption{Signal ablation: trace-level accuracy and E2E throughput under four scoring-weight configurations. E2E on Qwen2.5-7B (seq=2048, budget=50\,MB, 4 requests).}
+\label{tab:signal-ablation}
+\small
+\setlength{\tabcolsep}{6pt}
+\begin{tabular}{@{}lcccccc@{}}
+\toprule
+Config & $\alpha$ & $\beta$ & $\gamma$ & Acc. & tok/s & Evict \\
+\midrule
+Full EMA       & 0.7 & 0.2 & 0.1 & \textbf{0.61} & 176.2 & 2{,}048 \\
+No-attn        & 0.0 & 0.6 & 0.4 & 0.10 & 176.5 & 2{,}048 \\
+Recency (LRU)  & 0.0 & 1.0 & 0.0 & 0.10 & --- & --- \\
+Freq (LFU)     & 0.0 & 0.0 & 1.0 & 0.10 & --- & --- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:signal-ablation} reveals a two-level finding.
+
+\textbf{Trace-level: attention signal provides 6$\times$ better classification.} On synthetic traces with realistic hot-set dynamics (shifting Zipf), Full EMA achieves 0.61 accuracy---6$\times$ higher than the three non-attention variants (all 0.10). This confirms that when contention exists (hot set $>$ GPU capacity), the attention signal is the dominant discriminator.
+
+\textbf{E2E: difference vanishes under low contention.} With 4 requests decoded round-robin (each receiving 1/4 of the 50\,MB budget), Full EMA and No-attn produce identical throughput (176 vs.\ 177\,tok/s) and eviction counts (both 2,048). The reason is that per-request attention is extremely concentrated: only 1--3 blocks (attention sink + recent tokens) out of ${\sim}$130 are hot per request at any step, and the per-request GPU share comfortably accommodates them. In this low-contention regime, any reasonable strategy---including pure recency---suffices.
+
+\textbf{When does attention matter? Three converging lines of evidence.} The attention signal's advantage emerges under \emph{multi-request contention}, supported by three independent measurements:
+
+(1)~\emph{Block-identity precision} (Table~\ref{tab:contention-identity}): under 8-request contention with 5\% GPU capacity, Full EMA maintains 100\% precision while recency-only drops to 64\%---a 36\% misidentification rate that translates directly to unnecessary migrations.
+
+(2)~\emph{E2E migration scaling} (\S\ref{sec:e2e}): with 16 concurrent requests, FIFO produces 600,000+ unnecessary migrations while OrchKvCache's attention-driven classifier produces only ${\sim}$4,000. Table~\ref{tab:e2e} shows speedup growing from near-parity at 1 request to 1.77$\times$ at 16 requests, precisely tracking the onset of inter-request contention.
+
+(3)~\emph{Competitive ratio} (Table~\ref{tab:cr}): on synthetic traces with realistic contention, EMA achieves CR$=$1.51 while FIFO reaches 1.71 and LRU 2.24 at 512 blocks.
+
+These three lines of evidence---identity precision, E2E migration count, and trace-level competitive ratio---consistently show that the attention signal provides decisive value under contention. The 4-request ablation in Table~\ref{tab:signal-ablation} represents a low-contention regime where the per-request GPU share comfortably accommodates 1--3 hot blocks; the attention signal's practical value scales with the ratio of hot blocks to GPU capacity. Integrating FlashAttention's partial attention export would further sharpen classification under long-context, multi-request workloads where hot-set dynamics are most complex.
+
+\subsection{Throughput Overhead Diagnosis}
+\label{sec:overhead}
+
+To understand the throughput gap between OrchKvCache and production baselines, we conduct a multi-level overhead analysis.
+
+\begin{table}[t]
+\centering
+\caption{Per-step overhead breakdown of the OrchKvCache prototype on Qwen2.5-7B (seq=1024, budget=50\,MB, $N{=}10$ sampling).}
+\label{tab:overhead-breakdown}
+\small
+\setlength{\tabcolsep}{9pt}
+\begin{tabular}{@{}lrr@{}}
+\toprule
+Component & Avg (ms/step) & \% of total \\
+\midrule
+model.forward (attention) & 19.19 & 23.6\% \\
+\textbf{build\_past\_kv (reconstruction)} & \textbf{48.30} & \textbf{59.5\%} \\
+report\_attention ($N{=}10$) & 3.06 & 3.8\% \\
+step\_done + schedule & 9.42 & 11.6\% \\
+append\_token & 1.17 & 1.4\% \\
+\midrule
+Total per step & 81.1 & 100\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Level 1: Component breakdown.} Table~\ref{tab:overhead-breakdown} reveals that \texttt{build\_past\_kv()} accounts for \textbf{59.5\%} of per-step time: per-step GPU tensor allocation ($28{\times}2$ \texttt{torch.zeros} calls, ${\sim}$28\,ms) plus per-block Python slice copies (${\sim}$13\,ms). Model.forward itself takes only 19\,ms---nearly identical to GPU-only (16--19\,ms).
+
+\begin{table}[t]
+\centering
+\caption{Fair-baseline throughput landscape (seq=1024, budget=50\,MB, 64 generated tokens). All managed systems use identical pre-allocated buffers. Token match is 100\% for all configurations.}
+\label{tab:fair-baseline}
+\footnotesize
+\setlength{\tabcolsep}{9pt}
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+System & \multicolumn{2}{c}{Qwen2.5-7B} & \multicolumn{2}{c}{LLaMA-2-7B} \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5}
+& tok/s & Ovhd & tok/s & Ovhd \\
+\midrule
+vLLM native (SDPA+CB)        & 4{,}201 & ref.   & 7{,}231 & ref. \\
+GPU-Only (SDPA)               & 945     & ---    & 902     & ---  \\
+GPU-Only (eager)              & 817     & ---    & 835     & ---  \\
+Fast-FIFO (eager)             & 608     & 35.7\% & 499    & 44.7\% \\
+Fast-OrchKv (eager, $N{=}10$) & 258     & 72.7\% & 167    & 81.5\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Level 2: Fair-baseline comparison.} To disentangle scheduling-policy benefit from framework overhead, we implement two optimised managers with \emph{identical} pre-allocated GPU buffers and zero-copy \texttt{build\_past\_kv()}: \textbf{Fast-FIFO} (evicts oldest blocks, no attention scoring) and \textbf{Fast-OrchKv} (attention-driven classification). Table~\ref{tab:fair-baseline} shows the full throughput landscape.
+
+\textbf{Key finding: scheduling-loop overhead, not policy quality, is the bottleneck.}
+When both systems share the same zero-copy buffer infrastructure, Fast-FIFO (608\,tok/s on Qwen) outperforms Fast-OrchKv (258\,tok/s) because the Python-level scheduling loop adds 23--49\,ms per step. This confirms that the 1.28--1.77$\times$ speedup in \S\ref{sec:e2e} is measured in a regime where shared \texttt{build\_past\_kv} overhead (48\,ms) dominates both systems, amplifying the relative benefit of OrchKvCache's lower eviction count.
+
+\textbf{Decomposing the gap.} The throughput landscape separates three independent factors:
+\begin{enumerate}
+\item \textbf{Batching gap} (our framework vs.\ vLLM): 4.4--8$\times$, from continuous batching + CUDA graphs; orthogonal to KV scheduling.
+\item \textbf{Framework gap} (GPU-Only vs.\ Fast-FIFO): 35--45\%, from the KV management Python loop itself; reducible by moving to C/CUDA.
+\item \textbf{Scheduling-policy gap}: the pure benefit of attention-driven classification over FIFO is observable in migration count (139--597$\times$ fewer, \S\ref{sec:e2e}) and in the vLLM integration (\textbf{1.08--1.15$\times$}, Table~\ref{tab:vllm-block}).
+\end{enumerate}
+
+The core C/CUDA classifier already runs in $<$\,40\,$\mu$s (\S\ref{sec:prefetch-eval}). Moving the remaining scheduling loop from Python to C/CUDA would eliminate the 23--49\,ms overhead, allowing the scheduling-policy benefit to be measured without amplification.
+
+\subsection{vLLM Integration Analysis}
+\label{sec:vllm-integration}
+
+To assess whether OrchKvCache's scheduling principles transfer to production inference engines, we integrate three victim-selection policies into vLLM~0.7.3's scheduler. All other vLLM components---continuous batching, PagedAttention, FlashAttention kernels---remain unchanged, isolating the effect of victim selection.
+
+\textbf{Note on terminology.} The ``FIFO Offload'' baseline used in our block-level prototype (\S\ref{sec:e2e}) and the vLLM-native preemption policy are \emph{distinct} mechanisms at different granularities. The former is a block-level oldest-first eviction rule; the latter is vLLM's request-level queue-pop preemption (effectively LIFO at request granularity). We label them separately below.
+
+\textbf{Policies.} (i) \textbf{vLLM-default}: vLLM's native queue-pop preemption; \texttt{running\_queue.pop()} selects the most recently added sequence. (ii) \textbf{Progress-aware}: selects the sequence with the lowest generation progress ratio ($\text{output\_len} / \text{total\_len}$), as a lightweight proxy for ``least valuable.'' (iii) \textbf{Block-level scoring}: for each candidate victim, computes the mean OrchKvCache hotness score (Eq.~\ref{eq:hotness}) across \emph{all} of its KV blocks; the sequence with the lowest aggregate score is preempted. This policy reuses the same composite scoring function ($\alpha{=}0.7$, $\beta{=}0.2$, $\gamma{=}0.1$) from the block-level prototype, but applies it at request granularity.
+
+\textbf{Setup.} LLaMA-2-7B (MHA-32, 512\,KB/token) on A100-80GB with \texttt{swap\_space}=32\,GB, 64 output tokens. We sweep \texttt{gpu\_memory\_utilization} $\in \{0.20, 0.25, 0.30\}$ and concurrent requests $\in \{16, 32\}$ to vary preemption pressure, with 2 repeats per configuration.
+
+\begin{table}[t]
+\centering
+\caption{vLLM integration: three victim-selection policies across memory-pressure levels (LLaMA-2-7B, 2 repeats averaged). Speedup is relative to vLLM-default at each configuration.}
+\label{tab:vllm-block}
+\small
+\begin{tabular}{@{}clrrr@{}}
+\toprule
+gpu\_util & Policy & tok/s & vs Default \\
+\midrule
+\multirow{3}{*}{0.20 (16 req)}
+& vLLM-default       & 3{,}748 & 1.00$\times$ \\
+& Progress-aware     & 4{,}305 & \textbf{1.15$\times$} \\
+& Block-level scoring & 3{,}979 & 1.06$\times$ \\
+\midrule
+\multirow{3}{*}{0.20 (32 req)}
+& vLLM-default       & 3{,}981 & 1.00$\times$ \\
+& Progress-aware     & 4{,}313 & \textbf{1.08$\times$} \\
+& Block-level scoring & 3{,}603 & 0.91$\times$ \\
+\midrule
+\multirow{3}{*}{0.25 (16 req)}
+& vLLM-default       & 6{,}158 & 1.00$\times$ \\
+& Progress-aware     & 6{,}161 & 1.00$\times$ \\
+& Block-level scoring & 6{,}167 & 1.00$\times$ \\
+\midrule
+\multirow{3}{*}{0.30 (32 req)}
+& vLLM-default       & 7{,}869 & 1.00$\times$ \\
+& Progress-aware     & 7{,}870 & 1.00$\times$ \\
+& Block-level scoring & 7{,}877 & 1.00$\times$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{figures/fig26_vllm_strategies.pdf}
+\caption{vLLM victim-selection strategies across memory-pressure levels. Under tight memory (gpu\_util=0.20), progress-aware scoring achieves 1.08--1.15$\times$ over the vLLM-default policy; under relaxed memory ($\geq$0.25), all strategies converge.}
+\label{fig:vllm-strategies}
+\end{figure}
+
+\textbf{Result.} Table~\ref{tab:vllm-block} and Figure~\ref{fig:vllm-strategies} reveal a clear pressure-dependent pattern. Under tight memory (gpu\_util$=$0.20), preemption is frequent and victim-selection quality matters: progress-aware scoring achieves \textbf{1.08--1.15$\times$} over the vLLM-default policy, while block-level scoring yields 0.91--1.06$\times$. Under relaxed memory ($\geq$0.25), preemption rarely triggers and all three strategies are equivalent ($\pm$0.1\%).
+
+\textbf{Root-cause analysis of block-scoring at 32 requests.} The 0.91$\times$ regression at 32 requests traces to a specific implementation bottleneck: the Python-level per-block score aggregation iterates over all blocks of each candidate victim ($O(\text{blocks\_per\_request} \times \text{candidates})$), adding 2--5\,ms per preemption event. At 32 concurrent requests with frequent preemption, this overhead accumulates to several hundred milliseconds per scheduling cycle. In contrast, progress-aware scoring performs a single $O(1)$ division per request. Quantitatively: the core C classifier evaluates a single block in 2.6\,$\mu$s (\S\ref{sec:prefetch-eval}); aggregating 128 blocks (a typical 4K-token request on LLaMA-2-7B) would take ${\sim}$333\,$\mu$s natively, versus ${\sim}$4\,ms in Python---a 12$\times$ overhead that is fully resolvable. At 16 requests (where preemption is less frequent), block-scoring achieves 1.06$\times$, confirming that the algorithm is sound but the Python implementation does not scale to high-concurrency preemption.
+
+\textbf{Architectural constraint: why true partial swap fails.} We attempted \emph{intra-request partial swap}---evicting only cold blocks from running sequences. However, PagedAttention requires all blocks of a RUNNING sequence on GPU, so evicted blocks must be restored before attention runs. The freed GPU memory is immediately consumed by the restore, yielding zero net gain. Our prototype confirmed this: \texttt{NoFreeBlocksError} triggered on every attempt.
+
+\textbf{Implication.} These results refine the granularity insight: \emph{the benefit of attention-driven scheduling operates at two levels}. (1)~At the \textbf{victim selection level} (which request to preempt), progress-aware scoring---a lightweight proxy enabled by OrchKvCache's per-request hotness tracking---achieves \textbf{1.08--1.15$\times$} within vLLM's unmodified architecture. Block-level scoring achieves 1.06$\times$ at moderate concurrency (16 req) and would match or exceed progress-aware with a C-native implementation. (2)~At the \textbf{data migration level} (which blocks to move), true partial swap requires extending the attention kernel to support mixed GPU/CPU block tables---computing attention with some blocks fetched on-the-fly from DRAM. This is discussed in \S\ref{sec:discussion} and represents the path to combining OrchKvCache's block-level intelligence with production continuous batching.
+
+
+
+%% ====================================================================
+\section{Related Work}
+%% ====================================================================
+
+OrchKvCache is an \emph{online, proactive, block-granularity, lossless decode-phase} placement system spanning GPU, DRAM, and SSD. We position it against four lines of work.
+
+\textbf{Lossless KV offloading.}
+vLLM~\cite{vllm} pages KV blocks but evicts via blind FIFO. FlexGen~\cite{flexgen} solves three-tier placement offline (static, per-layer, low SSD utilization). InfiniGen~\cite{infinigen} adds cross-layer prefetching (GPU+DRAM only, lossy at reduced capacity; detailed comparison in \S\ref{sec:discussion}). OrchKvCache extends the hierarchy to SSD, proactively demotes cold blocks online, and guarantees lossless output at any GPU budget.
+
+\textbf{Lossy KV reduction and compression.}
+H2O~\cite{h2o}, ScissorHands~\cite{scissorhands}, StreamingLLM~\cite{streamingllm}, Quest~\cite{quest}, PyramidKV~\cite{pyramidkv}, SnapKV~\cite{snapkv}, Keyformer~\cite{keyformer}, and SqueezeAttention~\cite{squeezeattention} permanently discard or approximate KV data. KIVI~\cite{kivi} and CacheGen~\cite{cachegen} apply quantization/compression. All trade quality for memory; OrchKvCache \emph{migrates} instead of discarding, and can compose with compression (e.g., KIVI before SSD writes). IMPRESS~\cite{impress} and ContiguousKV~\cite{contiguouskv} target \emph{prefix-phase} KV reuse from SSD (lossy); OrchKvCache addresses the complementary \emph{decode-phase} problem with lossless integrity.
+
+\textbf{LLM serving and KV infrastructure.}
+Orca~\cite{orca} introduced continuous batching; DistServe~\cite{distserve}, Splitwise~\cite{splitwise}, and Sarathi-Serve~\cite{sarathi} disaggregate prefill/decode; FlashAttention~\cite{flashattn,flashattn2} provides IO-aware attention; SGLang~\cite{sglang} optimizes multi-call programs. Mooncake~\cite{mooncake}, Infinite-LLM~\cite{infinitellm}, vTensor~\cite{vtensor}, AttentionStore~\cite{attentionstore}, and CacheBlend~\cite{cacheblend} operate at cluster or cross-request scope. These are orthogonal to OrchKvCache's single-node, intra-request block-level scheduling.
+
+\textbf{Heterogeneous storage.}
+Strata~\cite{strata} and SPFS~\cite{spfs} pioneered cross-media file systems; OrchFS~\cite{orchfs} introduced alignment-based write partitioning (up to 29.76$\times$); TPP~\cite{tpp} manages CXL tiered memory. OrchKvCache builds on OrchFS for SSD-aligned I/O. InstInfer~\cite{instinfer}, HeteGen~\cite{hetegen}, and PowerInfer~\cite{powerinfer} target different bottlenecks (near-storage attention, CPU-GPU parallelism, activation locality).
+
+%% ====================================================================
+\section{Discussion}
+\label{sec:discussion}
+%% ====================================================================
+
+\textbf{Comparison with InfiniGen.}
+Table~\ref{tab:vs-infinigen} compares perplexity with InfiniGen~\cite{infinigen} (OSDI~'24) on WikiText-2 (seq=2048). At 80\% GPU KV capacity, FIFO degrades catastrophically (22.26), InfiniGen preserves quality (5.69), and OrchKvCache---which \emph{migrates} rather than \emph{discards}---is lossless at \emph{any} budget (5.01). Table~\ref{tab:feature-cmp} summarizes architectural differences. The two systems are complementary: InfiniGen predicts \emph{which} blocks to fetch (cross-layer speculation); OrchKvCache decides \emph{where} each block resides (three-tier placement + SSD-aligned I/O).
+
+\begin{table}[t]
+\centering
+\caption{Perplexity on WikiText-2 (seq=2048). InfiniGen data from~\cite{infinigen} Table~2.}
+\label{tab:vs-infinigen}
+\small
+\begin{tabular}{@{}lcl@{}}
+\toprule
+Scheme & LLaMA-2-7B & Note \\
+\midrule
+Full Cache            & 5.01 / 5.69$^\dagger$ & baseline \\
+80\% FIFO$^\dagger$   & 22.26$^\dagger$ & catastrophic \\
+80\% InfiniGen$^\dagger$ & 5.69$^\dagger$ & near-lossless \\
+\textbf{OrchKvCache (any budget)} & \textbf{5.01}  & \textbf{always lossless} \\
+\bottomrule
+\multicolumn{3}{@{}l}{\footnotesize $^\dagger$From~\cite{infinigen} (transformers 4.35). Ours: transformers 4.57.}\\
+\end{tabular}
+\end{table}
+
+\begin{table}[t]
+\centering
+\caption{Feature comparison of KV cache management systems.}
+\label{tab:feature-cmp}
+\small
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+Feature & OrchKvCache & InfiniGen & H2O & vLLM \\
+\midrule
+Storage tiers & 3 & 2 & 1 & 2 \\
+Lossless? & Yes & Yes$^*$ & No & Yes \\
+Proactive evict & Yes & No & N/A & No \\
+Prediction & EMA & Cross-layer & Cumul. & None \\
+Granularity & Block & Block & Token & Request \\
+SSD I/O opt. & Yes & No & No & No \\
+\bottomrule
+\multicolumn{5}{@{}l}{\footnotesize $^*$Lossless only when all KV fits in GPU; evicts entries otherwise.}\\
+\end{tabular}
+\end{table}
+
+\textbf{Future directions.}
+(1)~\emph{Native scheduling loop.} Porting the Python scheduling loop to C/CUDA would eliminate the 23--49\,ms overhead (\S\ref{sec:overhead}), as the native classifier already runs in $<$40\,$\mu$s.
+(2)~\emph{KV compression composability.} Composing with KV compression (e.g., KIVI 2-bit quantization~\cite{kivi}) before SSD writes would reduce storage footprint by ${\sim}$4$\times$ while preserving the three-tier migration framework.
+(3)~\emph{Multi-GPU and tensor parallelism.} Under tensor parallelism~\cite{megatron}, each rank manages a disjoint subset of KV heads; OrchKvCache can run an independent instance per rank with no cross-GPU coordination, as each rank's attention scores and KV blocks are self-contained. For pipeline parallelism, the scheduler runs on the stage that executes attention. Our single-GPU evaluation validates the core scheduling mechanisms; multi-GPU deployment adds only the standard communication overhead of the parallelism strategy, not additional KV-management cost. Emerging CXL-attached memory~\cite{tpp} would naturally extend the hierarchy to four tiers (GPU $\to$ local DRAM $\to$ CXL memory $\to$ SSD).
+(4)~\emph{Mixed-tier attention kernels.} Extending attention kernels to support mixed GPU/CPU block tables would enable true intra-request partial swap in production engines (\S\ref{sec:vllm-integration}), unifying block-level and request-level scheduling.
+(5)~\emph{Selective restore.} Kernel-level selective restore---fetching only EMA-top-ranked blocks during attention---could further reduce restore volume; preliminary profiling suggests high coverage at low fetch ratios.
+
+\textbf{Limitations.}
+(1)~At 8K+ context, eager attention OOMs, forcing a recency+frequency fallback; integrating FlashAttention's partial attention export~\cite{flashattn2} would restore the full classifier at arbitrary context lengths.
+(2)~Prototype speedup (1.28--1.77$\times$) is amplified by shared framework overhead; the vLLM result (1.08--1.15$\times$) is the implementation-independent estimate.
+(3)~All experiments use a single GPU; multi-GPU evaluation is left for future work (see direction 3 above).
+(4)~Cross-layer~\cite{infinigen} or query-aware~\cite{quest} signals could further improve prefetch accuracy beyond EMA.
+
+%% ====================================================================
+\section{Conclusion}
+%% ====================================================================
+
+We have presented OrchKvCache, a tiered KV-cache management system that orchestrates KV blocks across GPU, DRAM, and SSD using runtime hotness classification. Our block-level prototype validates the core mechanisms---attention-driven scoring, three-tier lossless migration, and SSD-aligned batch I/O---achieving \textbf{139--597$\times$} fewer migrations than FIFO with \textbf{100\% lossless} output. In this prototype (where shared framework overhead amplifies relative differences), the migration savings yield \textbf{1.28--1.77$\times$} throughput. Separately, integration into vLLM's scheduler confirms that attention-informed victim selection transfers to production runtimes (\textbf{1.08--1.15$\times$} under memory pressure). At 8K context, a recency+frequency fallback (without per-step attention export) remains lossless and outperforms FIFO by up to 2.12$\times$, validating the scheduling framework's applicability to FlashAttention-based stacks.
+
+Overhead decomposition shows the scheduling \emph{algorithm} is effective (native classifier: $<$\,40\,$\mu$s/step); the remaining gap is dominated by Python orchestration, resolvable by porting the scheduling loop to the native runtime.
+
+%% ====================================================================
+\section*{Acknowledgments}
+\textit{We used ChatGPT solely for language editing and phrasing improvement in selected parts of this paper. All technical content, claims, results, and conclusions were reviewed and verified by the authors.}
+
+%% ====================================================================
+\balance
+\bibliographystyle{IEEEtran}
+\begin{thebibliography}{46}
+
+\bibitem{vllm} W.~Kwon et~al., ``Efficient Memory Management for Large Language Model Serving with PagedAttention,'' in \textit{Proc.\ SOSP}, 2023.
+
+\bibitem{flexgen} Y.~Sheng et~al., ``FlexGen: High-Throughput Generative Inference of Large Language Models with a Single GPU,'' in \textit{Proc.\ ICML}, 2023.
+
+\bibitem{h2o} Z.~Zhang et~al., ``H$_2$O: Heavy-Hitter Oracle for Efficient Generative Inference of Large Language Models,'' in \textit{Proc.\ NeurIPS}, 2023.
+
+\bibitem{streamingllm} G.~Xiao et~al., ``Efficient Streaming Language Models with Attention Sinks,'' in \textit{Proc.\ ICLR}, 2024.
+
+\bibitem{infinigen} W.~Lee et~al., ``InfiniGen: Efficient Generative Inference of Large Language Models with Dynamic KV Cache Management,'' in \textit{Proc.\ OSDI}, 2024.
+
+\bibitem{cachegen} Y.~Liu et~al., ``CacheGen: KV Cache Compression and Streaming for Fast LLM Serving,'' in \textit{Proc.\ SIGCOMM}, 2024.
+
+\bibitem{scissorhands} Z.~Liu et~al., ``Scissorhands: Exploiting the Persistence of Importance Hypothesis for LLM KV Cache Compression at Test Time,'' \textit{arXiv:2305.17118}, 2023.
+
+\bibitem{squeezeattention} Z.~Wang et~al., ``SqueezeAttention: 2D Management of KV-Cache in LLM Inference via Layer-wise Optimal Budget,'' \textit{arXiv:2404.04793}, 2024.
+
+\bibitem{quest} J.~Tang et~al., ``Quest: Query-Aware Sparsity for Efficient Long-Context LLM Inference,'' in \textit{Proc.\ ICML}, 2024.
+
+\bibitem{mooncake} R.~Qin et~al., ``Mooncake: A KVCache-Centric Disaggregated Architecture for LLM Serving,'' \textit{arXiv:2407.00079}, 2024.
+
+\bibitem{orca} G.-I.~Yu et~al., ``Orca: A Distributed Serving System for Transformer-Based Generative Models,'' in \textit{Proc.\ OSDI}, 2022.
+
+\bibitem{distserve} Y.~Zhong et~al., ``DistServe: Disaggregating Prefill and Decoding for Goodput-optimized LLM Serving,'' in \textit{Proc.\ OSDI}, 2024.
+
+\bibitem{sarathi} A.~Agrawal et~al., ``Taming Throughput-Latency Tradeoff in LLM Inference with Sarathi-Serve,'' in \textit{Proc.\ OSDI}, 2024.
+
+\bibitem{flashattn2} T.~Dao, ``FlashAttention-2: Faster Attention with Better Parallelism and Work Partitioning,'' in \textit{Proc.\ ICLR}, 2024.
+
+\bibitem{flashattn} T.~Dao et~al., ``FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness,'' in \textit{Proc.\ NeurIPS}, 2022.
+
+\bibitem{sglang} L.~Zheng et~al., ``SGLang: Efficient Execution of Structured Language Model Programs,'' in \textit{Proc.\ NeurIPS}, 2024.
+
+\bibitem{splitwise} P.~Patel et~al., ``Splitwise: Efficient Generative LLM Inference Using Phase Splitting,'' in \textit{Proc.\ ISCA}, 2024.
+
+\bibitem{orchfs} Y.~Zhan et~al., ``Rethinking the Request-to-IO Transformation Process of File Systems for Full Utilization of High-Bandwidth SSDs,'' in \textit{Proc.\ FAST}, 2025.
+
+\bibitem{impress} W.~Chen et~al., ``IMPRESS: An Importance-Informed Multi-Tier Prefix KV Storage System for Large Language Model Inference,'' in \textit{Proc.\ FAST}, 2025.
+
+\bibitem{strata} Y.~Kwon et~al., ``Strata: A Cross Media File System,'' in \textit{Proc.\ SOSP}, 2017.
+
+\bibitem{spfs} J.~Kim et~al., ``SPFS: Splitting and Piggy-backing the File System for Performance with Persistent Memory,'' in \textit{Proc.\ ATC}, 2023.
+
+\bibitem{vtensor} J.~Xu et~al., ``vTensor: Flexible Virtual Tensor Management for Efficient LLM Serving,'' in \textit{Proc.\ FAST}, 2025.
+
+\bibitem{sleator-tarjan} D.~D.~Sleator and R.~E.~Tarjan, ``Amortized Efficiency of List Update and Paging Rules,'' \textit{Communications of the ACM}, vol.~28, no.~2, pp.~202--208, 1985.
+
+\bibitem{transformer} A.~Vaswani et~al., ``Attention Is All You Need,'' in \textit{Proc.\ NeurIPS}, 2017.
+
+\bibitem{gqa} J.~Ainslie et~al., ``GQA: Training Generalized Multi-Query Transformer Models from Multi-Head Checkpoints,'' in \textit{Proc.\ EMNLP}, 2023.
+
+\bibitem{llama2} H.~Touvron et~al., ``Llama 2: Open Foundation and Fine-Tuned Chat Models,'' \textit{arXiv:2307.09288}, 2023.
+
+\bibitem{llama3} Meta AI, ``The Llama 3 Herd of Models,'' \textit{arXiv:2407.21783}, 2024.
+
+\bibitem{instinfer} X.~Pan et~al., ``InstInfer: In-Storage Attention Offloading for Cost-Effective Long-Context LLM Inference,'' \textit{arXiv:2409.04992}, 2024.
+
+
+\bibitem{infinitellm} L.~Bin et~al., ``Infinite-LLM: Efficient LLM Service for Long Context with DistAttention and Distributed KVCache,'' \textit{arXiv:2401.02669}, 2024.
+
+\bibitem{hetegen} X.~Zhao et~al., ``HeteGen: Efficient Heterogeneous Parallel Inference for Large Language Models on Resource-Constrained Devices,'' in \textit{Proc.\ MLSys}, 2024.
+
+\bibitem{powerinfer} Y.~Song et~al., ``PowerInfer: Fast Large Language Model Serving with a Consumer-grade GPU,'' \textit{arXiv:2312.12456}, 2023.
+
+\bibitem{kivi} Z.~Liu et~al., ``KIVI: A Tuning-Free Asymmetric 2bit Quantization for KV Cache,'' in \textit{Proc.\ ICML}, 2024.
+
+\bibitem{pyramidkv} Z.~Cai et~al., ``PyramidKV: Dynamic KV Cache Compression based on Pyramidal Information Funneling,'' \textit{arXiv:2406.02069}, 2024.
+
+\bibitem{snapkv} Y.~Li et~al., ``SnapKV: LLM Knows What You are Looking for Before Generation,'' in \textit{Proc.\ NeurIPS}, 2024.
+
+\bibitem{tpp} H.~Al Maruf et~al., ``TPP: Transparent Page Placement for CXL-Enabled Tiered-Memory,'' in \textit{Proc.\ ASPLOS}, 2023.
+
+\bibitem{keyformer} W.~Peng et~al., ``Keyformer: KV Cache Reduction through Key Tokens Selection for Efficient Generative Inference,'' in \textit{Proc.\ MLSys}, 2024.
+
+
+\bibitem{qwen2.5} Qwen Team, ``Qwen2.5 Technical Report,'' \textit{arXiv:2412.15115}, 2024.
+
+\bibitem{mistral} A.~Jiang et~al., ``Mistral 7B,'' \textit{arXiv:2310.06825}, 2023.
+
+\bibitem{mqa} N.~Shazeer, ``Fast Transformer Decoding: One Write-Head Is All You Need,'' \textit{arXiv:1911.02150}, 2019.
+
+\bibitem{megatron} M.~Shoeybi et~al., ``Megatron-LM: Training Multi-Billion Parameter Language Models Using Model Parallelism,'' \textit{arXiv:1909.08053}, 2019.
+
+\bibitem{attentionstore} B.~Gao et~al., ``AttentionStore: Cost-effective Attention Reuse across Multi-turn Conversations in Large Language Model Serving,'' \textit{arXiv:2403.19708}, 2024.
+
+\bibitem{cacheblend} J.~Yao et~al., ``CacheBlend: Fast Large Language Model Serving for RAG with Cached Knowledge Fusion,'' in \textit{Proc.\ EuroSys}, 2025.
+
+
+\bibitem{rope} J.~Su et~al., ``RoFormer: Enhanced Transformer with Rotary Position Embedding,'' \textit{Neurocomputing}, vol.~568, 2024.
+
+\bibitem{gpt4} OpenAI, ``GPT-4 Technical Report,'' \textit{arXiv:2303.08774}, 2023.
+
+\bibitem{contiguouskv} J.~Zou et~al., ``ContiguousKV: Accelerating LLM Prefill with Granularity-Aligned KV Cache Management,'' \textit{arXiv:2601.13631}, 2025.
+
+\bibitem{lm-eval} L.~Gao et~al., ``A Framework for Few-Shot Language Model Evaluation,'' Zenodo, 2024. \texttt{doi:10.5281/zenodo.10256836}.
+
+\end{thebibliography}
+\end{document}

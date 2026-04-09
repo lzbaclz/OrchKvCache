@@ -1,0 +1,44 @@
+[
+  {
+    "model": "LLaMA-2-7B",
+    "config": "gpu-only",
+    "throughput": 605.5,
+    "evictions": 0,
+    "status": "OK"
+  },
+  {
+    "model": "LLaMA-2-7B",
+    "config": "naive-fifo",
+    "throughput": 43.0,
+    "evictions": 524544,
+    "status": "OK"
+  },
+  {
+    "model": "LLaMA-2-7B",
+    "config": "orchkv",
+    "throughput": 74.8,
+    "evictions": 1024,
+    "status": "OK"
+  },
+  {
+    "model": "LLaMA-2-13B",
+    "config": "gpu-only",
+    "throughput": 444.6,
+    "evictions": 0,
+    "status": "OK"
+  },
+  {
+    "model": "LLaMA-2-13B",
+    "config": "naive-fifo",
+    "throughput": 30.0,
+    "evictions": 663744,
+    "status": "OK"
+  },
+  {
+    "model": "LLaMA-2-13B",
+    "config": "orchkv",
+    "throughput": 55.9,
+    "evictions": 1024,
+    "status": "OK"
+  }
+]
