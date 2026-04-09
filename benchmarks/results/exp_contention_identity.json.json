@@ -1,0 +1,97 @@
+{
+  "model": "Qwen2.5-7B",
+  "results": {
+    "cap_5pct": {
+      "Full_EMA": {
+        "avg_precision": 1.0,
+        "avg_recall": 1.0,
+        "avg_f1": 1.0,
+        "n_steps": 32,
+        "gpu_cap": 25
+      },
+      "No_attn": {
+        "avg_precision": 0.64,
+        "avg_recall": 0.64,
+        "avg_f1": 0.64,
+        "n_steps": 32,
+        "gpu_cap": 25
+      },
+      "Recency": {
+        "avg_precision": 0.64,
+        "avg_recall": 0.64,
+        "avg_f1": 0.64,
+        "n_steps": 32,
+        "gpu_cap": 25
+      }
+    },
+    "cap_10pct": {
+      "Full_EMA": {
+        "avg_precision": 1.0,
+        "avg_recall": 1.0,
+        "avg_f1": 1.0,
+        "n_steps": 32,
+        "gpu_cap": 50
+      },
+      "No_attn": {
+        "avg_precision": 0.8,
+        "avg_recall": 0.8,
+        "avg_f1": 0.8,
+        "n_steps": 32,
+        "gpu_cap": 50
+      },
+      "Recency": {
+        "avg_precision": 0.8,
+        "avg_recall": 0.8,
+        "avg_f1": 0.8,
+        "n_steps": 32,
+        "gpu_cap": 50
+      }
+    },
+    "cap_20pct": {
+      "Full_EMA": {
+        "avg_precision": 1.0,
+        "avg_recall": 1.0,
+        "avg_f1": 1.0,
+        "n_steps": 32,
+        "gpu_cap": 100
+      },
+      "No_attn": {
+        "avg_precision": 0.9,
+        "avg_recall": 0.9,
+        "avg_f1": 0.9,
+        "n_steps": 32,
+        "gpu_cap": 100
+      },
+      "Recency": {
+        "avg_precision": 0.9,
+        "avg_recall": 0.9,
+        "avg_f1": 0.9,
+        "n_steps": 32,
+        "gpu_cap": 100
+      }
+    },
+    "cap_30pct": {
+      "Full_EMA": {
+        "avg_precision": 1.0,
+        "avg_recall": 1.0,
+        "avg_f1": 1.0,
+        "n_steps": 32,
+        "gpu_cap": 150
+      },
+      "No_attn": {
+        "avg_precision": 0.9333,
+        "avg_recall": 0.9333,
+        "avg_f1": 0.9333,
+        "n_steps": 32,
+        "gpu_cap": 150
+      },
+      "Recency": {
+        "avg_precision": 0.9333,
+        "avg_recall": 0.9333,
+        "avg_f1": 0.9333,
+        "n_steps": 32,
+        "gpu_cap": 150
+      }
+    }
+  }
+}

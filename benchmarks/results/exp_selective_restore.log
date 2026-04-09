@@ -1,0 +1,36 @@
+`torch_dtype` is deprecated! Use `dtype` instead!
+=================================================================
+  Improvement 8b: Attention Weight Coverage by EMA Score
+=================================================================
+
+  Qwen2.5-7B  seq=1024  gen=64  budget=50MB
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:01<00:04,  1.51s/it]Loading checkpoint shards:  50%|█████     | 2/4 [00:03<00:03,  1.50s/it]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:04<00:01,  1.28s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:05<00:00,  1.21s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:05<00:00,  1.28s/it]
+
+    Avg coverage (EMA-ranked blocks → attention weight captured):
+      Top-10%:  42.86%  ########
+      Top-20%:  42.86%  ########
+      Top-30%:  42.86%  ########
+      Top-50%:  42.86%  ########
+      Top-70%:  42.86%  ########
+      Top-90%:  42.86%  ########
+
+  Llama-2-7b-hf  seq=1024  gen=64  budget=50MB
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards:  50%|█████     | 1/2 [00:02<00:02,  2.98s/it]Loading checkpoint shards: 100%|██████████| 2/2 [00:04<00:00,  1.85s/it]Loading checkpoint shards: 100%|██████████| 2/2 [00:04<00:00,  2.02s/it]
+
+    Avg coverage (EMA-ranked blocks → attention weight captured):
+      Top-10%: 100.00%  ####################
+      Top-20%: 100.00%  ####################
+      Top-30%: 100.00%  ####################
+      Top-50%: 100.00%  ####################
+      Top-70%: 100.00%  ####################
+      Top-90%: 100.00%  ####################
+
+=================================================================
+  SUMMARY: EMA Score → Attention Weight Coverage
+=================================================================
+  Model                  top10%   top30%   top50%   top70%   top90%
+  Qwen2.5-7B              42.9%    42.9%    42.9%    42.9%    42.9%
+  Llama-2-7b-hf          100.0%   100.0%   100.0%   100.0%   100.0%
+[bench] saved → /home/lzq/codes/orchkv/OrchKvCache/benchmarks/results/exp_selective_restore.json
+
+Saved to /home/lzq/codes/orchkv/OrchKvCache/benchmarks/results/exp_selective_restore.json

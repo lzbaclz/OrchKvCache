@@ -1,0 +1,152 @@
+{
+  "args": {
+    "n_blocks": 256,
+    "n_steps": 200,
+    "n_runs": 3,
+    "seed": 42
+  },
+  "raw": [
+    {
+      "run": 0,
+      "config": "full_ema",
+      "desc": "Full EMA (default)",
+      "alpha": 0.7,
+      "beta": 0.2,
+      "gamma": 0.1,
+      "accuracy": 0.6094,
+      "gpu_demotes": 0
+    },
+    {
+      "run": 1,
+      "config": "full_ema",
+      "desc": "Full EMA (default)",
+      "alpha": 0.7,
+      "beta": 0.2,
+      "gamma": 0.1,
+      "accuracy": 0.6094,
+      "gpu_demotes": 0
+    },
+    {
+      "run": 2,
+      "config": "full_ema",
+      "desc": "Full EMA (default)",
+      "alpha": 0.7,
+      "beta": 0.2,
+      "gamma": 0.1,
+      "accuracy": 0.6094,
+      "gpu_demotes": 0
+    },
+    {
+      "run": 0,
+      "config": "no_attn",
+      "desc": "No attention (SDPA fallback)",
+      "alpha": 0.0,
+      "beta": 0.6,
+      "gamma": 0.4,
+      "accuracy": 0.0977,
+      "gpu_demotes": 0
+    },
+    {
+      "run": 1,
+      "config": "no_attn",
+      "desc": "No attention (SDPA fallback)",
+      "alpha": 0.0,
+      "beta": 0.6,
+      "gamma": 0.4,
+      "accuracy": 0.0977,
+      "gpu_demotes": 0
+    },
+    {
+      "run": 2,
+      "config": "no_attn",
+      "desc": "No attention (SDPA fallback)",
+      "alpha": 0.0,
+      "beta": 0.6,
+      "gamma": 0.4,
+      "accuracy": 0.0977,
+      "gpu_demotes": 0
+    },
+    {
+      "run": 0,
+      "config": "recency_only",
+      "desc": "Recency only (LRU-like)",
+      "alpha": 0.0,
+      "beta": 1.0,
+      "gamma": 0.0,
+      "accuracy": 0.0977,
+      "gpu_demotes": 0
+    },
+    {
+      "run": 1,
+      "config": "recency_only",
+      "desc": "Recency only (LRU-like)",
+      "alpha": 0.0,
+      "beta": 1.0,
+      "gamma": 0.0,
+      "accuracy": 0.0977,
+      "gpu_demotes": 0
+    },
+    {
+      "run": 2,
+      "config": "recency_only",
+      "desc": "Recency only (LRU-like)",
+      "alpha": 0.0,
+      "beta": 1.0,
+      "gamma": 0.0,
+      "accuracy": 0.0977,
+      "gpu_demotes": 0
+    },
+    {
+      "run": 0,
+      "config": "frequency_only",
+      "desc": "Frequency only (LFU-like)",
+      "alpha": 0.0,
+      "beta": 0.0,
+      "gamma": 1.0,
+      "accuracy": 0.0977,
+      "gpu_demotes": 0
+    },
+    {
+      "run": 1,
+      "config": "frequency_only",
+      "desc": "Frequency only (LFU-like)",
+      "alpha": 0.0,
+      "beta": 0.0,
+      "gamma": 1.0,
+      "accuracy": 0.0977,
+      "gpu_demotes": 0
+    },
+    {
+      "run": 2,
+      "config": "frequency_only",
+      "desc": "Frequency only (LFU-like)",
+      "alpha": 0.0,
+      "beta": 0.0,
+      "gamma": 1.0,
+      "accuracy": 0.0977,
+      "gpu_demotes": 0
+    }
+  ],
+  "summary": {
+    "full_ema": {
+      "desc": "Full EMA (default)",
+      "avg_accuracy": 0.6094,
+      "avg_demotes": 0.0
+    },
+    "no_attn": {
+      "desc": "No attention (SDPA fallback)",
+      "avg_accuracy": 0.0977,
+      "avg_demotes": 0.0
+    },
+    "recency_only": {
+      "desc": "Recency only (LRU-like)",
+      "avg_accuracy": 0.0977,
+      "avg_demotes": 0.0
+    },
+    "frequency_only": {
+      "desc": "Frequency only (LFU-like)",
+      "avg_accuracy": 0.0977,
+      "avg_demotes": 0.0
+    }
+  }
+}

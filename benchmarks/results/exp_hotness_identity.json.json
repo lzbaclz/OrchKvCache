@@ -1,0 +1,30 @@
+[
+  {
+    "model": "Qwen2.5-7B",
+    "seq_len": 1024,
+    "n_steps": 32,
+    "avg_precision@5pct": 1.0,
+    "avg_recall@5pct": 1.0,
+    "avg_f1@5pct": 1.0,
+    "avg_precision@10pct": 1.0,
+    "avg_recall@10pct": 1.0,
+    "avg_f1@10pct": 1.0,
+    "avg_precision@25pct": 1.0,
+    "avg_recall@25pct": 1.0,
+    "avg_f1@25pct": 1.0
+  },
+  {
+    "model": "Llama-2-7b-hf",
+    "seq_len": 1024,
+    "n_steps": 32,
+    "avg_precision@5pct": 1.0,
+    "avg_recall@5pct": 1.0,
+    "avg_f1@5pct": 1.0,
+    "avg_precision@10pct": 1.0,
+    "avg_recall@10pct": 1.0,
+    "avg_f1@10pct": 1.0,
+    "avg_precision@25pct": 1.0,
+    "avg_recall@25pct": 1.0,
+    "avg_f1@25pct": 1.0
+  }
+]

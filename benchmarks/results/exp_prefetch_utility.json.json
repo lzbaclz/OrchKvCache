@@ -1,0 +1,69 @@
+[
+  {
+    "model": "Qwen2.5-7B",
+    "seq_len": 2048,
+    "n_requests": 4,
+    "budget_mb": 50,
+    "total_demotes": 2048,
+    "total_promotes": 2048,
+    "total_prefetches_dispatched": 0,
+    "total_prefetch_hits": 0,
+    "total_prefetch_wasted": 0,
+    "prefetch_hit_rate": 0,
+    "useful_prefetch_ratio": 0.0,
+    "per_request": [
+      {
+        "request": 0,
+        "gpu_to_dram": 512,
+        "dram_to_gpu": 512,
+        "prefetches_dispatched": 0,
+        "prefetch_hits": 0,
+        "prefetch_wasted": 0,
+        "prefetch_hit_rate": 0.0,
+        "schedule_cycles": 64,
+        "n_hot": 0,
+        "n_warm": 3696,
+        "n_cold": 0
+      },
+      {
+        "request": 1,
+        "gpu_to_dram": 512,
+        "dram_to_gpu": 512,
+        "prefetches_dispatched": 0,
+        "prefetch_hits": 0,
+        "prefetch_wasted": 0,
+        "prefetch_hit_rate": 0.0,
+        "schedule_cycles": 64,
+        "n_hot": 0,
+        "n_warm": 3696,
+        "n_cold": 0
+      },
+      {
+        "request": 2,
+        "gpu_to_dram": 512,
+        "dram_to_gpu": 512,
+        "prefetches_dispatched": 0,
+        "prefetch_hits": 0,
+        "prefetch_wasted": 0,
+        "prefetch_hit_rate": 0.0,
+        "schedule_cycles": 64,
+        "n_hot": 0,
+        "n_warm": 3696,
+        "n_cold": 0
+      },
+      {
+        "request": 3,
+        "gpu_to_dram": 512,
+        "dram_to_gpu": 512,
+        "prefetches_dispatched": 0,
+        "prefetch_hits": 0,
+        "prefetch_wasted": 0,
+        "prefetch_hit_rate": 0.0,
+        "schedule_cycles": 64,
+        "n_hot": 0,
+        "n_warm": 3696,
+        "n_cold": 0
+      }
+    ]
+  }
+]

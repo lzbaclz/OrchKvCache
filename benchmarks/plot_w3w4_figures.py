@@ -94,8 +94,12 @@ def fig_w3_eviction():
                            and r["mode"] == "orchkv"), None)
             if naive_r and orch_r and orch_r["total_evictions"] > 0:
                 ratio = naive_r["total_evictions"] / orch_r["total_evictions"]
-                ax.annotate(f"{ratio:.0f}x", xy=(x[mi_m] + w / 2, orch_r["total_evictions"]),
-                            fontsize=6.5, ha="center", va="bottom", color="#59a14f", fontweight="bold")
+                orch_y = orch_r["total_evictions"]
+                ax.annotate(f"{ratio:.0f}×",
+                            xy=(x[mi_m] + w, orch_y * 2.5),
+                            fontsize=8, ha="center", va="bottom",
+                            color="#2d6a2e", fontweight="bold",
+                            bbox=dict(boxstyle="round,pad=0.15", fc="white", ec="none", alpha=0.8))
 
     fig.tight_layout(w_pad=2)
     save(fig, "fig_w3_eviction")
