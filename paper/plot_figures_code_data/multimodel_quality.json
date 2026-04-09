@@ -1,0 +1,50 @@
+[
+  {
+    "model": "Qwen2.5-7B",
+    "prompt": "short",
+    "prompt_len": 152,
+    "generated": 128,
+    "match_rate": 100.0,
+    "evictions": 0
+  },
+  {
+    "model": "Qwen2.5-7B",
+    "prompt": "medium",
+    "prompt_len": 341,
+    "generated": 128,
+    "match_rate": 100.0,
+    "evictions": 1024
+  },
+  {
+    "model": "Qwen2.5-7B",
+    "prompt": "long",
+    "prompt_len": 701,
+    "generated": 128,
+    "match_rate": 100.0,
+    "evictions": 1024
+  },
+  {
+    "model": "Mistral-7B",
+    "prompt": "short",
+    "prompt_len": 182,
+    "generated": 128,
+    "match_rate": 100.0,
+    "evictions": 1024
+  },
+  {
+    "model": "Mistral-7B",
+    "prompt": "medium",
+    "prompt_len": 342,
+    "generated": 128,
+    "match_rate": 100.0,
+    "evictions": 1024
+  },
+  {
+    "model": "Mistral-7B",
+    "prompt": "long",
+    "prompt_len": 807,
+    "generated": 128,
+    "match_rate": 100.0,
+    "evictions": 1024
+  }
+]

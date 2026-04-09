@@ -1,0 +1,15 @@
+%% ====================================================================
+%% REPLACEMENT for the "Decomposing the gap" paragraph (3 enum items)
+%% in overleaf5.tex, around line 868-875.
+%% Update item 3 with new numbers after running experiments.
+%% ====================================================================
+
+\textbf{Decomposing the gap.} The throughput landscape separates three independent factors:
+\begin{enumerate}
+\item \textbf{Batching gap} (our framework vs.\ vLLM): 4.4--8$\times$, from continuous batching + CUDA graphs; orthogonal to KV scheduling.
+\item \textbf{Framework gap} (GPU-Only vs.\ Fast-FIFO): 35--45\%, from the KV management Python loop itself; reducible by moving to C/CUDA.
+%%TBD: Update the vLLM multiplier below with Hybrid V3 results.
+\item \textbf{Scheduling-policy gap}: the pure benefit of attention-driven classification over FIFO is observable in migration count (139--597$\times$ fewer, \S\ref{sec:e2e}) and in the vLLM integration (Hybrid~V3: \textbf{%%TBD%%$\times$}, Table~\ref{tab:vllm-block}).
+\end{enumerate}
+
+The core C/CUDA classifier already runs in $<$\,40\,$\mu$s (\S\ref{sec:prefetch-eval}). Moving the remaining scheduling loop from Python to C/CUDA would eliminate the 23--49\,ms overhead, allowing the scheduling-policy benefit to be measured without amplification.

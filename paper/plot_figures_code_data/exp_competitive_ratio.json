@@ -1,0 +1,114 @@
+{
+  "results": [
+    {
+      "n_blocks": 64,
+      "capacity": 19,
+      "capacity_ratio": 0.3,
+      "n_steps": 500,
+      "OPT_evictions": 2488,
+      "OPT_CR": 1.0,
+      "OPT_promotions": 2527.7,
+      "EMA_evictions": 6803,
+      "EMA_CR": 2.73,
+      "EMA_promotions": 6822,
+      "LFU_evictions": 7042.7,
+      "LFU_CR": 2.83,
+      "LFU_promotions": 7061.7,
+      "LRU_evictions": 10286.7,
+      "LRU_CR": 4.13,
+      "LRU_promotions": 10305.7,
+      "FIFO_evictions": 9199.3,
+      "FIFO_CR": 3.7,
+      "FIFO_promotions": 9218.3
+    },
+    {
+      "n_blocks": 128,
+      "capacity": 38,
+      "capacity_ratio": 0.3,
+      "n_steps": 500,
+      "OPT_evictions": 4817,
+      "OPT_CR": 1.0,
+      "OPT_promotions": 4880.3,
+      "EMA_evictions": 8864.3,
+      "EMA_CR": 1.84,
+      "EMA_promotions": 8902.3,
+      "LFU_evictions": 9030.3,
+      "LFU_CR": 1.87,
+      "LFU_promotions": 9068.3,
+      "LRU_evictions": 12814.7,
+      "LRU_CR": 2.66,
+      "LRU_promotions": 12852.7,
+      "FIFO_evictions": 10303.3,
+      "FIFO_CR": 2.14,
+      "FIFO_promotions": 10341.3
+    },
+    {
+      "n_blocks": 256,
+      "capacity": 76,
+      "capacity_ratio": 0.3,
+      "n_steps": 500,
+      "OPT_evictions": 12396.3,
+      "OPT_CR": 1.0,
+      "OPT_promotions": 12526.3,
+      "EMA_evictions": 22274.3,
+      "EMA_CR": 1.8,
+      "EMA_promotions": 22350.3,
+      "LFU_evictions": 22556.7,
+      "LFU_CR": 1.82,
+      "LFU_promotions": 22632.7,
+      "LRU_evictions": 34179,
+      "LRU_CR": 2.76,
+      "LRU_promotions": 34255,
+      "FIFO_evictions": 26287,
+      "FIFO_CR": 2.12,
+      "FIFO_promotions": 26363
+    },
+    {
+      "n_blocks": 512,
+      "capacity": 153,
+      "capacity_ratio": 0.3,
+      "n_steps": 300,
+      "OPT_evictions": 14846,
+      "OPT_CR": 1.0,
+      "OPT_promotions": 15077,
+      "EMA_evictions": 22404,
+      "EMA_CR": 1.51,
+      "EMA_promotions": 22557,
+      "LFU_evictions": 22359.3,
+      "LFU_CR": 1.51,
+      "LFU_promotions": 22512.3,
+      "LRU_evictions": 33221.3,
+      "LRU_CR": 2.24,
+      "LRU_promotions": 33374.3,
+      "FIFO_evictions": 25425.7,
+      "FIFO_CR": 1.71,
+      "FIFO_promotions": 25578.7
+    }
+  ],
+  "config": {
+    "n_runs": 3,
+    "seed": 42,
+    "configs": [
+      [
+        64,
+        500,
+        0.3
+      ],
+      [
+        128,
+        500,
+        0.3
+      ],
+      [
+        256,
+        500,
+        0.3
+      ],
+      [
+        512,
+        300,
+        0.3
+      ]
+    ]
+  }
+}

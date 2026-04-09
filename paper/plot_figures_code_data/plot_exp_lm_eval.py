@@ -4,7 +4,7 @@ Plot LM-Eval benchmark results: GPU-Only vs OrchKvCache accuracy.
 Since OrchKvCache is lossless, both bars should be identical.
 
 Input:  exp_lm_eval.json (same directory)
-Output: output_figures/fig_lm_eval_accuracy.pdf/png
+Output: out_figures_1/fig_lm_eval_accuracy.pdf/png
 """
 import json
 from pathlib import Path
@@ -14,15 +14,25 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 DATA = Path(__file__).parent
-OUT = DATA / "output_figures"
+OUT = DATA / "out_figures_1"
 OUT.mkdir(exist_ok=True)
 
+C_GPU = "#A8D5BA"
+C_ORKV = "#9CC0D8"
+
+EC_GPU = "#6BA882"
+EC_ORKV = "#5A90B0"
+
+BAR_KW = dict(linewidth=0.7)
+
 plt.rcParams.update({
-    'font.size': 10, 'axes.labelsize': 11, 'axes.titlesize': 11,
-    'xtick.labelsize': 9, 'ytick.labelsize': 9, 'legend.fontsize': 8,
-    'figure.dpi': 150, 'savefig.dpi': 300, 'savefig.bbox': 'tight',
-    'axes.grid': True, 'grid.alpha': 0.25,
-    'axes.spines.top': False, 'axes.spines.right': False,
+    "font.size": 10,
+    "font.family": "serif",
+    "figure.dpi": 150,
+    "savefig.dpi": 300,
+    "savefig.bbox": "tight",
+    "axes.spines.top": False,
+    "axes.spines.right": False,
 })
 
 
@@ -38,8 +48,6 @@ def main():
     if len(models) == 1:
         axes = [axes]
 
-    colors = {'GPU-Only': '#2ca02c', 'OrchKvCache': '#1f77b4'}
-
     for idx, r in enumerate(data):
         ax = axes[idx]
         x = np.arange(len(tasks))
@@ -49,9 +57,9 @@ def main():
         orch_vals = [r["orchkv"].get(t, 0) for t in tasks]
 
         bars1 = ax.bar(x - w/2, gpu_vals, w, label='GPU-Only',
-                       color=colors['GPU-Only'], edgecolor='white', linewidth=0.5)
+                       color=C_GPU, edgecolor=EC_GPU, **BAR_KW)
         bars2 = ax.bar(x + w/2, orch_vals, w, label='OrchKvCache',
-                       color=colors['OrchKvCache'], edgecolor='white', linewidth=0.5)
+                       color=C_ORKV, edgecolor=EC_ORKV, **BAR_KW)
 
         for i in range(len(tasks)):
             if gpu_vals[i] == orch_vals[i] and gpu_vals[i] > 0:
@@ -61,7 +69,6 @@ def main():
         ax.set_xticks(x)
         ax.set_xticklabels(task_labels, rotation=30, ha='right')
         ax.set_ylabel('Accuracy (%)' if idx == 0 else '')
-        ax.set_title(f'({chr(97+idx)}) {r["model"]}')
         ax.set_ylim(0, 105)
         ax.legend(loc='lower right', fontsize=7)
 

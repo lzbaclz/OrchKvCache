@@ -1,0 +1,182 @@
+[
+  {
+    "gpu_util": 0.2,
+    "num_prompts": 16,
+    "strategy": "fifo",
+    "avg_throughput": 3747.6,
+    "min_throughput": 3189.4,
+    "max_throughput": 4305.9,
+    "avg_preemptions": -1.0,
+    "n_trials": 2
+  },
+  {
+    "gpu_util": 0.2,
+    "num_prompts": 16,
+    "strategy": "progress",
+    "avg_throughput": 4304.5,
+    "min_throughput": 4303.6,
+    "max_throughput": 4305.4,
+    "avg_preemptions": -1.0,
+    "n_trials": 2
+  },
+  {
+    "gpu_util": 0.2,
+    "num_prompts": 16,
+    "strategy": "block_score",
+    "avg_throughput": 3978.6,
+    "min_throughput": 3648.4,
+    "max_throughput": 4308.7,
+    "avg_preemptions": -1.0,
+    "n_trials": 2
+  },
+  {
+    "gpu_util": 0.2,
+    "num_prompts": 32,
+    "strategy": "fifo",
+    "avg_throughput": 3980.9,
+    "min_throughput": 3651.7,
+    "max_throughput": 4310.2,
+    "avg_preemptions": -1.0,
+    "n_trials": 2
+  },
+  {
+    "gpu_util": 0.2,
+    "num_prompts": 32,
+    "strategy": "progress",
+    "avg_throughput": 4312.5,
+    "min_throughput": 4310.8,
+    "max_throughput": 4314.2,
+    "avg_preemptions": -1.0,
+    "n_trials": 2
+  },
+  {
+    "gpu_util": 0.2,
+    "num_prompts": 32,
+    "strategy": "block_score",
+    "avg_throughput": 3603.1,
+    "min_throughput": 3598.8,
+    "max_throughput": 3607.4,
+    "avg_preemptions": -1.0,
+    "n_trials": 2
+  },
+  {
+    "gpu_util": 0.25,
+    "num_prompts": 16,
+    "strategy": "fifo",
+    "avg_throughput": 6158.4,
+    "min_throughput": 6155.1,
+    "max_throughput": 6161.6,
+    "avg_preemptions": -1.0,
+    "n_trials": 2
+  },
+  {
+    "gpu_util": 0.25,
+    "num_prompts": 16,
+    "strategy": "progress",
+    "avg_throughput": 6160.6,
+    "min_throughput": 6159.8,
+    "max_throughput": 6161.3,
+    "avg_preemptions": -1.0,
+    "n_trials": 2
+  },
+  {
+    "gpu_util": 0.25,
+    "num_prompts": 16,
+    "strategy": "block_score",
+    "avg_throughput": 6166.8,
+    "min_throughput": 6166.4,
+    "max_throughput": 6167.2,
+    "avg_preemptions": -1.0,
+    "n_trials": 2
+  },
+  {
+    "gpu_util": 0.25,
+    "num_prompts": 32,
+    "strategy": "fifo",
+    "avg_throughput": 6029.4,
+    "min_throughput": 6027.1,
+    "max_throughput": 6031.6,
+    "avg_preemptions": -1.0,
+    "n_trials": 2
+  },
+  {
+    "gpu_util": 0.25,
+    "num_prompts": 32,
+    "strategy": "progress",
+    "avg_throughput": 6019.1,
+    "min_throughput": 6013.6,
+    "max_throughput": 6024.5,
+    "avg_preemptions": -1.0,
+    "n_trials": 2
+  },
+  {
+    "gpu_util": 0.25,
+    "num_prompts": 32,
+    "strategy": "block_score",
+    "avg_throughput": 6030.9,
+    "min_throughput": 6030.0,
+    "max_throughput": 6031.7,
+    "avg_preemptions": -1.0,
+    "n_trials": 2
+  },
+  {
+    "gpu_util": 0.3,
+    "num_prompts": 16,
+    "strategy": "fifo",
+    "avg_throughput": 6165.1,
+    "min_throughput": 6163.6,
+    "max_throughput": 6166.7,
+    "avg_preemptions": -1.0,
+    "n_trials": 2
+  },
+  {
+    "gpu_util": 0.3,
+    "num_prompts": 16,
+    "strategy": "progress",
+    "avg_throughput": 6167.5,
+    "min_throughput": 6165.7,
+    "max_throughput": 6169.3,
+    "avg_preemptions": -1.0,
+    "n_trials": 2
+  },
+  {
+    "gpu_util": 0.3,
+    "num_prompts": 16,
+    "strategy": "block_score",
+    "avg_throughput": 6160.9,
+    "min_throughput": 6157.9,
+    "max_throughput": 6163.8,
+    "avg_preemptions": -1.0,
+    "n_trials": 2
+  },
+  {
+    "gpu_util": 0.3,
+    "num_prompts": 32,
+    "strategy": "fifo",
+    "avg_throughput": 7868.8,
+    "min_throughput": 7868.3,
+    "max_throughput": 7869.2,
+    "avg_preemptions": -1.0,
+    "n_trials": 2
+  },
+  {
+    "gpu_util": 0.3,
+    "num_prompts": 32,
+    "strategy": "progress",
+    "avg_throughput": 7870.1,
+    "min_throughput": 7865.5,
+    "max_throughput": 7874.7,
+    "avg_preemptions": -1.0,
+    "n_trials": 2
+  },
+  {
+    "gpu_util": 0.3,
+    "num_prompts": 32,
+    "strategy": "block_score",
+    "avg_throughput": 7876.9,
+    "min_throughput": 7876.7,
+    "max_throughput": 7877.2,
+    "avg_preemptions": -1.0,
+    "n_trials": 2
+  }
+]

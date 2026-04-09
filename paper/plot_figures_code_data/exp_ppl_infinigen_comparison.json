@@ -1,0 +1,30 @@
+{
+  "orchkv_results": [
+    {
+      "model": "meta-llama/Llama-2-7b-hf",
+      "dataset": "wikitext-2",
+      "seq_len": 2048,
+      "ppl": 5.0057,
+      "n_tokens": 1018880,
+      "n_windows": 663
+    },
+    {
+      "model": "meta-llama/Llama-2-13b-hf",
+      "error": "We couldn't connect to 'https://huggingface.co' to load the files, and couldn't find them in the cached files.\nCheck your internet connection or see how to run the library in offline mode at 'https://huggingface.co/docs/transformers/installation#offline-mode'."
+    }
+  ],
+  "infinigen_table2": {
+    "LLaMA-2-7B": {
+      "full_cache": 5.69,
+      "80pct_fifo": 22.26,
+      "80pct_lru": 9.47,
+      "80pct_counter": 5.69
+    },
+    "LLaMA-2-13B": {
+      "full_cache": 5.25,
+      "80pct_fifo": 21.41,
+      "80pct_lru": 10.95,
+      "80pct_counter": 5.25
+    }
+  }
+}

@@ -1,0 +1,194 @@
+[
+  {
+    "model": "Qwen2.5-7B",
+    "workload": "sharegpt-like",
+    "mode": "baseline",
+    "n_requests": 20,
+    "completed": 20,
+    "oom": 0,
+    "avg_throughput": 770.3,
+    "total_evictions": 0,
+    "length_stats": {
+      "min": 64,
+      "max": 1957,
+      "mean": 519,
+      "std": 516
+    }
+  },
+  {
+    "model": "Qwen2.5-7B",
+    "workload": "sharegpt-like",
+    "mode": "naive",
+    "n_requests": 20,
+    "completed": 20,
+    "oom": 0,
+    "avg_throughput": 266.2,
+    "total_evictions": 166824,
+    "length_stats": {
+      "min": 64,
+      "max": 1957,
+      "mean": 519,
+      "std": 516
+    }
+  },
+  {
+    "model": "Qwen2.5-7B",
+    "workload": "sharegpt-like",
+    "mode": "orchkv",
+    "n_requests": 20,
+    "completed": 20,
+    "oom": 0,
+    "avg_throughput": 272.2,
+    "total_evictions": 1024,
+    "length_stats": {
+      "min": 64,
+      "max": 1957,
+      "mean": 519,
+      "std": 516
+    }
+  },
+  {
+    "model": "Qwen2.5-7B",
+    "workload": "longcontext-mix",
+    "mode": "baseline",
+    "n_requests": 20,
+    "completed": 20,
+    "oom": 0,
+    "avg_throughput": 1018.9,
+    "total_evictions": 0,
+    "length_stats": {
+      "min": 178,
+      "max": 3877,
+      "mean": 726,
+      "std": 938
+    }
+  },
+  {
+    "model": "Qwen2.5-7B",
+    "workload": "longcontext-mix",
+    "mode": "naive",
+    "n_requests": 20,
+    "completed": 20,
+    "oom": 0,
+    "avg_throughput": 262.8,
+    "total_evictions": 382648,
+    "length_stats": {
+      "min": 178,
+      "max": 3877,
+      "mean": 726,
+      "std": 938
+    }
+  },
+  {
+    "model": "Qwen2.5-7B",
+    "workload": "longcontext-mix",
+    "mode": "orchkv",
+    "n_requests": 20,
+    "completed": 20,
+    "oom": 0,
+    "avg_throughput": 289.1,
+    "total_evictions": 1024,
+    "length_stats": {
+      "min": 178,
+      "max": 3877,
+      "mean": 726,
+      "std": 938
+    }
+  },
+  {
+    "model": "LLaMA-2-7B",
+    "workload": "sharegpt-like",
+    "mode": "baseline",
+    "n_requests": 20,
+    "completed": 20,
+    "oom": 0,
+    "avg_throughput": 827.3,
+    "total_evictions": 0,
+    "length_stats": {
+      "min": 64,
+      "max": 1957,
+      "mean": 519,
+      "std": 516
+    }
+  },
+  {
+    "model": "LLaMA-2-7B",
+    "workload": "sharegpt-like",
+    "mode": "naive",
+    "n_requests": 20,
+    "completed": 20,
+    "oom": 0,
+    "avg_throughput": 153.9,
+    "total_evictions": 603972,
+    "length_stats": {
+      "min": 64,
+      "max": 1957,
+      "mean": 519,
+      "std": 516
+    }
+  },
+  {
+    "model": "LLaMA-2-7B",
+    "workload": "sharegpt-like",
+    "mode": "orchkv",
+    "n_requests": 20,
+    "completed": 20,
+    "oom": 0,
+    "avg_throughput": 235.6,
+    "total_evictions": 4904,
+    "length_stats": {
+      "min": 64,
+      "max": 1957,
+      "mean": 519,
+      "std": 516
+    }
+  },
+  {
+    "model": "LLaMA-2-7B",
+    "workload": "longcontext-mix",
+    "mode": "baseline",
+    "n_requests": 20,
+    "completed": 20,
+    "oom": 0,
+    "avg_throughput": 1022.4,
+    "total_evictions": 0,
+    "length_stats": {
+      "min": 178,
+      "max": 3877,
+      "mean": 726,
+      "std": 938
+    }
+  },
+  {
+    "model": "LLaMA-2-7B",
+    "workload": "longcontext-mix",
+    "mode": "naive",
+    "n_requests": 20,
+    "completed": 20,
+    "oom": 0,
+    "avg_throughput": 156.8,
+    "total_evictions": 868864,
+    "length_stats": {
+      "min": 178,
+      "max": 3877,
+      "mean": 726,
+      "std": 938
+    }
+  },
+  {
+    "model": "LLaMA-2-7B",
+    "workload": "longcontext-mix",
+    "mode": "orchkv",
+    "n_requests": 20,
+    "completed": 20,
+    "oom": 0,
+    "avg_throughput": 246.8,
+    "total_evictions": 5120,
+    "length_stats": {
+      "min": 178,
+      "max": 3877,
+      "mean": 726,
+      "std": 938
+    }
+  }
+]

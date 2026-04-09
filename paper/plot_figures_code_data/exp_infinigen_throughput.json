@@ -1,0 +1,95 @@
+[
+  {
+    "config": "OPT-1.3B, bs=4, prompt=512, gen=128, KV-on-CPU",
+    "gpu": "NVIDIA A100-SXM4-80GB",
+    "results": [
+      {
+        "scheme": "FlexGen Original",
+        "total_s": 18.365,
+        "prefill_s": 0.191,
+        "decode_s": 18.174,
+        "gen_throughput_tok_s": 28.17,
+        "speedup_vs_original": 1.00
+      },
+      {
+        "scheme": "InfiniGen",
+        "total_s": 13.204,
+        "prefill_s": 0.328,
+        "decode_s": 12.876,
+        "gen_throughput_tok_s": 39.75,
+        "speedup_vs_original": 1.41
+      },
+      {
+        "scheme": "H2O (FlexGen)",
+        "total_s": 8.250,
+        "prefill_s": 0.113,
+        "decode_s": 8.137,
+        "gen_throughput_tok_s": 62.90,
+        "speedup_vs_original": 2.23,
+        "note": "max-num-kv=400, hh-ratio=0.1"
+      }
+    ]
+  },
+  {
+    "config": "OPT-1.3B, bs=4, prompt=1024, gen=128, KV-on-CPU",
+    "gpu": "NVIDIA A100-SXM4-80GB",
+    "results": [
+      {
+        "scheme": "FlexGen Original",
+        "total_s": 19.052,
+        "prefill_s": 0.219,
+        "decode_s": 18.834,
+        "gen_throughput_tok_s": 27.19,
+        "speedup_vs_original": 1.00
+      },
+      {
+        "scheme": "InfiniGen",
+        "total_s": 10.721,
+        "prefill_s": 0.321,
+        "decode_s": 10.400,
+        "gen_throughput_tok_s": 49.23,
+        "speedup_vs_original": 1.81
+      },
+      {
+        "scheme": "H2O (FlexGen)",
+        "total_s": 9.766,
+        "prefill_s": 0.186,
+        "decode_s": 9.580,
+        "gen_throughput_tok_s": 53.44,
+        "speedup_vs_original": 1.97,
+        "note": "max-num-kv=400, hh-ratio=0.1"
+      }
+    ]
+  },
+  {
+    "config": "OPT-1.3B, bs=4, prompt=1536, gen=128, KV-on-CPU",
+    "gpu": "NVIDIA A100-SXM4-80GB",
+    "results": [
+      {
+        "scheme": "FlexGen Original",
+        "total_s": 23.044,
+        "prefill_s": 0.335,
+        "decode_s": 22.709,
+        "gen_throughput_tok_s": 22.55,
+        "speedup_vs_original": 1.00
+      },
+      {
+        "scheme": "InfiniGen",
+        "total_s": 10.904,
+        "prefill_s": 0.472,
+        "decode_s": 10.433,
+        "gen_throughput_tok_s": 49.09,
+        "speedup_vs_original": 2.18
+      },
+      {
+        "scheme": "H2O (FlexGen)",
+        "total_s": 10.937,
+        "prefill_s": 0.268,
+        "decode_s": 10.669,
+        "gen_throughput_tok_s": 48.00,
+        "speedup_vs_original": 2.13,
+        "note": "max-num-kv=400, hh-ratio=0.1"
+      }
+    ]
+  }
+]

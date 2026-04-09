@@ -17,7 +17,7 @@
     "note": "OrchKvCache is lossless (100% token match under greedy decoding), so all downstream metrics are identical by construction. GPU-Only results serve as both baseline and OrchKvCache results."
   },
   {
-    "model": "Llama-2-7b-hf",
+    "model": "LLaMA-2-7B",
     "gpu_only": {
       "piqa": 78.13,
       "rte": 63.9,

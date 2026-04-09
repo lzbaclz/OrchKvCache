@@ -1,0 +1,92 @@
+[
+  {
+    "gpu_util": 0.2,
+    "num_prompts": 64,
+    "strategy": "fifo",
+    "avg_throughput": 2764.5,
+    "std_throughput": 1.6,
+    "min_throughput": 2762.7,
+    "max_throughput": 2765.4,
+    "avg_preemptions": 18.0,
+    "min_preemptions": 18,
+    "max_preemptions": 18,
+    "n_trials": 3,
+    "prompt_stats": {
+      "min": 106,
+      "max": 2238,
+      "mean": 557.8,
+      "median": 366
+    },
+    "scorer_stats": {}
+  },
+  {
+    "gpu_util": 0.2,
+    "num_prompts": 64,
+    "strategy": "progress",
+    "avg_throughput": 2668.7,
+    "std_throughput": 3.7,
+    "min_throughput": 2665.7,
+    "max_throughput": 2672.8,
+    "avg_preemptions": 14.0,
+    "min_preemptions": 14,
+    "max_preemptions": 14,
+    "n_trials": 3,
+    "prompt_stats": {
+      "min": 106,
+      "max": 2238,
+      "mean": 557.8,
+      "median": 366
+    },
+    "scorer_stats": {
+      "score_calls": 74,
+      "victims_selected": 12
+    }
+  },
+  {
+    "gpu_util": 0.2,
+    "num_prompts": 64,
+    "strategy": "block_v2",
+    "avg_throughput": 2646.2,
+    "std_throughput": 0.7,
+    "min_throughput": 2645.8,
+    "max_throughput": 2647.0,
+    "avg_preemptions": 13.0,
+    "min_preemptions": 13,
+    "max_preemptions": 13,
+    "n_trials": 3,
+    "prompt_stats": {
+      "min": 106,
+      "max": 2238,
+      "mean": 557.8,
+      "median": 366
+    },
+    "scorer_stats": {
+      "score_calls": 68,
+      "victims_selected": 11,
+      "tracker": {
+        "registry_updates": 11,
+        "blocks_tracked": 71
+      }
+    }
+  },
+  {
+    "gpu_util": 0.2,
+    "num_prompts": 64,
+    "strategy": "hybrid",
+    "avg_throughput": 2760.3,
+    "std_throughput": 1.1,
+    "min_throughput": 2759.2,
+    "max_throughput": 2761.3,
+    "avg_preemptions": 18.0,
+    "min_preemptions": 18,
+    "max_preemptions": 18,
+    "n_trials": 3,
+    "prompt_stats": {
+      "min": 106,
+      "max": 2238,
+      "mean": 557.8,
+      "median": 366
+    },
+    "scorer_stats": {}
+  }
+]

@@ -1,0 +1,44 @@
+[
+  {
+    "model": "Qwen2.5-7B",
+    "config": "gpu-only",
+    "throughput": 756.3,
+    "evictions": 0,
+    "status": "OK"
+  },
+  {
+    "model": "Qwen2.5-7B",
+    "config": "naive-fifo",
+    "throughput": 73.8,
+    "evictions": 331296,
+    "status": "OK"
+  },
+  {
+    "model": "Qwen2.5-7B",
+    "config": "orchkv",
+    "throughput": 91.0,
+    "evictions": 1024,
+    "status": "OK"
+  },
+  {
+    "model": "Mistral-7B",
+    "config": "gpu-only",
+    "throughput": 685.0,
+    "evictions": 0,
+    "status": "OK"
+  },
+  {
+    "model": "Mistral-7B",
+    "config": "naive-fifo",
+    "throughput": 56.7,
+    "evictions": 470784,
+    "status": "OK"
+  },
+  {
+    "model": "Mistral-7B",
+    "config": "orchkv",
+    "throughput": 78.1,
+    "evictions": 1024,
+    "status": "OK"
+  }
+]
