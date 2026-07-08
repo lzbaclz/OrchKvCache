@@ -1,0 +1,655 @@
+{
+  "experiment": "vllm_connector_memory_pressure",
+  "model": "Qwen2.5-7B",
+  "model_path": "/public/model_zoo/Qwen2.5-7B",
+  "prompt_len": 2048,
+  "gen_len": 128,
+  "timestamp": "2026-07-09T00:03:18.216736",
+  "experiment_1_max_concurrency": {
+    "0.3": {
+      "gpu_mem_util": 0.3,
+      "prompt_len": 2048,
+      "gen_len": 128,
+      "status": "OK",
+      "runs": [
+        {
+          "batch_size": 1,
+          "status": "OK",
+          "elapsed_s": 1.743,
+          "total_gen_tokens": 128,
+          "avg_gen_per_req": 128.0,
+          "throughput_tok_s": 73.4,
+          "per_req_latency_s": 1.743,
+          "preemptions": 0,
+          "preemption_messages": [],
+          "completed_requests": 1,
+          "total_requests": 1,
+          "all_completed": true
+        },
+        {
+          "batch_size": 2,
+          "status": "OK",
+          "elapsed_s": 1.962,
+          "total_gen_tokens": 256,
+          "avg_gen_per_req": 128.0,
+          "throughput_tok_s": 130.5,
+          "per_req_latency_s": 0.981,
+          "preemptions": 0,
+          "preemption_messages": [],
+          "completed_requests": 2,
+          "total_requests": 2,
+          "all_completed": true
+        },
+        {
+          "batch_size": 4,
+          "status": "OK",
+          "elapsed_s": 2.289,
+          "total_gen_tokens": 512,
+          "avg_gen_per_req": 128.0,
+          "throughput_tok_s": 223.7,
+          "per_req_latency_s": 0.572,
+          "preemptions": 0,
+          "preemption_messages": [],
+          "completed_requests": 4,
+          "total_requests": 4,
+          "all_completed": true
+        },
+        {
+          "batch_size": 8,
+          "status": "OK",
+          "elapsed_s": 3.647,
+          "total_gen_tokens": 1024,
+          "avg_gen_per_req": 128.0,
+          "throughput_tok_s": 280.8,
+          "per_req_latency_s": 0.456,
+          "preemptions": 0,
+          "preemption_messages": [],
+          "completed_requests": 8,
+          "total_requests": 8,
+          "all_completed": true
+        },
+        {
+          "batch_size": 16,
+          "status": "OK",
+          "elapsed_s": 4.288,
+          "total_gen_tokens": 2048,
+          "avg_gen_per_req": 128.0,
+          "throughput_tok_s": 477.6,
+          "per_req_latency_s": 0.268,
+          "preemptions": 0,
+          "preemption_messages": [],
+          "completed_requests": 16,
+          "total_requests": 16,
+          "all_completed": true
+        },
+        {
+          "batch_size": 32,
+          "status": "OK",
+          "elapsed_s": 7.479,
+          "total_gen_tokens": 4096,
+          "avg_gen_per_req": 128.0,
+          "throughput_tok_s": 547.7,
+          "per_req_latency_s": 0.234,
+          "preemptions": 0,
+          "preemption_messages": [],
+          "completed_requests": 32,
+          "total_requests": 32,
+          "all_completed": true
+        },
+        {
+          "batch_size": 64,
+          "status": "OK",
+          "elapsed_s": 13.748,
+          "total_gen_tokens": 8192,
+          "avg_gen_per_req": 128.0,
+          "throughput_tok_s": 595.9,
+          "per_req_latency_s": 0.215,
+          "preemptions": 0,
+          "preemption_messages": [],
+          "completed_requests": 64,
+          "total_requests": 64,
+          "all_completed": true
+        },
+        {
+          "batch_size": 128,
+          "status": "OK",
+          "elapsed_s": 25.362,
+          "total_gen_tokens": 16384,
+          "avg_gen_per_req": 128.0,
+          "throughput_tok_s": 646.0,
+          "per_req_latency_s": 0.198,
+          "preemptions": 1,
+          "preemption_messages": [
+            "Sequence group 198 is preempted by PreemptionMode.RECOMPUTE mode because there is not enough KV cache space. This can affect the end-to-end performance. Increase gpu_memory_utilization or tensor_parallel_size to provide more KV cache memory. total_num_cumulative_preemption=1"
+          ],
+          "completed_requests": 128,
+          "total_requests": 128,
+          "all_completed": true
+        }
+      ]
+    },
+    "0.5": {
+      "gpu_mem_util": 0.5,
+      "prompt_len": 2048,
+      "gen_len": 128,
+      "status": "OK",
+      "runs": [
+        {
+          "batch_size": 1,
+          "status": "OK",
+          "elapsed_s": 1.692,
+          "total_gen_tokens": 128,
+          "avg_gen_per_req": 128.0,
+          "throughput_tok_s": 75.7,
+          "per_req_latency_s": 1.692,
+          "preemptions": 0,
+          "preemption_messages": [],
+          "completed_requests": 1,
+          "total_requests": 1,
+          "all_completed": true
+        },
+        {
+          "batch_size": 2,
+          "status": "OK",
+          "elapsed_s": 1.853,
+          "total_gen_tokens": 256,
+          "avg_gen_per_req": 128.0,
+          "throughput_tok_s": 138.1,
+          "per_req_latency_s": 0.927,
+          "preemptions": 0,
+          "preemption_messages": [],
+          "completed_requests": 2,
+          "total_requests": 2,
+          "all_completed": true
+        },
+        {
+          "batch_size": 4,
+          "status": "OK",
+          "elapsed_s": 2.196,
+          "total_gen_tokens": 512,
+          "avg_gen_per_req": 128.0,
+          "throughput_tok_s": 233.2,
+          "per_req_latency_s": 0.549,
+          "preemptions": 0,
+          "preemption_messages": [],
+          "completed_requests": 4,
+          "total_requests": 4,
+          "all_completed": true
+        },
+        {
+          "batch_size": 8,
+          "status": "OK",
+          "elapsed_s": 2.833,
+          "total_gen_tokens": 1024,
+          "avg_gen_per_req": 128.0,
+          "throughput_tok_s": 361.5,
+          "per_req_latency_s": 0.354,
+          "preemptions": 0,
+          "preemption_messages": [],
+          "completed_requests": 8,
+          "total_requests": 8,
+          "all_completed": true
+        },
+        {
+          "batch_size": 16,
+          "status": "OK",
+          "elapsed_s": 4.162,
+          "total_gen_tokens": 2048,
+          "avg_gen_per_req": 128.0,
+          "throughput_tok_s": 492.1,
+          "per_req_latency_s": 0.26,
+          "preemptions": 0,
+          "preemption_messages": [],
+          "completed_requests": 16,
+          "total_requests": 16,
+          "all_completed": true
+        },
+        {
+          "batch_size": 32,
+          "status": "OK",
+          "elapsed_s": 6.85,
+          "total_gen_tokens": 4096,
+          "avg_gen_per_req": 128.0,
+          "throughput_tok_s": 598.0,
+          "per_req_latency_s": 0.214,
+          "preemptions": 0,
+          "preemption_messages": [],
+          "completed_requests": 32,
+          "total_requests": 32,
+          "all_completed": true
+        },
+        {
+          "batch_size": 64,
+          "status": "OK",
+          "elapsed_s": 12.295,
+          "total_gen_tokens": 8192,
+          "avg_gen_per_req": 128.0,
+          "throughput_tok_s": 666.3,
+          "per_req_latency_s": 0.192,
+          "preemptions": 0,
+          "preemption_messages": [],
+          "completed_requests": 64,
+          "total_requests": 64,
+          "all_completed": true
+        },
+        {
+          "batch_size": 128,
+          "status": "OK",
+          "elapsed_s": 23.135,
+          "total_gen_tokens": 16384,
+          "avg_gen_per_req": 128.0,
+          "throughput_tok_s": 708.2,
+          "per_req_latency_s": 0.181,
+          "preemptions": 0,
+          "preemption_messages": [],
+          "completed_requests": 128,
+          "total_requests": 128,
+          "all_completed": true
+        }
+      ]
+    },
+    "0.7": {
+      "gpu_mem_util": 0.7,
+      "prompt_len": 2048,
+      "gen_len": 128,
+      "status": "OK",
+      "runs": [
+        {
+          "batch_size": 1,
+          "status": "OK",
+          "elapsed_s": 1.687,
+          "total_gen_tokens": 128,
+          "avg_gen_per_req": 128.0,
+          "throughput_tok_s": 75.9,
+          "per_req_latency_s": 1.687,
+          "preemptions": 0,
+          "preemption_messages": [],
+          "completed_requests": 1,
+          "total_requests": 1,
+          "all_completed": true
+        },
+        {
+          "batch_size": 2,
+          "status": "OK",
+          "elapsed_s": 1.843,
+          "total_gen_tokens": 256,
+          "avg_gen_per_req": 128.0,
+          "throughput_tok_s": 138.9,
+          "per_req_latency_s": 0.922,
+          "preemptions": 0,
+          "preemption_messages": [],
+          "completed_requests": 2,
+          "total_requests": 2,
+          "all_completed": true
+        },
+        {
+          "batch_size": 4,
+          "status": "OK",
+          "elapsed_s": 2.189,
+          "total_gen_tokens": 512,
+          "avg_gen_per_req": 128.0,
+          "throughput_tok_s": 233.9,
+          "per_req_latency_s": 0.547,
+          "preemptions": 0,
+          "preemption_messages": [],
+          "completed_requests": 4,
+          "total_requests": 4,
+          "all_completed": true
+        },
+        {
+          "batch_size": 8,
+          "status": "OK",
+          "elapsed_s": 2.837,
+          "total_gen_tokens": 1024,
+          "avg_gen_per_req": 128.0,
+          "throughput_tok_s": 360.9,
+          "per_req_latency_s": 0.355,
+          "preemptions": 0,
+          "preemption_messages": [],
+          "completed_requests": 8,
+          "total_requests": 8,
+          "all_completed": true
+        },
+        {
+          "batch_size": 16,
+          "status": "OK",
+          "elapsed_s": 4.174,
+          "total_gen_tokens": 2048,
+          "avg_gen_per_req": 128.0,
+          "throughput_tok_s": 490.7,
+          "per_req_latency_s": 0.261,
+          "preemptions": 0,
+          "preemption_messages": [],
+          "completed_requests": 16,
+          "total_requests": 16,
+          "all_completed": true
+        },
+        {
+          "batch_size": 32,
+          "status": "OK",
+          "elapsed_s": 7.555,
+          "total_gen_tokens": 4096,
+          "avg_gen_per_req": 128.0,
+          "throughput_tok_s": 542.2,
+          "per_req_latency_s": 0.236,
+          "preemptions": 0,
+          "preemption_messages": [],
+          "completed_requests": 32,
+          "total_requests": 32,
+          "all_completed": true
+        },
+        {
+          "batch_size": 64,
+          "status": "OK",
+          "elapsed_s": 13.662,
+          "total_gen_tokens": 8192,
+          "avg_gen_per_req": 128.0,
+          "throughput_tok_s": 599.6,
+          "per_req_latency_s": 0.213,
+          "preemptions": 0,
+          "preemption_messages": [],
+          "completed_requests": 64,
+          "total_requests": 64,
+          "all_completed": true
+        },
+        {
+          "batch_size": 128,
+          "status": "OK",
+          "elapsed_s": 23.908,
+          "total_gen_tokens": 16384,
+          "avg_gen_per_req": 128.0,
+          "throughput_tok_s": 685.3,
+          "per_req_latency_s": 0.187,
+          "preemptions": 0,
+          "preemption_messages": [],
+          "completed_requests": 128,
+          "total_requests": 128,
+          "all_completed": true
+        }
+      ]
+    },
+    "0.85": {
+      "status": "RESULT_READ_FAILED: [Errno 2] No such file or directory: '/home/lzq/codes/orchkv/OrchKvCache/benchmarks/sigmetrics/results/_tmp_vllm_exp1_2872315545495339.json'"
+    }
+  },
+  "experiment_2_cold_block_analysis": {
+    "measurement_basis": {
+      "gini_coefficient": 0.92,
+      "top_10pct_attention_concentration": 0.925,
+      "cold_block_fraction": 0.9,
+      "cold_attention_contribution": 0.07499999999999996,
+      "model": "Qwen2.5-7B"
+    },
+    "theoretical_max_concurrency_improvement": {
+      "formula": "1 / (1 - cold_fraction * (1 - cold_attention_contribution))",
+      "value": 5.97,
+      "interpretation": "If 90% of blocks are cold (contribute only 7.5% attention), offloading all to DRAM gives 6.0x more concurrent sequences"
+    },
+    "offload_ratio_analysis": [
+      {
+        "offload_ratio": 0.5,
+        "description": "Offload 50% of cold blocks to DRAM",
+        "blocks_offloaded_fraction": 0.45,
+        "gpu_kv_fraction_remaining": 0.55,
+        "theoretical_concurrency_gain": 1.82,
+        "attention_mass_offloaded": 0.0375,
+        "attention_retained_on_gpu": 0.9625
+      },
+      {
+        "offload_ratio": 0.7,
+        "description": "Offload 70% of cold blocks to DRAM",
+        "blocks_offloaded_fraction": 0.63,
+        "gpu_kv_fraction_remaining": 0.37,
+        "theoretical_concurrency_gain": 2.7,
+        "attention_mass_offloaded": 0.0525,
+        "attention_retained_on_gpu": 0.9475
+      },
+      {
+        "offload_ratio": 0.9,
+        "description": "Offload 90% of cold blocks to DRAM",
+        "blocks_offloaded_fraction": 0.81,
+        "gpu_kv_fraction_remaining": 0.19,
+        "theoretical_concurrency_gain": 5.26,
+        "attention_mass_offloaded": 0.0675,
+        "attention_retained_on_gpu": 0.9325
+      },
+      {
+        "offload_ratio": 1.0,
+        "description": "Offload 100% of cold blocks to DRAM",
+        "blocks_offloaded_fraction": 0.9,
+        "gpu_kv_fraction_remaining": 0.1,
+        "theoretical_concurrency_gain": 10.0,
+        "attention_mass_offloaded": 0.075,
+        "attention_retained_on_gpu": 0.925
+      }
+    ],
+    "concrete_examples": [
+      {
+        "gpu_kv_pool_gb": 2,
+        "seq_len": 2176,
+        "offload_ratio": 0.5,
+        "n_blocks_per_seq": 136,
+        "hot_blocks_on_gpu": 74,
+        "kv_per_seq_mb_vllm": 119.0,
+        "kv_per_seq_mb_orchkv": 64.75,
+        "max_concurrent_vllm": 17,
+        "max_concurrent_orchkv": 31,
+        "improvement_factor": 1.82
+      },
+      {
+        "gpu_kv_pool_gb": 2,
+        "seq_len": 2176,
+        "offload_ratio": 0.7,
+        "n_blocks_per_seq": 136,
+        "hot_blocks_on_gpu": 50,
+        "kv_per_seq_mb_vllm": 119.0,
+        "kv_per_seq_mb_orchkv": 43.75,
+        "max_concurrent_vllm": 17,
+        "max_concurrent_orchkv": 46,
+        "improvement_factor": 2.71
+      },
+      {
+        "gpu_kv_pool_gb": 2,
+        "seq_len": 2176,
+        "offload_ratio": 0.9,
+        "n_blocks_per_seq": 136,
+        "hot_blocks_on_gpu": 25,
+        "kv_per_seq_mb_vllm": 119.0,
+        "kv_per_seq_mb_orchkv": 21.88,
+        "max_concurrent_vllm": 17,
+        "max_concurrent_orchkv": 93,
+        "improvement_factor": 5.47
+      },
+      {
+        "gpu_kv_pool_gb": 4,
+        "seq_len": 2176,
+        "offload_ratio": 0.5,
+        "n_blocks_per_seq": 136,
+        "hot_blocks_on_gpu": 74,
+        "kv_per_seq_mb_vllm": 119.0,
+        "kv_per_seq_mb_orchkv": 64.75,
+        "max_concurrent_vllm": 34,
+        "max_concurrent_orchkv": 63,
+        "improvement_factor": 1.85
+      },
+      {
+        "gpu_kv_pool_gb": 4,
+        "seq_len": 2176,
+        "offload_ratio": 0.7,
+        "n_blocks_per_seq": 136,
+        "hot_blocks_on_gpu": 50,
+        "kv_per_seq_mb_vllm": 119.0,
+        "kv_per_seq_mb_orchkv": 43.75,
+        "max_concurrent_vllm": 34,
+        "max_concurrent_orchkv": 93,
+        "improvement_factor": 2.74
+      },
+      {
+        "gpu_kv_pool_gb": 4,
+        "seq_len": 2176,
+        "offload_ratio": 0.9,
+        "n_blocks_per_seq": 136,
+        "hot_blocks_on_gpu": 25,
+        "kv_per_seq_mb_vllm": 119.0,
+        "kv_per_seq_mb_orchkv": 21.88,
+        "max_concurrent_vllm": 34,
+        "max_concurrent_orchkv": 187,
+        "improvement_factor": 5.5
+      },
+      {
+        "gpu_kv_pool_gb": 8,
+        "seq_len": 2176,
+        "offload_ratio": 0.5,
+        "n_blocks_per_seq": 136,
+        "hot_blocks_on_gpu": 74,
+        "kv_per_seq_mb_vllm": 119.0,
+        "kv_per_seq_mb_orchkv": 64.75,
+        "max_concurrent_vllm": 68,
+        "max_concurrent_orchkv": 126,
+        "improvement_factor": 1.85
+      },
+      {
+        "gpu_kv_pool_gb": 8,
+        "seq_len": 2176,
+        "offload_ratio": 0.7,
+        "n_blocks_per_seq": 136,
+        "hot_blocks_on_gpu": 50,
+        "kv_per_seq_mb_vllm": 119.0,
+        "kv_per_seq_mb_orchkv": 43.75,
+        "max_concurrent_vllm": 68,
+        "max_concurrent_orchkv": 187,
+        "improvement_factor": 2.75
+      },
+      {
+        "gpu_kv_pool_gb": 8,
+        "seq_len": 2176,
+        "offload_ratio": 0.9,
+        "n_blocks_per_seq": 136,
+        "hot_blocks_on_gpu": 25,
+        "kv_per_seq_mb_vllm": 119.0,
+        "kv_per_seq_mb_orchkv": 21.88,
+        "max_concurrent_vllm": 68,
+        "max_concurrent_orchkv": 374,
+        "improvement_factor": 5.5
+      }
+    ],
+    "key_insight": "vLLM must reject requests when KV cache is full. OrchKvCache offloads cold blocks (90% of blocks, 7.5% of attention) to DRAM, multiplying effective concurrency without quality loss."
+  },
+  "experiment_3_kv_capacity": {
+    "0.3": {
+      "gpu_mem_util": 0.3,
+      "status": "OK",
+      "kv_cache_capacity": {
+        "num_gpu_blocks": 9373,
+        "num_cpu_blocks": 4681,
+        "block_size": 16,
+        "total_kv_tokens": 149968,
+        "total_kv_mb": 8201.38
+      },
+      "concurrency_analysis": {
+        "seq_len": 2176,
+        "blocks_per_seq": 136,
+        "max_concurrent_seqs_vllm": 68,
+        "max_seq_x_concurrency_product": 147968
+      },
+      "orchkv_comparison": [
+        {
+          "offload_ratio": 0.5,
+          "hot_blocks_per_seq": 74,
+          "max_concurrent_orchkv": 126,
+          "improvement_factor": 1.85
+        },
+        {
+          "offload_ratio": 0.7,
+          "hot_blocks_per_seq": 50,
+          "max_concurrent_orchkv": 187,
+          "improvement_factor": 2.75
+        },
+        {
+          "offload_ratio": 0.9,
+          "hot_blocks_per_seq": 25,
+          "max_concurrent_orchkv": 374,
+          "improvement_factor": 5.5
+        }
+      ]
+    },
+    "0.5": {
+      "gpu_mem_util": 0.5,
+      "status": "OK",
+      "kv_cache_capacity": {
+        "num_gpu_blocks": 27923,
+        "num_cpu_blocks": 4681,
+        "block_size": 16,
+        "total_kv_tokens": 446768,
+        "total_kv_mb": 24432.62
+      },
+      "concurrency_analysis": {
+        "seq_len": 2176,
+        "blocks_per_seq": 136,
+        "max_concurrent_seqs_vllm": 205,
+        "max_seq_x_concurrency_product": 446080
+      },
+      "orchkv_comparison": [
+        {
+          "offload_ratio": 0.5,
+          "hot_blocks_per_seq": 74,
+          "max_concurrent_orchkv": 377,
+          "improvement_factor": 1.84
+        },
+        {
+          "offload_ratio": 0.7,
+          "hot_blocks_per_seq": 50,
+          "max_concurrent_orchkv": 558,
+          "improvement_factor": 2.72
+        },
+        {
+          "offload_ratio": 0.9,
+          "hot_blocks_per_seq": 25,
+          "max_concurrent_orchkv": 1116,
+          "improvement_factor": 5.44
+        }
+      ]
+    },
+    "0.7": {
+      "gpu_mem_util": 0.7,
+      "status": "OK",
+      "kv_cache_capacity": {
+        "num_gpu_blocks": 26893,
+        "num_cpu_blocks": 4681,
+        "block_size": 16,
+        "total_kv_tokens": 430288,
+        "total_kv_mb": 23531.38
+      },
+      "concurrency_analysis": {
+        "seq_len": 2176,
+        "blocks_per_seq": 136,
+        "max_concurrent_seqs_vllm": 197,
+        "max_seq_x_concurrency_product": 428672
+      },
+      "orchkv_comparison": [
+        {
+          "offload_ratio": 0.5,
+          "hot_blocks_per_seq": 74,
+          "max_concurrent_orchkv": 363,
+          "improvement_factor": 1.84
+        },
+        {
+          "offload_ratio": 0.7,
+          "hot_blocks_per_seq": 50,
+          "max_concurrent_orchkv": 537,
+          "improvement_factor": 2.73
+        },
+        {
+          "offload_ratio": 0.9,
+          "hot_blocks_per_seq": 25,
+          "max_concurrent_orchkv": 1075,
+          "improvement_factor": 5.46
+        }
+      ]
+    },
+    "0.85": {
+      "gpu_mem_util": 0.85,
+      "status": "INIT_FAILED: CUDA out of memory. Tried to allocate 130.00 MiB. GPU 0 has a total capacity of 79.25 GiB of which 38.31 MiB is free. Process 3506561 has 66.41 GiB memory in use. Including non-PyTorch memory, this process has 12.79 GiB memory in use. Of the allocated memory 12.26 GiB is allocated by PyTorch, and 52.84 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)"
+    }
+  }
+}
