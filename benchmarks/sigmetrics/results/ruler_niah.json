@@ -1,0 +1,1308 @@
+{
+  "experiment": "ruler_niah",
+  "model": "/public/model_zoo/Qwen2.5-7B",
+  "budget_fraction": 0.5,
+  "max_new_tokens": 32,
+  "prompt_lengths": [
+    1024,
+    2048,
+    4096
+  ],
+  "num_prompts_per_length": 20,
+  "seed": 42,
+  "needle": "The secret number is 42.",
+  "results": {
+    "1024": {
+      "target_len": 1024,
+      "num_prompts": 20,
+      "baseline": {
+        "accuracy": 0.0,
+        "n_valid": 20,
+        "n_errors": 0,
+        "mean_throughput_tok_s": 35.92,
+        "mean_tpot_ms": 28.63
+      },
+      "orchkv_50pct": {
+        "accuracy": 0.0,
+        "n_valid": 20,
+        "n_errors": 0,
+        "mean_throughput_tok_s": 5.02,
+        "mean_tpot_ms": 199.29,
+        "mean_evictions": 256.0,
+        "mean_promotions": 256.0,
+        "total_evictions": 5120,
+        "total_promotions": 5120
+      },
+      "consistency": {
+        "matches": 20,
+        "valid_pairs": 20,
+        "rate": 1.0
+      },
+      "per_prompt": {
+        "baseline": [
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !! !!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 1.3386,
+            "throughput_tok_s": 23.9,
+            "tpot_ms": 41.83,
+            "accurate": false
+          },
+          {
+            "generated_text": "!!!!!!!!! !!!!!! ! !!!!!!!!!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 1.211,
+            "throughput_tok_s": 26.43,
+            "tpot_ms": 37.84,
+            "accurate": false
+          },
+          {
+            "generated_text": "!!!!!!!!! !!!!!! !! !!!!!!!!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 0.8495,
+            "throughput_tok_s": 37.67,
+            "tpot_ms": 26.55,
+            "accurate": false
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !! !!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 0.7336,
+            "throughput_tok_s": 43.62,
+            "tpot_ms": 22.93,
+            "accurate": false
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !!!!!! !! !",
+            "n_tokens": 32,
+            "elapsed_s": 0.8571,
+            "throughput_tok_s": 37.34,
+            "tpot_ms": 26.78,
+            "accurate": false
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !!!!!! !!",
+            "n_tokens": 32,
+            "elapsed_s": 0.8496,
+            "throughput_tok_s": 37.67,
+            "tpot_ms": 26.55,
+            "accurate": false
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !!!!!! !!",
+            "n_tokens": 32,
+            "elapsed_s": 0.8565,
+            "throughput_tok_s": 37.36,
+            "tpot_ms": 26.77,
+            "accurate": false
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !!!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 1.2137,
+            "throughput_tok_s": 26.36,
+            "tpot_ms": 37.93,
+            "accurate": false
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !! !!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 0.8497,
+            "throughput_tok_s": 37.66,
+            "tpot_ms": 26.55,
+            "accurate": false
+          },
+          {
+            "generated_text": "!!!!!!!!! !!!!!! ! !!!!!!!!!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 0.8039,
+            "throughput_tok_s": 39.81,
+            "tpot_ms": 25.12,
+            "accurate": false
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !! !!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 0.8482,
+            "throughput_tok_s": 37.73,
+            "tpot_ms": 26.51,
+            "accurate": false
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !! !!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 0.8559,
+            "throughput_tok_s": 37.39,
+            "tpot_ms": 26.75,
+            "accurate": false
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !! !!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 0.8416,
+            "throughput_tok_s": 38.02,
+            "tpot_ms": 26.3,
+            "accurate": false
+          },
+          {
+            "generated_text": "!!!!!!!!! !!!!!! ! !!!!!!!!!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 0.8501,
+            "throughput_tok_s": 37.64,
+            "tpot_ms": 26.57,
+            "accurate": false
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !! !!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 0.8511,
+            "throughput_tok_s": 37.6,
+            "tpot_ms": 26.6,
+            "accurate": false
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !! !!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 1.2234,
+            "throughput_tok_s": 26.16,
+            "tpot_ms": 38.23,
+            "accurate": false
+          },
+          {
+            "generated_text": "!!!!!!!!! !!!!!! !! !!!!!!!!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 0.8466,
+            "throughput_tok_s": 37.8,
+            "tpot_ms": 26.46,
+            "accurate": false
+          },
+          {
+            "generated_text": "!!!!!!!!! !!!!!! !! !!!!!!!!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 0.8057,
+            "throughput_tok_s": 39.72,
+            "tpot_ms": 25.18,
+            "accurate": false
+          },
+          {
+            "generated_text": "!!!!!!!!! !!!!!! ! !!!!!!!!!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 0.8453,
+            "throughput_tok_s": 37.85,
+            "tpot_ms": 26.42,
+            "accurate": false
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !!!!!! !!",
+            "n_tokens": 32,
+            "elapsed_s": 0.7884,
+            "throughput_tok_s": 40.59,
+            "tpot_ms": 24.64,
+            "accurate": false
+          }
+        ],
+        "orchkv_50pct": [
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !! !!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 6.2436,
+            "throughput_tok_s": 5.13,
+            "tpot_ms": 195.11,
+            "accurate": false,
+            "evictions": 256,
+            "promotions": 256,
+            "blocks_gpu": 1736,
+            "blocks_dram": 0,
+            "gpu_kv_mb": 54.25
+          },
+          {
+            "generated_text": "!!!!!!!!! !!!!!! ! !!!!!!!!!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 6.3633,
+            "throughput_tok_s": 5.03,
+            "tpot_ms": 198.85,
+            "accurate": false,
+            "evictions": 256,
+            "promotions": 256,
+            "blocks_gpu": 1736,
+            "blocks_dram": 0,
+            "gpu_kv_mb": 54.25
+          },
+          {
+            "generated_text": "!!!!!!!!! !!!!!! !! !!!!!!!!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 6.4203,
+            "throughput_tok_s": 4.98,
+            "tpot_ms": 200.64,
+            "accurate": false,
+            "evictions": 256,
+            "promotions": 256,
+            "blocks_gpu": 1736,
+            "blocks_dram": 0,
+            "gpu_kv_mb": 54.25
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !! !!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 6.4742,
+            "throughput_tok_s": 4.94,
+            "tpot_ms": 202.32,
+            "accurate": false,
+            "evictions": 256,
+            "promotions": 256,
+            "blocks_gpu": 1736,
+            "blocks_dram": 0,
+            "gpu_kv_mb": 54.25
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !!!!!! !! !",
+            "n_tokens": 32,
+            "elapsed_s": 6.2784,
+            "throughput_tok_s": 5.1,
+            "tpot_ms": 196.2,
+            "accurate": false,
+            "evictions": 256,
+            "promotions": 256,
+            "blocks_gpu": 1736,
+            "blocks_dram": 0,
+            "gpu_kv_mb": 54.25
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !!!!!! !!",
+            "n_tokens": 32,
+            "elapsed_s": 6.3951,
+            "throughput_tok_s": 5.0,
+            "tpot_ms": 199.85,
+            "accurate": false,
+            "evictions": 256,
+            "promotions": 256,
+            "blocks_gpu": 1736,
+            "blocks_dram": 0,
+            "gpu_kv_mb": 54.25
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !!!!!! !!",
+            "n_tokens": 32,
+            "elapsed_s": 6.46,
+            "throughput_tok_s": 4.95,
+            "tpot_ms": 201.87,
+            "accurate": false,
+            "evictions": 256,
+            "promotions": 256,
+            "blocks_gpu": 1736,
+            "blocks_dram": 0,
+            "gpu_kv_mb": 54.25
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !!!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 6.3874,
+            "throughput_tok_s": 5.01,
+            "tpot_ms": 199.61,
+            "accurate": false,
+            "evictions": 256,
+            "promotions": 256,
+            "blocks_gpu": 1736,
+            "blocks_dram": 0,
+            "gpu_kv_mb": 54.25
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !! !!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 6.3737,
+            "throughput_tok_s": 5.02,
+            "tpot_ms": 199.18,
+            "accurate": false,
+            "evictions": 256,
+            "promotions": 256,
+            "blocks_gpu": 1736,
+            "blocks_dram": 0,
+            "gpu_kv_mb": 54.25
+          },
+          {
+            "generated_text": "!!!!!!!!! !!!!!! ! !!!!!!!!!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 6.3882,
+            "throughput_tok_s": 5.01,
+            "tpot_ms": 199.63,
+            "accurate": false,
+            "evictions": 256,
+            "promotions": 256,
+            "blocks_gpu": 1736,
+            "blocks_dram": 0,
+            "gpu_kv_mb": 54.25
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !! !!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 6.6154,
+            "throughput_tok_s": 4.84,
+            "tpot_ms": 206.73,
+            "accurate": false,
+            "evictions": 256,
+            "promotions": 256,
+            "blocks_gpu": 1736,
+            "blocks_dram": 0,
+            "gpu_kv_mb": 54.25
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !! !!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 6.4253,
+            "throughput_tok_s": 4.98,
+            "tpot_ms": 200.79,
+            "accurate": false,
+            "evictions": 256,
+            "promotions": 256,
+            "blocks_gpu": 1736,
+            "blocks_dram": 0,
+            "gpu_kv_mb": 54.25
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !! !!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 6.3797,
+            "throughput_tok_s": 5.02,
+            "tpot_ms": 199.37,
+            "accurate": false,
+            "evictions": 256,
+            "promotions": 256,
+            "blocks_gpu": 1736,
+            "blocks_dram": 0,
+            "gpu_kv_mb": 54.25
+          },
+          {
+            "generated_text": "!!!!!!!!! !!!!!! ! !!!!!!!!!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 5.9233,
+            "throughput_tok_s": 5.4,
+            "tpot_ms": 185.1,
+            "accurate": false,
+            "evictions": 256,
+            "promotions": 256,
+            "blocks_gpu": 1736,
+            "blocks_dram": 0,
+            "gpu_kv_mb": 54.25
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !! !!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 6.4516,
+            "throughput_tok_s": 4.96,
+            "tpot_ms": 201.61,
+            "accurate": false,
+            "evictions": 256,
+            "promotions": 256,
+            "blocks_gpu": 1736,
+            "blocks_dram": 0,
+            "gpu_kv_mb": 54.25
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !! !!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 6.4261,
+            "throughput_tok_s": 4.98,
+            "tpot_ms": 200.81,
+            "accurate": false,
+            "evictions": 256,
+            "promotions": 256,
+            "blocks_gpu": 1736,
+            "blocks_dram": 0,
+            "gpu_kv_mb": 54.25
+          },
+          {
+            "generated_text": "!!!!!!!!! !!!!!! !! !!!!!!!!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 6.3565,
+            "throughput_tok_s": 5.03,
+            "tpot_ms": 198.64,
+            "accurate": false,
+            "evictions": 256,
+            "promotions": 256,
+            "blocks_gpu": 1736,
+            "blocks_dram": 0,
+            "gpu_kv_mb": 54.25
+          },
+          {
+            "generated_text": "!!!!!!!!! !!!!!! !! !!!!!!!!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 6.4306,
+            "throughput_tok_s": 4.98,
+            "tpot_ms": 200.96,
+            "accurate": false,
+            "evictions": 256,
+            "promotions": 256,
+            "blocks_gpu": 1736,
+            "blocks_dram": 0,
+            "gpu_kv_mb": 54.25
+          },
+          {
+            "generated_text": "!!!!!!!!! !!!!!! ! !!!!!!!!!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 6.3175,
+            "throughput_tok_s": 5.07,
+            "tpot_ms": 197.42,
+            "accurate": false,
+            "evictions": 256,
+            "promotions": 256,
+            "blocks_gpu": 1736,
+            "blocks_dram": 0,
+            "gpu_kv_mb": 54.25
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !!!!!! !!",
+            "n_tokens": 32,
+            "elapsed_s": 6.4328,
+            "throughput_tok_s": 4.97,
+            "tpot_ms": 201.02,
+            "accurate": false,
+            "evictions": 256,
+            "promotions": 256,
+            "blocks_gpu": 1736,
+            "blocks_dram": 0,
+            "gpu_kv_mb": 54.25
+          }
+        ]
+      }
+    },
+    "2048": {
+      "target_len": 2048,
+      "num_prompts": 20,
+      "baseline": {
+        "accuracy": 0.0,
+        "n_valid": 20,
+        "n_errors": 0,
+        "mean_throughput_tok_s": 26.92,
+        "mean_tpot_ms": 38.59
+      },
+      "orchkv_50pct": {
+        "accuracy": 0.0,
+        "n_valid": 20,
+        "n_errors": 0,
+        "mean_throughput_tok_s": 2.55,
+        "mean_tpot_ms": 392.29,
+        "mean_evictions": 238.4,
+        "mean_promotions": 238.4,
+        "total_evictions": 4768,
+        "total_promotions": 4768
+      },
+      "consistency": {
+        "matches": 20,
+        "valid_pairs": 20,
+        "rate": 1.0
+      },
+      "per_prompt": {
+        "baseline": [
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !!!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 1.14,
+            "throughput_tok_s": 28.07,
+            "tpot_ms": 35.62,
+            "accurate": false
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !!!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 1.1003,
+            "throughput_tok_s": 29.08,
+            "tpot_ms": 34.38,
+            "accurate": false
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !!!!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 0.9811,
+            "throughput_tok_s": 32.62,
+            "tpot_ms": 30.66,
+            "accurate": false
+          },
+          {
+            "generated_text": "!!!!!!!!!",
+            "n_tokens": 10,
+            "elapsed_s": 0.6192,
+            "throughput_tok_s": 16.15,
+            "tpot_ms": 61.92,
+            "accurate": false
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !!!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 1.0196,
+            "throughput_tok_s": 31.39,
+            "tpot_ms": 31.86,
+            "accurate": false
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !!!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 1.1239,
+            "throughput_tok_s": 28.47,
+            "tpot_ms": 35.12,
+            "accurate": false
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !!!!!! !!!",
+            "n_tokens": 32,
+            "elapsed_s": 1.1008,
+            "throughput_tok_s": 29.07,
+            "tpot_ms": 34.4,
+            "accurate": false
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !!!!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 1.1059,
+            "throughput_tok_s": 28.94,
+            "tpot_ms": 34.56,
+            "accurate": false
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !!!!!! !!!",
+            "n_tokens": 32,
+            "elapsed_s": 1.1194,
+            "throughput_tok_s": 28.59,
+            "tpot_ms": 34.98,
+            "accurate": false
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !!!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 1.1212,
+            "throughput_tok_s": 28.54,
+            "tpot_ms": 35.04,
+            "accurate": false
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !!!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 1.1222,
+            "throughput_tok_s": 28.52,
+            "tpot_ms": 35.07,
+            "accurate": false
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !!!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 1.1197,
+            "throughput_tok_s": 28.58,
+            "tpot_ms": 34.99,
+            "accurate": false
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !!!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 1.1257,
+            "throughput_tok_s": 28.43,
+            "tpot_ms": 35.18,
+            "accurate": false
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !!!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 1.1242,
+            "throughput_tok_s": 28.47,
+            "tpot_ms": 35.13,
+            "accurate": false
+          },
+          {
+            "generated_text": "!!!!!!!!! !!!!! !! !!!!!!!!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 1.1184,
+            "throughput_tok_s": 28.61,
+            "tpot_ms": 34.95,
+            "accurate": false
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !! !!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 1.1215,
+            "throughput_tok_s": 28.53,
+            "tpot_ms": 35.05,
+            "accurate": false
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !! !!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 1.124,
+            "throughput_tok_s": 28.47,
+            "tpot_ms": 35.13,
+            "accurate": false
+          },
+          {
+            "generated_text": "!!!!!!!!!",
+            "n_tokens": 10,
+            "elapsed_s": 0.6195,
+            "throughput_tok_s": 16.14,
+            "tpot_ms": 61.95,
+            "accurate": false
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !! !!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 1.5203,
+            "throughput_tok_s": 21.05,
+            "tpot_ms": 47.51,
+            "accurate": false
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !! !!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 1.543,
+            "throughput_tok_s": 20.74,
+            "tpot_ms": 48.22,
+            "accurate": false
+          }
+        ],
+        "orchkv_50pct": [
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !!!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 12.675,
+            "throughput_tok_s": 2.52,
+            "tpot_ms": 396.09,
+            "accurate": false,
+            "evictions": 256,
+            "promotions": 256,
+            "blocks_gpu": 3584,
+            "blocks_dram": 0,
+            "gpu_kv_mb": 112.0
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !!!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 11.6837,
+            "throughput_tok_s": 2.74,
+            "tpot_ms": 365.11,
+            "accurate": false,
+            "evictions": 256,
+            "promotions": 256,
+            "blocks_gpu": 3584,
+            "blocks_dram": 0,
+            "gpu_kv_mb": 112.0
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !!!!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 12.7032,
+            "throughput_tok_s": 2.52,
+            "tpot_ms": 396.97,
+            "accurate": false,
+            "evictions": 256,
+            "promotions": 256,
+            "blocks_gpu": 3584,
+            "blocks_dram": 0,
+            "gpu_kv_mb": 112.0
+          },
+          {
+            "generated_text": "!!!!!!!!!",
+            "n_tokens": 10,
+            "elapsed_s": 4.2822,
+            "throughput_tok_s": 2.34,
+            "tpot_ms": 428.22,
+            "accurate": false,
+            "evictions": 80,
+            "promotions": 80,
+            "blocks_gpu": 3556,
+            "blocks_dram": 0,
+            "gpu_kv_mb": 111.12
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !!!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 12.6617,
+            "throughput_tok_s": 2.53,
+            "tpot_ms": 395.68,
+            "accurate": false,
+            "evictions": 256,
+            "promotions": 256,
+            "blocks_gpu": 3584,
+            "blocks_dram": 0,
+            "gpu_kv_mb": 112.0
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !!!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 12.6798,
+            "throughput_tok_s": 2.52,
+            "tpot_ms": 396.24,
+            "accurate": false,
+            "evictions": 256,
+            "promotions": 256,
+            "blocks_gpu": 3584,
+            "blocks_dram": 0,
+            "gpu_kv_mb": 112.0
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !!!!!! !!!",
+            "n_tokens": 32,
+            "elapsed_s": 12.3688,
+            "throughput_tok_s": 2.59,
+            "tpot_ms": 386.52,
+            "accurate": false,
+            "evictions": 256,
+            "promotions": 256,
+            "blocks_gpu": 3584,
+            "blocks_dram": 0,
+            "gpu_kv_mb": 112.0
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !!!!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 12.6679,
+            "throughput_tok_s": 2.53,
+            "tpot_ms": 395.87,
+            "accurate": false,
+            "evictions": 256,
+            "promotions": 256,
+            "blocks_gpu": 3584,
+            "blocks_dram": 0,
+            "gpu_kv_mb": 112.0
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !!!!!! !!!",
+            "n_tokens": 32,
+            "elapsed_s": 12.6756,
+            "throughput_tok_s": 2.52,
+            "tpot_ms": 396.11,
+            "accurate": false,
+            "evictions": 256,
+            "promotions": 256,
+            "blocks_gpu": 3584,
+            "blocks_dram": 0,
+            "gpu_kv_mb": 112.0
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !!!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 12.6635,
+            "throughput_tok_s": 2.53,
+            "tpot_ms": 395.74,
+            "accurate": false,
+            "evictions": 256,
+            "promotions": 256,
+            "blocks_gpu": 3584,
+            "blocks_dram": 0,
+            "gpu_kv_mb": 112.0
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !!!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 12.6499,
+            "throughput_tok_s": 2.53,
+            "tpot_ms": 395.31,
+            "accurate": false,
+            "evictions": 256,
+            "promotions": 256,
+            "blocks_gpu": 3584,
+            "blocks_dram": 0,
+            "gpu_kv_mb": 112.0
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !!!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 12.6354,
+            "throughput_tok_s": 2.53,
+            "tpot_ms": 394.86,
+            "accurate": false,
+            "evictions": 256,
+            "promotions": 256,
+            "blocks_gpu": 3584,
+            "blocks_dram": 0,
+            "gpu_kv_mb": 112.0
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !!!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 12.5771,
+            "throughput_tok_s": 2.54,
+            "tpot_ms": 393.04,
+            "accurate": false,
+            "evictions": 256,
+            "promotions": 256,
+            "blocks_gpu": 3584,
+            "blocks_dram": 0,
+            "gpu_kv_mb": 112.0
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !!!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 12.7193,
+            "throughput_tok_s": 2.52,
+            "tpot_ms": 397.48,
+            "accurate": false,
+            "evictions": 256,
+            "promotions": 256,
+            "blocks_gpu": 3584,
+            "blocks_dram": 0,
+            "gpu_kv_mb": 112.0
+          },
+          {
+            "generated_text": "!!!!!!!!! !!!!! !! !!!!!!!!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 12.6706,
+            "throughput_tok_s": 2.53,
+            "tpot_ms": 395.96,
+            "accurate": false,
+            "evictions": 256,
+            "promotions": 256,
+            "blocks_gpu": 3584,
+            "blocks_dram": 0,
+            "gpu_kv_mb": 112.0
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !! !!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 12.6407,
+            "throughput_tok_s": 2.53,
+            "tpot_ms": 395.02,
+            "accurate": false,
+            "evictions": 256,
+            "promotions": 256,
+            "blocks_gpu": 3584,
+            "blocks_dram": 0,
+            "gpu_kv_mb": 112.0
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !! !!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 11.9089,
+            "throughput_tok_s": 2.69,
+            "tpot_ms": 372.15,
+            "accurate": false,
+            "evictions": 256,
+            "promotions": 256,
+            "blocks_gpu": 3584,
+            "blocks_dram": 0,
+            "gpu_kv_mb": 112.0
+          },
+          {
+            "generated_text": "!!!!!!!!!",
+            "n_tokens": 10,
+            "elapsed_s": 3.8578,
+            "throughput_tok_s": 2.59,
+            "tpot_ms": 385.78,
+            "accurate": false,
+            "evictions": 80,
+            "promotions": 80,
+            "blocks_gpu": 3556,
+            "blocks_dram": 0,
+            "gpu_kv_mb": 111.12
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !! !!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 12.2291,
+            "throughput_tok_s": 2.62,
+            "tpot_ms": 382.16,
+            "accurate": false,
+            "evictions": 256,
+            "promotions": 256,
+            "blocks_gpu": 3584,
+            "blocks_dram": 0,
+            "gpu_kv_mb": 112.0
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !! !!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 12.2088,
+            "throughput_tok_s": 2.62,
+            "tpot_ms": 381.53,
+            "accurate": false,
+            "evictions": 256,
+            "promotions": 256,
+            "blocks_gpu": 3584,
+            "blocks_dram": 0,
+            "gpu_kv_mb": 112.0
+          }
+        ]
+      }
+    },
+    "4096": {
+      "target_len": 4096,
+      "num_prompts": 20,
+      "baseline": {
+        "accuracy": 0.0,
+        "n_valid": 20,
+        "n_errors": 0,
+        "mean_throughput_tok_s": 16.42,
+        "mean_tpot_ms": 61.09
+      },
+      "orchkv_50pct": {
+        "accuracy": 0.0,
+        "n_valid": 0
+      },
+      "consistency": {
+        "matches": 0,
+        "valid_pairs": 0,
+        "rate": 0.0
+      },
+      "per_prompt": {
+        "baseline": [
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !!!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 2.1648,
+            "throughput_tok_s": 14.78,
+            "tpot_ms": 67.65,
+            "accurate": false
+          },
+          {
+            "generated_text": "!!!!!!!! !! !!!!! !!!!!!!!!!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 1.9068,
+            "throughput_tok_s": 16.78,
+            "tpot_ms": 59.59,
+            "accurate": false
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !!!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 2.0879,
+            "throughput_tok_s": 15.33,
+            "tpot_ms": 65.25,
+            "accurate": false
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !!!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 1.818,
+            "throughput_tok_s": 17.6,
+            "tpot_ms": 56.81,
+            "accurate": false
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !!!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 1.8938,
+            "throughput_tok_s": 16.9,
+            "tpot_ms": 59.18,
+            "accurate": false
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !! !!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 2.0014,
+            "throughput_tok_s": 15.99,
+            "tpot_ms": 62.54,
+            "accurate": false
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !!!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 1.8956,
+            "throughput_tok_s": 16.88,
+            "tpot_ms": 59.24,
+            "accurate": false
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !!!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 2.0887,
+            "throughput_tok_s": 15.32,
+            "tpot_ms": 65.27,
+            "accurate": false
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !!!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 1.784,
+            "throughput_tok_s": 17.94,
+            "tpot_ms": 55.75,
+            "accurate": false
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !! !!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 1.9115,
+            "throughput_tok_s": 16.74,
+            "tpot_ms": 59.73,
+            "accurate": false
+          },
+          {
+            "generated_text": "!!!!! !!!! ! ! !!!!!!!!!! !!!!!! !!",
+            "n_tokens": 32,
+            "elapsed_s": 2.0057,
+            "throughput_tok_s": 15.95,
+            "tpot_ms": 62.68,
+            "accurate": false
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !!!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 1.9122,
+            "throughput_tok_s": 16.73,
+            "tpot_ms": 59.76,
+            "accurate": false
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !! !!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 2.1084,
+            "throughput_tok_s": 15.18,
+            "tpot_ms": 65.89,
+            "accurate": false
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !!!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 1.8253,
+            "throughput_tok_s": 17.53,
+            "tpot_ms": 57.04,
+            "accurate": false
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !! !!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 1.9168,
+            "throughput_tok_s": 16.69,
+            "tpot_ms": 59.9,
+            "accurate": false
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !!!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 1.9932,
+            "throughput_tok_s": 16.05,
+            "tpot_ms": 62.29,
+            "accurate": false
+          },
+          {
+            "generated_text": "!!!!!!!!! !!!!! !! !!!!!!!!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 1.9174,
+            "throughput_tok_s": 16.69,
+            "tpot_ms": 59.92,
+            "accurate": false
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !!!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 2.1399,
+            "throughput_tok_s": 14.95,
+            "tpot_ms": 66.87,
+            "accurate": false
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!!!!!!! !!!!!!!!",
+            "n_tokens": 32,
+            "elapsed_s": 1.8304,
+            "throughput_tok_s": 17.48,
+            "tpot_ms": 57.2,
+            "accurate": false
+          },
+          {
+            "generated_text": "!!!!! !!!! ! !!!!!! !! !!!!!!!!!! !!",
+            "n_tokens": 32,
+            "elapsed_s": 1.8953,
+            "throughput_tok_s": 16.88,
+            "tpot_ms": 59.23,
+            "accurate": false
+          }
+        ],
+        "orchkv_50pct": [
+          {
+            "accurate": false,
+            "error": "CUDA out of memory. Tried to allocate 850.00 MiB. GPU 0 has a total capacity of 79.25 GiB of which 194.31 MiB is free. Process 3540299 has 38.24 GiB memory in use. Including non-PyTorch memory, this p",
+            "generated_text": "",
+            "n_tokens": 0,
+            "throughput_tok_s": 0,
+            "tpot_ms": 0,
+            "evictions": 0,
+            "promotions": 0
+          },
+          {
+            "accurate": false,
+            "error": "CUDA out of memory. Tried to allocate 850.00 MiB. GPU 0 has a total capacity of 79.25 GiB of which 194.31 MiB is free. Process 3540299 has 38.24 GiB memory in use. Including non-PyTorch memory, this p",
+            "generated_text": "",
+            "n_tokens": 0,
+            "throughput_tok_s": 0,
+            "tpot_ms": 0,
+            "evictions": 0,
+            "promotions": 0
+          },
+          {
+            "accurate": false,
+            "error": "CUDA out of memory. Tried to allocate 850.00 MiB. GPU 0 has a total capacity of 79.25 GiB of which 194.31 MiB is free. Process 3540299 has 38.24 GiB memory in use. Including non-PyTorch memory, this p",
+            "generated_text": "",
+            "n_tokens": 0,
+            "throughput_tok_s": 0,
+            "tpot_ms": 0,
+            "evictions": 0,
+            "promotions": 0
+          },
+          {
+            "accurate": false,
+            "error": "CUDA out of memory. Tried to allocate 850.00 MiB. GPU 0 has a total capacity of 79.25 GiB of which 194.31 MiB is free. Process 3540299 has 38.24 GiB memory in use. Including non-PyTorch memory, this p",
+            "generated_text": "",
+            "n_tokens": 0,
+            "throughput_tok_s": 0,
+            "tpot_ms": 0,
+            "evictions": 0,
+            "promotions": 0
+          },
+          {
+            "accurate": false,
+            "error": "CUDA out of memory. Tried to allocate 850.00 MiB. GPU 0 has a total capacity of 79.25 GiB of which 194.31 MiB is free. Process 3540299 has 38.24 GiB memory in use. Including non-PyTorch memory, this p",
+            "generated_text": "",
+            "n_tokens": 0,
+            "throughput_tok_s": 0,
+            "tpot_ms": 0,
+            "evictions": 0,
+            "promotions": 0
+          },
+          {
+            "accurate": false,
+            "error": "CUDA out of memory. Tried to allocate 850.00 MiB. GPU 0 has a total capacity of 79.25 GiB of which 194.31 MiB is free. Process 3540299 has 38.24 GiB memory in use. Including non-PyTorch memory, this p",
+            "generated_text": "",
+            "n_tokens": 0,
+            "throughput_tok_s": 0,
+            "tpot_ms": 0,
+            "evictions": 0,
+            "promotions": 0
+          },
+          {
+            "accurate": false,
+            "error": "CUDA out of memory. Tried to allocate 850.00 MiB. GPU 0 has a total capacity of 79.25 GiB of which 194.31 MiB is free. Process 3540299 has 38.24 GiB memory in use. Including non-PyTorch memory, this p",
+            "generated_text": "",
+            "n_tokens": 0,
+            "throughput_tok_s": 0,
+            "tpot_ms": 0,
+            "evictions": 0,
+            "promotions": 0
+          },
+          {
+            "accurate": false,
+            "error": "CUDA out of memory. Tried to allocate 850.00 MiB. GPU 0 has a total capacity of 79.25 GiB of which 194.31 MiB is free. Process 3540299 has 38.24 GiB memory in use. Including non-PyTorch memory, this p",
+            "generated_text": "",
+            "n_tokens": 0,
+            "throughput_tok_s": 0,
+            "tpot_ms": 0,
+            "evictions": 0,
+            "promotions": 0
+          },
+          {
+            "accurate": false,
+            "error": "CUDA out of memory. Tried to allocate 850.00 MiB. GPU 0 has a total capacity of 79.25 GiB of which 194.31 MiB is free. Process 3540299 has 38.24 GiB memory in use. Including non-PyTorch memory, this p",
+            "generated_text": "",
+            "n_tokens": 0,
+            "throughput_tok_s": 0,
+            "tpot_ms": 0,
+            "evictions": 0,
+            "promotions": 0
+          },
+          {
+            "accurate": false,
+            "error": "CUDA out of memory. Tried to allocate 850.00 MiB. GPU 0 has a total capacity of 79.25 GiB of which 194.31 MiB is free. Process 3540299 has 38.24 GiB memory in use. Including non-PyTorch memory, this p",
+            "generated_text": "",
+            "n_tokens": 0,
+            "throughput_tok_s": 0,
+            "tpot_ms": 0,
+            "evictions": 0,
+            "promotions": 0
+          },
+          {
+            "accurate": false,
+            "error": "CUDA out of memory. Tried to allocate 850.00 MiB. GPU 0 has a total capacity of 79.25 GiB of which 194.31 MiB is free. Process 3540299 has 38.24 GiB memory in use. Including non-PyTorch memory, this p",
+            "generated_text": "",
+            "n_tokens": 0,
+            "throughput_tok_s": 0,
+            "tpot_ms": 0,
+            "evictions": 0,
+            "promotions": 0
+          },
+          {
+            "accurate": false,
+            "error": "CUDA out of memory. Tried to allocate 850.00 MiB. GPU 0 has a total capacity of 79.25 GiB of which 194.31 MiB is free. Process 3540299 has 38.24 GiB memory in use. Including non-PyTorch memory, this p",
+            "generated_text": "",
+            "n_tokens": 0,
+            "throughput_tok_s": 0,
+            "tpot_ms": 0,
+            "evictions": 0,
+            "promotions": 0
+          },
+          {
+            "accurate": false,
+            "error": "CUDA out of memory. Tried to allocate 850.00 MiB. GPU 0 has a total capacity of 79.25 GiB of which 194.31 MiB is free. Process 3540299 has 38.24 GiB memory in use. Including non-PyTorch memory, this p",
+            "generated_text": "",
+            "n_tokens": 0,
+            "throughput_tok_s": 0,
+            "tpot_ms": 0,
+            "evictions": 0,
+            "promotions": 0
+          },
+          {
+            "accurate": false,
+            "error": "CUDA out of memory. Tried to allocate 850.00 MiB. GPU 0 has a total capacity of 79.25 GiB of which 194.31 MiB is free. Process 3540299 has 38.24 GiB memory in use. Including non-PyTorch memory, this p",
+            "generated_text": "",
+            "n_tokens": 0,
+            "throughput_tok_s": 0,
+            "tpot_ms": 0,
+            "evictions": 0,
+            "promotions": 0
+          },
+          {
+            "accurate": false,
+            "error": "CUDA out of memory. Tried to allocate 850.00 MiB. GPU 0 has a total capacity of 79.25 GiB of which 194.31 MiB is free. Process 3540299 has 38.24 GiB memory in use. Including non-PyTorch memory, this p",
+            "generated_text": "",
+            "n_tokens": 0,
+            "throughput_tok_s": 0,
+            "tpot_ms": 0,
+            "evictions": 0,
+            "promotions": 0
+          },
+          {
+            "accurate": false,
+            "error": "CUDA out of memory. Tried to allocate 850.00 MiB. GPU 0 has a total capacity of 79.25 GiB of which 194.31 MiB is free. Process 3540299 has 38.24 GiB memory in use. Including non-PyTorch memory, this p",
+            "generated_text": "",
+            "n_tokens": 0,
+            "throughput_tok_s": 0,
+            "tpot_ms": 0,
+            "evictions": 0,
+            "promotions": 0
+          },
+          {
+            "accurate": false,
+            "error": "CUDA out of memory. Tried to allocate 850.00 MiB. GPU 0 has a total capacity of 79.25 GiB of which 194.31 MiB is free. Process 3540299 has 38.24 GiB memory in use. Including non-PyTorch memory, this p",
+            "generated_text": "",
+            "n_tokens": 0,
+            "throughput_tok_s": 0,
+            "tpot_ms": 0,
+            "evictions": 0,
+            "promotions": 0
+          },
+          {
+            "accurate": false,
+            "error": "CUDA out of memory. Tried to allocate 850.00 MiB. GPU 0 has a total capacity of 79.25 GiB of which 194.31 MiB is free. Process 3540299 has 38.24 GiB memory in use. Including non-PyTorch memory, this p",
+            "generated_text": "",
+            "n_tokens": 0,
+            "throughput_tok_s": 0,
+            "tpot_ms": 0,
+            "evictions": 0,
+            "promotions": 0
+          },
+          {
+            "accurate": false,
+            "error": "CUDA out of memory. Tried to allocate 850.00 MiB. GPU 0 has a total capacity of 79.25 GiB of which 194.31 MiB is free. Process 3540299 has 38.24 GiB memory in use. Including non-PyTorch memory, this p",
+            "generated_text": "",
+            "n_tokens": 0,
+            "throughput_tok_s": 0,
+            "tpot_ms": 0,
+            "evictions": 0,
+            "promotions": 0
+          },
+          {
+            "accurate": false,
+            "error": "CUDA out of memory. Tried to allocate 850.00 MiB. GPU 0 has a total capacity of 79.25 GiB of which 194.31 MiB is free. Process 3540299 has 38.24 GiB memory in use. Including non-PyTorch memory, this p",
+            "generated_text": "",
+            "n_tokens": 0,
+            "throughput_tok_s": 0,
+            "tpot_ms": 0,
+            "evictions": 0,
+            "promotions": 0
+          }
+        ]
+      }
+    }
+  }
+}
