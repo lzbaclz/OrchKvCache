@@ -152,7 +152,7 @@ class FastKVCacheManager:
             n_blocks = (self._total_tokens + self.block_size - 1) // self.block_size
             for bid in range(n_blocks):
                 flags = 1 if (bid * self.block_size) < self.sink_tokens else 0
-                _C.tm_register_block_id(self._tm_handle, bid, flags, 0)
+                _C.tm_register_block_id(self._tm_handle, bid, 0, flags)
             self._stats["total_blocks"] = n_blocks * self.n_layers
 
     def append_token(self, past_key_values) -> None:
@@ -170,7 +170,7 @@ class FastKVCacheManager:
         new_block_id = pos // self.block_size
         if pos % self.block_size == 0 and self._tm_handle and _C:
             flags = 1 if pos < self.sink_tokens else 0
-            _C.tm_register_block_id(self._tm_handle, new_block_id, flags, 0)
+            _C.tm_register_block_id(self._tm_handle, new_block_id, 0, flags)
 
     def _grow_buffers(self, new_max: int):
         new_max = ((new_max + 255) // 256) * 256

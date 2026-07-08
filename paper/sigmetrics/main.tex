@@ -1,0 +1,673 @@
+%%% OrchKvCache — SIGMETRICS 2027 Submission
+%%% ACM acmsmall format (single-column, ~20 pages)
+\documentclass[acmsmall,nonacm,screen]{acmart}
+
+\usepackage{booktabs}
+\usepackage{subcaption}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{xcolor}
+\usepackage{multirow}
+\usepackage{makecell}
+\usepackage{balance}
+
+\newcommand{\sys}{OrchKvCache}
+\newcommand{\todo}[1]{\textcolor{red}{\textbf{[TODO: #1]}}}
+\newcommand{\remark}[1]{\textcolor{blue}{\textbf{[REMARK: #1]}}}
+
+\begin{document}
+
+%% ----------------------------------------------------------------
+%%  Title & Authors
+%% ----------------------------------------------------------------
+\title{\sys{}: Measuring and Scheduling Lossless KV-Cache Residency\\
+       Across GPU, DRAM, and SSD}
+
+\author{Ziqing Li}
+\affiliation{%
+  \institution{Huazhong University of Science and Technology}
+  \city{Wuhan}
+  \country{China}}
+\email{liziqing@hust.edu.cn}
+
+\author{Jianxi Chen}
+\affiliation{%
+  \institution{Huazhong University of Science and Technology}
+  \city{Wuhan}
+  \country{China}}
+\email{chenjianxi@hust.edu.cn}
+
+%% ----------------------------------------------------------------
+%%  Abstract
+%% ----------------------------------------------------------------
+\begin{abstract}
+% Sentence 1 — Problem
+Long-context large language models (LLMs) are bottlenecked by KV-cache memory
+that grows linearly with sequence length, forcing operators to either over-provision
+expensive GPU memory or sacrifice output quality through lossy eviction.
+% Sentence 2 — Measurement finding
+Through an extensive measurement study across four model families and six
+workloads, we discover that attention patterns exhibit \emph{stable hot-set
+concentrations} and \emph{predictable reuse distances}, creating an opportunity
+for lossless offloading that prior heuristic policies fail to exploit.
+% Sentence 3 — System
+We present \sys{}, a tiered KV-cache manager that combines reuse-distance
+prediction with a critical-path-aware scheduler to place each cache block on the
+right tier (GPU, DRAM, or SSD) at the right time, guaranteeing bit-exact
+output while hiding promotion latency behind decode-phase compute.
+% Sentence 4 — Evaluation result
+\todo{Fill final numbers: X$\times$ higher goodput under SLO, Y\% GPU-memory
+saving, zero quality degradation across 1000+ prompts on LongBench, RULER,
+and AgentBench.}
+\end{abstract}
+
+\maketitle
+
+%% ================================================================
+%%  1  Introduction
+%% ================================================================
+\section{Introduction}\label{sec:intro}
+
+\todo{Open with the memory-wall problem for long-context LLM serving: a single
+128K-context Llama-3-70B request consumes $>$40\,GB of KV cache, exceeding the
+VRAM of a commodity GPU.}
+
+\todo{Introduce the lossless paradox: existing offloading systems either stall
+on promotion misses (hurting latency SLO) or fall back to lossy eviction
+(hurting quality).  Neither is acceptable for production serving.}
+
+\todo{Preview measurement findings:
+\begin{itemize}
+  \item Attention hot-sets concentrate on $<$15\% of tokens yet remain stable
+        across decode steps.
+  \item Block reuse distances follow heavy-tailed distributions that are
+        well-predicted by lightweight QK-inner-product proxies.
+  \item Promotion latency from DRAM (5--8\,$\mu$s) and SSD (30--80\,$\mu$s)
+        can be fully overlapped with the decode-phase compute of most models.
+\end{itemize}}
+
+\todo{Describe the design space gap: no prior system combines reuse-distance
+modeling, critical-path awareness, and tiered storage in a single framework.}
+
+\todo{List contributions:
+\begin{enumerate}
+  \item A measurement study characterising attention hot-sets, reuse distances,
+        and promotion slack across four model families and six workloads
+        (\S\ref{sec:measurement}).
+  \item A critical-path residency model that decides \emph{when} and \emph{where}
+        to place each KV block with zero quality loss (\S\ref{sec:model}).
+  \item The \sys{} system integrating a lightweight signal-acquisition layer,
+        a reuse-distance predictor, a critical-path scheduler, and a tiered
+        storage backend (\S\ref{sec:design}--\S\ref{sec:impl}).
+  \item An evaluation showing X$\times$ goodput improvement under SLO,
+        Y\% memory saving, and bit-exact output verified on 1000+ prompts
+        (\S\ref{sec:eval}).
+\end{enumerate}}
+
+
+%% ================================================================
+%%  2  Background and Motivation
+%% ================================================================
+\section{Background and Motivation}\label{sec:background}
+
+% --- 2.1 ---
+\subsection{The KV Cache Memory Bottleneck}\label{sec:bg:bottleneck}
+
+\todo{Explain KV cache lifecycle in auto-regressive LLM inference: prefill
+generates KV for all prompt tokens; decode appends one KV pair per step.
+Memory grows as $O(n \cdot d \cdot L)$ where $n$ is sequence length, $d$ is
+head dimension, and $L$ is the number of layers.}
+
+\todo{Give concrete numbers: Llama-3-70B at 128K context $\approx$ 40\,GB;
+Qwen-2.5-1M at 1M context $\approx$ 300\,GB. Compare with A100-80GB,
+H100-80GB VRAM budgets.}
+
+\todo{Discuss operational implications: batch size is memory-capped $\to$
+under-utilises compute $\to$ low goodput.  Operators face a cost--quality
+trade-off.}
+
+% --- 2.2 ---
+\subsection{The Lossless Offloading Paradox}\label{sec:bg:paradox}
+
+\todo{Define lossless: bit-exact reproduction of the attention output that
+full-GPU serving would produce.  Any token eviction, quantisation, or
+approximation is lossy.}
+
+\todo{Explain why offloading is hard: decode attention needs the \emph{full}
+KV set of the attended positions.  If a block is remote when needed, the
+decode step stalls until promotion completes.  Stall $\to$ TTFT/TPOT SLO
+violation.}
+
+\todo{Survey existing approaches:
+\begin{itemize}
+  \item \textbf{Lossy eviction}: H2O, StreamingLLM, ScissorHands, SnapKV —
+        drop tokens permanently, quality degrades on recall-heavy tasks.
+  \item \textbf{Offload-then-prefetch}: InfiniGen, FlexGen, LMCache —
+        move cold blocks to DRAM/SSD but rely on coarse heuristics (FIFO,
+        LRU) for promotion, causing frequent stalls.
+  \item \textbf{Quantised caching}: KIVI, KVQuant — compress KV to fewer
+        bits; still lossy, accumulates error over long contexts.
+\end{itemize}}
+
+\todo{State the gap: no system provides a principled, measurement-grounded
+policy that achieves lossless offloading \emph{without} stalling.}
+
+% --- 2.3 ---
+\subsection{Design Space of KV-Cache Management}\label{sec:bg:taxonomy}
+
+\todo{Present a big taxonomy table (Table~\ref{tab:taxonomy}) comparing
+axes: eviction vs.\ offloading, lossy vs.\ lossless, policy (FIFO / LRU /
+LFU / attention-aware / reuse-distance), tiers (GPU only / GPU+DRAM /
+GPU+DRAM+SSD), prefetch strategy (none / speculative / model-based),
+critical-path awareness (yes/no).}
+
+\begin{table*}[t]
+\centering
+\caption{Design space of KV-cache memory management.
+\todo{Fill all rows with related-work comparison.}}
+\label{tab:taxonomy}
+\begin{tabular}{lcccccc}
+\toprule
+\textbf{System} & \textbf{Evict/Offload} & \textbf{Lossy?} &
+  \textbf{Policy} & \textbf{Tiers} & \textbf{Prefetch} &
+  \textbf{CP-Aware} \\
+\midrule
+vLLM~\cite{kwon2023vllm}           & Evict   & Lossless & Seq-level & GPU          & —       & No  \\
+H2O~\cite{zhang2024h2o}            & Evict   & Lossy    & Attn-score & GPU         & —       & No  \\
+StreamingLLM~\cite{xiao2024streamingllm} & Evict & Lossy & Sink+Window & GPU       & —       & No  \\
+InfiniGen~\cite{lee2024infinigen}   & Offload & Lossless & LRU-ish  & GPU+DRAM     & Spec.   & No  \\
+FlexGen~\cite{sheng2023flexgen}     & Offload & Lossless & Static   & GPU+DRAM+SSD & None    & No  \\
+LMCache~\cite{yao2024lmcache}      & Offload & Lossless & Prefix   & GPU+DRAM+SSD & Prefix  & No  \\
+FlexiCache~\cite{li2024flexicache} & Offload & Lossless & Attn-aware & GPU+DRAM   & Pred.   & No  \\
+\midrule
+\sys{} (ours) & Offload & Lossless & Reuse-dist & GPU+DRAM+SSD & Model & \textbf{Yes} \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\todo{Discuss what critical-path awareness means: the scheduler must know
+whether a block's next access falls on the critical path of the decode step
+and whether promotion latency can be hidden behind compute.}
+
+
+%% ================================================================
+%%  3  Measurement Study
+%% ================================================================
+\section{Measurement Study}\label{sec:measurement}
+
+\todo{Describe experimental setup for the measurement study: models
+(Llama-3-8B, Llama-3-70B, Qwen-2.5-7B, Qwen-2.5-1M-7B), workloads
+(LongBench, RULER, AgentBench, needle-in-a-haystack, multi-turn chat,
+code generation), instrumented vLLM fork, metrics collected.}
+
+% --- 3.1 ---
+\subsection{Attention Concentration and Hot-Set Stability}\label{sec:meas:hotset}
+
+\todo{Key finding: across all models and workloads, $>$85\% of attention mass
+concentrates on $<$15\% of KV blocks at each decode step.}
+
+\todo{Show hot-set overlap between consecutive decode steps (Jaccard
+similarity $>$0.9 for top-15\% set).  Implication: hot-set membership is
+highly predictable from the previous step.}
+
+\todo{Figure~\ref{fig:hotset}: heatmap of per-layer attention concentration
+ratio across decode steps for Llama-3-70B on a RULER task.}
+
+\todo{Discuss variation across layers: shallow layers are more diffuse;
+deep layers exhibit sharper concentration.  Layer-wise budgeting is
+important.}
+
+% --- 3.2 ---
+\subsection{Block Reuse Distance Characterisation}\label{sec:meas:reuse}
+
+\todo{Define block-level reuse distance: number of decode steps between
+consecutive accesses to the same KV block (or $\infty$ for never-reused
+blocks).}
+
+\todo{Key finding: reuse-distance distributions are heavy-tailed (power-law
+body, exponential tail) and remarkably stable across sequences of the same
+workload type.}
+
+\todo{Figure~\ref{fig:reuse_dist}: CDF of block reuse distances for four
+models $\times$ three workloads.  Highlight the ``cold tail'' that comprises
+30--60\% of blocks.}
+
+\todo{Implication: a policy that knows the reuse distance of each block can
+offload the cold tail with near-zero risk of stall.}
+
+% --- 3.3 ---
+\subsection{Promotion Latency and Overlap Slack}\label{sec:meas:slack}
+
+\todo{Measure promotion latency per tier: GPU $\to$ GPU (0), DRAM $\to$ GPU
+(5--8\,$\mu$s per block via pinned DMA), SSD $\to$ GPU (30--80\,$\mu$s via
+POSIX read, 15--40\,$\mu$s via GDS).}
+
+\todo{Measure decode-step compute time per model: Llama-3-8B $\approx$
+X\,ms, Llama-3-70B $\approx$ Y\,ms per step on A100/H100.  This is the
+``overlap slack'' available to hide promotion.}
+
+\todo{Key finding: for all tested models, the decode-step compute exceeds
+the DRAM promotion latency by $>$10$\times$ and the SSD/GDS promotion
+latency by $>$3$\times$, meaning promotion can be fully overlapped with
+compute via pipelining.}
+
+\todo{Figure~\ref{fig:slack}: bar chart comparing decode-step compute time
+vs.\ promotion latency for each tier and model.}
+
+% --- 3.4 ---
+\subsection{Workload Dependence}\label{sec:meas:workload}
+
+\todo{Show how hot-set size, reuse-distance shape, and overlap slack vary
+across workload types.  Retrieval-heavy tasks (RULER needle) have sharper
+concentration; summarisation tasks have broader attention.}
+
+\todo{Argue that a single static policy cannot cover all workloads $\to$
+need an adaptive, measurement-driven approach.}
+
+
+%% ================================================================
+%%  4  Critical-Path Residency Model
+%% ================================================================
+\section{Critical-Path Residency Model}\label{sec:model}
+
+\todo{High-level goal: given the measured signals, derive a per-block
+placement decision that guarantees (a) lossless output and (b) zero
+critical-path stall, while minimising GPU memory usage.}
+
+% --- 4.1 ---
+\subsection{Reuse Distance Prediction}\label{sec:model:reuse}
+
+\todo{Formalise the reuse-distance prediction problem.  Input: QK
+inner-product proxy score $s_i^{(t)}$ for block $i$ at step $t$,
+historical reuse distances.  Output: predicted reuse distance
+$\hat{r}_i^{(t)}$.}
+
+\todo{Present the predictor: lightweight exponential moving average of
+per-block proxy scores, thresholded to classify blocks into hot / warm /
+cold tiers.  Justify via correlation analysis from \S\ref{sec:meas:reuse}.}
+
+\todo{Complexity: $O(B)$ per decode step where $B$ is the number of active
+blocks.  No neural network overhead.}
+
+% --- 4.2 ---
+\subsection{Promotion Latency Model}\label{sec:model:latency}
+
+\todo{Model the promotion latency $\ell_{\text{tier}}(b)$ for block $b$
+from each tier as a function of block size, bus bandwidth, queue depth, and
+concurrency.  Calibrate with micro-benchmarks.}
+
+\todo{Define overlap slack $\Delta^{(t)}$: the compute time of the current
+decode step available for hiding promotion.  $\Delta$ depends on model size,
+batch size, and hardware.}
+
+% --- 4.3 ---
+\subsection{Offload Condition and Tier Selection}\label{sec:model:offload}
+
+\todo{Derive the offload condition: block $b$ can be offloaded to tier $T$
+iff its predicted reuse distance $\hat{r}_b > \lceil \ell_T(b) / \Delta
+\rceil + \text{safety margin}$.  This guarantees that promotion completes
+before the block is needed.}
+
+\todo{Tier selection: prefer DRAM for warm blocks (moderate reuse distance),
+SSD for cold blocks (long reuse distance).  Tie-break by promotion latency
+ratio.}
+
+\todo{Handle prediction errors: if a block is accessed earlier than
+predicted, the scheduler has a ``rescue'' path that preempts lower-priority
+promotions and uses emergency synchronous DMA.  Quantify rescue rate from
+measurement traces.}
+
+% --- 4.4 ---
+\subsection{Model Validation}\label{sec:model:validation}
+
+\todo{Validate the model on measurement traces: replay recorded access
+patterns through the residency model and compare predicted stall vs.\ actual
+stall.  Show $<$2\% prediction error on median stall time.}
+
+\todo{Figure~\ref{fig:model_validation}: scatter plot of predicted vs.\
+measured stall per decode step across four workloads.}
+
+
+%% ================================================================
+%%  5  System Design
+%% ================================================================
+\section{System Design}\label{sec:design}
+
+% --- 5.1 ---
+\subsection{Architecture Overview}\label{sec:design:arch}
+
+\todo{Figure~\ref{fig:arch}: system architecture diagram showing four
+components: (1) Signal Acquisition Layer, (2) Reuse-Distance Predictor,
+(3) Critical-Path Scheduler, (4) Tiered Storage Backend.  Show data flow
+from attention kernel $\to$ predictor $\to$ scheduler $\to$ DMA/GDS engine.}
+
+\todo{Explain the per-step control loop: after each decode step, the signal
+layer emits proxy scores; the predictor updates reuse estimates; the
+scheduler issues offload / promote / pin commands; the backend executes
+asynchronous transfers.}
+
+% --- 5.2 ---
+\subsection{Low-Overhead Signal Acquisition}\label{sec:design:signal}
+
+\todo{QK proxy: compute partial QK inner products using only the query of the
+current decode step and a sampled subset of K heads.  Cost: one small GEMV
+per layer, $<$1\% of decode compute.}
+
+\todo{Sampling: only sample every $S$ decode steps (default $S{=}4$) and
+interpolate between samples.  Reduces overhead by $4\times$ with $<$0.5\%
+prediction accuracy loss.}
+
+\todo{Bypass: for the first $P$ prefill tokens (where attention is dense by
+construction), skip signal acquisition entirely.}
+
+% --- 5.3 ---
+\subsection{Reuse-Distance-Aware Residency Predictor}\label{sec:design:predictor}
+
+\todo{Describe the EMA-based predictor from \S\ref{sec:model:reuse} in
+implementation detail.  Per-block state: 4 bytes (16-bit EMA score + 16-bit
+last-access timestamp).  Total overhead for 1M blocks: 4\,MB.}
+
+\todo{Explain the hot / warm / cold classification thresholds and how they
+adapt to workload-specific reuse-distance distributions using online
+percentile tracking.}
+
+% --- 5.4 ---
+\subsection{Critical-Path-Aware Scheduler}\label{sec:design:scheduler}
+
+\todo{Describe the scheduling algorithm:
+\begin{enumerate}
+  \item Classify blocks into hot (keep on GPU), warm (offload to DRAM),
+        cold (offload to SSD).
+  \item For each warm/cold block, compute the latest safe offload time
+        using the offload condition from \S\ref{sec:model:offload}.
+  \item Schedule promotions to start $\hat{r}_b - \lceil \ell_T / \Delta
+        \rceil$ steps before predicted access.
+  \item If multiple promotions compete for bandwidth, prioritise by
+        soonest predicted access.
+\end{enumerate}}
+
+\todo{Discuss concurrency management: cap in-flight DMA to avoid
+bus saturation; back-pressure mechanism when promotion queue is full.}
+
+% --- 5.5 ---
+\subsection{Tiered Storage Backend}\label{sec:design:backend}
+
+\todo{Three I/O paths:
+\begin{itemize}
+  \item \textbf{DRAM tier}: pinned host memory, \texttt{cudaMemcpyAsync}
+        via CUDA streams.
+  \item \textbf{SSD tier (POSIX)}: page-cache-bypassing \texttt{O\_DIRECT}
+        reads into pinned buffers, then DMA to GPU.
+  \item \textbf{SSD tier (GDS)}: NVIDIA GPUDirect Storage for direct
+        SSD$\to$GPU transfers, eliminating CPU bounce buffer.
+\end{itemize}}
+
+\todo{Block layout on SSD: contiguous 2\,MB blocks aligned to filesystem
+block size.  Pre-allocated file pool to avoid allocation jitter.}
+
+\todo{Discuss GDS availability and fallback to POSIX on systems without GDS
+support.}
+
+% --- 5.6 ---
+\subsection{Production Integration Path}\label{sec:design:production}
+
+\todo{Describe how \sys{} integrates with vLLM's PagedAttention:
+replace the block allocator with a tiered allocator; hook into the scheduler
+to receive offload/promote commands; minimal kernel modification (only the
+signal acquisition GEMV).}
+
+\todo{Discuss deployment considerations: multi-GPU (tensor-parallel),
+multi-node, and disaggregated prefill--decode architectures.}
+
+
+%% ================================================================
+%%  6  Implementation
+%% ================================================================
+\section{Implementation}\label{sec:impl}
+
+\todo{Lines of code: \sys{} is implemented in $\sim$X\,K lines of Python
+and $\sim$Y\,K lines of CUDA/C++.}
+
+\todo{Built on top of vLLM v0.6.x.  Key modifications:
+\begin{itemize}
+  \item Tiered block allocator (Python, $\sim$X lines).
+  \item Signal acquisition CUDA kernel (Triton, $\sim$Y lines).
+  \item Reuse-distance predictor (Python + NumPy, $\sim$Z lines).
+  \item Critical-path scheduler (Python, $\sim$W lines).
+  \item GDS backend (C++ extension, $\sim$V lines).
+\end{itemize}}
+
+\todo{Discuss engineering challenges: CUDA stream synchronisation for
+overlapped promotion, memory pool fragmentation, GDS alignment requirements.}
+
+
+%% ================================================================
+%%  7  Evaluation
+%% ================================================================
+\section{Evaluation}\label{sec:eval}
+
+% --- 7.1 ---
+\subsection{Experimental Setup}\label{sec:eval:setup}
+
+\todo{Hardware: NVIDIA A100-80GB / H100-80GB GPUs, 512\,GB DDR5 DRAM,
+Samsung 990 PRO NVMe SSD (7\,GB/s seq read).  Server: 2$\times$ AMD EPYC
+9654, 192 cores.}
+
+\todo{Models: Llama-3-8B, Llama-3-70B (TP=4), Qwen-2.5-7B, Qwen-2.5-1M-7B.}
+
+\todo{Workloads: LongBench, RULER, AgentBench, needle-in-a-haystack,
+multi-turn chat (ShareGPT), code generation (HumanEval-X with 32K context).}
+
+\todo{Baselines: vLLM (no offload), FlexGen, InfiniGen, LMCache, FlexiCache.
+Policy baselines: FIFO, LRU, LFU, Belady (oracle).}
+
+\todo{Metrics: goodput (requests/sec meeting SLO), TTFT, TPOT, GPU memory
+usage, output quality (exact-match, F1, BLEU).}
+
+% --- 7.2 ---
+\subsection{Model Validation: Predicted vs.\ Measured Stall}\label{sec:eval:validation}
+
+\todo{Figure: scatter plot of predicted vs.\ measured per-step stall time
+for \sys{}'s residency model.  Show $R^2 > 0.95$ across workloads.}
+
+\todo{Table: mean absolute error of stall prediction per model and
+workload.  Target: $<$5\% MAPE.}
+
+% --- 7.3 ---
+\subsection{Policy Comparison}\label{sec:eval:policy}
+
+\todo{Compare seven policies under the same tiered backend:
+FIFO, LRU, LFU, Belady (oracle upper bound), InfiniGen-style (speculative
+QK), FlexiCache-style (attention-score ranking), \sys{} (reuse-distance +
+critical-path).}
+
+\todo{Figure: goodput vs.\ GPU memory budget (10\%--100\% of full KV) for
+each policy on Llama-3-70B / RULER.}
+
+\todo{Key result: \sys{} tracks within X\% of Belady and outperforms the
+best heuristic (FlexiCache-style) by Y\%.}
+
+% --- 7.4 ---
+\subsection{System Comparison}\label{sec:eval:system}
+
+\todo{End-to-end comparison with vLLM, LMCache, FlexGen, InfiniGen under
+realistic serving load (Poisson arrivals, mixed context lengths).}
+
+\todo{Figure: goodput vs.\ request rate for each system at 50\% GPU memory
+budget.  \sys{} sustains X$\times$ higher goodput than vLLM and Y$\times$
+higher than the best offloading baseline.}
+
+\todo{Table: TTFT p50/p99 and TPOT p50/p99 comparison.}
+
+% --- 7.5 ---
+\subsection{Goodput Under SLO vs.\ Request Rate}\label{sec:eval:slo}
+
+\todo{Figure: SLO attainment rate (fraction of requests meeting TPOT
+$<$100\,ms) vs.\ request rate for each system.}
+
+\todo{Show that \sys{} maintains $>$95\% SLO attainment at X req/s while
+baselines drop below 80\% at Y req/s.}
+
+% --- 7.6 ---
+\subsection{Memory Pressure Sweep}\label{sec:eval:memory}
+
+\todo{Vary GPU KV-cache budget from 5\% to 75\% of full KV.  Plot goodput
+and TPOT for each system.}
+
+\todo{Key finding: \sys{} degrades gracefully; at 10\% budget it still
+achieves Z\% of full-GPU goodput.  Baselines cliff at $<$30\% budget.}
+
+% --- 7.7 ---
+\subsection{SSD Backend Ablation}\label{sec:eval:ssd}
+
+\todo{Compare three I/O backends: (a) GPU+DRAM only, (b) GPU+DRAM+SSD
+(POSIX O\_DIRECT), (c) GPU+DRAM+SSD (GDS).}
+
+\todo{Show that adding SSD tier extends effective KV capacity by X$\times$
+with $<$Y\% goodput loss compared to DRAM-only.  GDS further improves SSD
+tier throughput by Z\%.}
+
+% --- 7.8 ---
+\subsection{Signal Acquisition Overhead}\label{sec:eval:overhead}
+
+\todo{Micro-benchmark: measure the per-step overhead of the QK proxy kernel
+and predictor update as a fraction of decode-step compute.}
+
+\todo{Target: $<$1\% overhead on Llama-3-70B, $<$2\% on Llama-3-8B (smaller
+model $\to$ smaller denominator).}
+
+\todo{Ablation on sampling interval $S$: show accuracy vs.\ overhead
+trade-off.}
+
+% --- 7.9 ---
+\subsection{Correctness and Quality}\label{sec:eval:quality}
+
+\todo{Run 1000+ prompts from LongBench, RULER, and AgentBench through
+both full-GPU vLLM and \sys{}.  Compare outputs token-by-token.}
+
+\todo{Result: 100\% exact match (bit-exact output), confirming lossless
+guarantee.}
+
+\todo{Table: benchmark scores (F1, exact-match, BLEU, pass@1) for
+full-GPU vs.\ \sys{} — identical rows.}
+
+
+%% ================================================================
+%%  8  Related Work
+%% ================================================================
+\section{Related Work}\label{sec:related}
+
+\todo{Organise into subsections or paragraphs:}
+
+\paragraph{KV-Cache Eviction and Compression.}
+\todo{H2O~\cite{zhang2024h2o}, StreamingLLM~\cite{xiao2024streamingllm},
+ScissorHands~\cite{liu2024scissorhands}, SnapKV~\cite{li2024snapkv},
+PyramidKV~\cite{cai2024pyramidkv}, Keyformer~\cite{adnan2024keyformer},
+Ada-KV~\cite{feng2024adakv}, KIVI~\cite{liu2024kivi},
+PagedEviction~\cite{yu2024pagedeviction}.
+These are all lossy — \sys{} is lossless.}
+
+\paragraph{KV-Cache Offloading.}
+\todo{FlexGen~\cite{sheng2023flexgen}, InfiniGen~\cite{lee2024infinigen},
+LMCache~\cite{yao2024lmcache}, FlexiCache~\cite{li2024flexicache},
+CachedAttention~\cite{gao2024cachedattention},
+SqueezeAttention~\cite{yang2024squeezeattention},
+CacheBlend~\cite{yao2024cacheblend},
+vTensor~\cite{xu2024vtensor}, Tokencake~\cite{patel2024tokencake}.
+Offload but lack critical-path-aware scheduling.}
+
+\paragraph{GPU--Storage Systems.}
+\todo{BaM~\cite{qureshi2023bam}, ALISA~\cite{zhao2024alisa},
+KVDrive~\cite{patel2024kvdrive}, GDS/TERAIO~\cite{nvidia2023gds}.
+Hardware-level I/O but no KV-cache-specific policy.}
+
+\paragraph{Attention Kernels and Serving Systems.}
+\todo{FlashAttention~\cite{dao2022flashattention},
+FlashAttention-2~\cite{dao2023flashattention2},
+FlashAttention-3~\cite{shah2024flashattention3},
+FlashInfer~\cite{ye2024flashinfer},
+vLLM~\cite{kwon2023vllm},
+Mooncake~\cite{qiu2024mooncake},
+Tutti~\cite{wu2024tutti},
+Quest~\cite{tang2024quest},
+DUAL-BLADE~\cite{wang2024dualblade}.
+Complementary to \sys{} — our system can layer on top of any attention kernel.}
+
+\paragraph{KV-Cache Quantisation and Other Compression.}
+\todo{KIVI~\cite{liu2024kivi}, TurboQuant~\cite{chen2024turboquant},
+CommVQ~\cite{yang2024commvq}, IMPRESS~\cite{liu2024impress}.
+Lossy; can be composed with \sys{} as an optional tier.}
+
+
+%% ================================================================
+%%  9  Discussion and Limitations
+%% ================================================================
+\section{Discussion and Limitations}\label{sec:discussion}
+
+\todo{Discuss limitations:
+\begin{itemize}
+  \item Prediction accuracy degrades for highly irregular attention patterns
+        (e.g., adversarial prompts).
+  \item GDS requires specific NVMe hardware and driver support.
+  \item Current prototype is single-node; multi-node extension is future work.
+  \item Overhead of signal acquisition may become significant for very small
+        models ($<$1B parameters).
+\end{itemize}}
+
+\todo{Discuss broader impact: enabling longer-context serving on commodity
+hardware democratises access to powerful LLMs.}
+
+\todo{Discuss potential negative societal impacts and mitigations (standard
+ACM ethics).}
+
+
+%% ================================================================
+%%  10  Conclusion
+%% ================================================================
+\section{Conclusion}\label{sec:conclusion}
+
+\todo{Restate the problem, the key insight from the measurement study, the
+system design, and the main evaluation results in 4--5 sentences.}
+
+\todo{Highlight that \sys{} achieves X$\times$ goodput improvement and Y\%
+memory saving while maintaining bit-exact output quality, validated on
+1000+ prompts across diverse benchmarks.}
+
+\todo{Mention future directions: multi-node tiered caching, integration with
+disaggregated serving architectures, and co-design with attention-kernel
+compression.}
+
+
+%% ================================================================
+%%  Acknowledgements
+%% ================================================================
+\begin{acks}
+\todo{Acknowledge funding sources, compute providers, and colleagues who
+provided feedback.}
+\end{acks}
+
+
+%% ================================================================
+%%  References
+%% ================================================================
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{references}
+
+%% ================================================================
+%%  Appendix (optional)
+%% ================================================================
+\appendix
+
+\section{Extended Measurement Data}\label{app:measurement}
+\todo{Additional figures and tables from the measurement study that do not
+fit in the main body.}
+
+\section{Proof of Offload Safety Condition}\label{app:proof}
+\todo{Formal proof that the offload condition in \S\ref{sec:model:offload}
+guarantees zero stall under the stated assumptions.}
+
+\section{Artifact Description}\label{app:artifact}
+\todo{Describe the artifact for reproducibility: code repository, Docker
+image, scripts to reproduce all figures and tables.}
+
+\end{document}

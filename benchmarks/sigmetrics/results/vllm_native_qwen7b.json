@@ -1,0 +1,42 @@
+{
+  "model": "Qwen2.5-7B",
+  "engine": "vLLM-0.8.5-native",
+  "configs": [
+    {
+      "config": "short_batch4",
+      "prompt_tokens": 2044,
+      "gen_tokens": 512,
+      "elapsed_s": 1.473,
+      "throughput_tok_s": 347.7,
+      "tpot_ms": 2.88,
+      "batch_size": 4
+    },
+    {
+      "config": "medium_batch4",
+      "prompt_tokens": 8164,
+      "gen_tokens": 1024,
+      "elapsed_s": 3.005,
+      "throughput_tok_s": 340.8,
+      "tpot_ms": 2.93,
+      "batch_size": 4
+    },
+    {
+      "config": "long_batch2",
+      "prompt_tokens": 8182,
+      "gen_tokens": 1024,
+      "elapsed_s": 6.026,
+      "throughput_tok_s": 169.9,
+      "tpot_ms": 5.89,
+      "batch_size": 2
+    },
+    {
+      "config": "pressure_batch8",
+      "prompt_tokens": 16328,
+      "gen_tokens": 1024,
+      "elapsed_s": 1.621,
+      "throughput_tok_s": 631.6,
+      "tpot_ms": 1.58,
+      "batch_size": 8
+    }
+  ]
+}

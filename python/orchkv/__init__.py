@@ -15,3 +15,15 @@ try:
     _HAS_CORE = True
 except ImportError:
     _HAS_CORE = False
+
+from orchkv.config import PAPER_DEFAULTS  # noqa: F401
+
+try:
+    from orchkv.config import make_config  # noqa: F401
+except Exception:
+    pass
+
+try:
+    from orchkv.kvcache_manager import KVCacheManager  # noqa: F401
+except Exception:
+    pass

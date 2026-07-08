@@ -1,0 +1,88 @@
+{
+  "experiment": "long_context_scaling",
+  "model": "Qwen2.5-7B",
+  "gen_len": 32,
+  "budget_fraction": 0.5,
+  "baseline": [
+    {
+      "prompt_len": 1024,
+      "gen_tokens": 32,
+      "elapsed_s": 1.302,
+      "throughput_tok_s": 24.59,
+      "tpot_ms": 40.67
+    },
+    {
+      "prompt_len": 2048,
+      "gen_tokens": 2,
+      "elapsed_s": 0.277,
+      "throughput_tok_s": 7.23,
+      "tpot_ms": 138.3
+    },
+    {
+      "prompt_len": 4096,
+      "gen_tokens": 4,
+      "elapsed_s": 0.676,
+      "throughput_tok_s": 5.92,
+      "tpot_ms": 168.89
+    }
+  ],
+  "orchkv": [
+    {
+      "prompt_len": 1024,
+      "gen_tokens": 32,
+      "budget_bytes": 30277632,
+      "budget_mb": 28.88,
+      "elapsed_s": 4.416,
+      "throughput_tok_s": 7.25,
+      "tpot_ms": 137.99,
+      "evictions": 264,
+      "promotions": 256,
+      "ssd_spills": 132,
+      "blocks_gpu": 2680,
+      "blocks_dram": 4,
+      "blocks_ssd": 4,
+      "promotion_p50_us": 46.2,
+      "promotion_p99_us": 245.1,
+      "promotion_mean_us": 67.6,
+      "promotion_count": 256
+    },
+    {
+      "prompt_len": 2048,
+      "gen_tokens": 1,
+      "budget_bytes": 59637760,
+      "budget_mb": 56.88,
+      "elapsed_s": 0.194,
+      "throughput_tok_s": 5.14,
+      "tpot_ms": 194.39,
+      "evictions": 16,
+      "promotions": 8,
+      "ssd_spills": 8,
+      "blocks_gpu": 3604,
+      "blocks_dram": 4,
+      "blocks_ssd": 4,
+      "promotion_p50_us": 46.1,
+      "promotion_p99_us": 213.8,
+      "promotion_mean_us": 69.3,
+      "promotion_count": 8
+    },
+    {
+      "prompt_len": 4096,
+      "gen_tokens": 3,
+      "budget_bytes": 118358016,
+      "budget_mb": 112.88,
+      "elapsed_s": 1.101,
+      "throughput_tok_s": 2.72,
+      "tpot_ms": 367.02,
+      "evictions": 32,
+      "promotions": 24,
+      "ssd_spills": 16,
+      "blocks_gpu": 7244,
+      "blocks_dram": 4,
+      "blocks_ssd": 4,
+      "promotion_p50_us": 45.4,
+      "promotion_p99_us": 216.5,
+      "promotion_mean_us": 63.4,
+      "promotion_count": 24
+    }
+  ]
+}

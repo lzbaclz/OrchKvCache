@@ -1,0 +1,16 @@
+{
+  "model": "Qwen2.5-7B",
+  "prompt_tokens": 2048,
+  "n_blocks": 128,
+  "gen_steps": 48,
+  "decode_s": 1.22,
+  "throughput_tok_s": 39.34,
+  "step_time_us": 25417.0,
+  "gini_mean": 0.9179,
+  "gini_std": 0.0242,
+  "jaccard_mean": 0.8995,
+  "reuse_distance_mean": 1.17,
+  "reuse_distance_p50": 1.0,
+  "reuse_distance_p90": 1.0,
+  "top10_concentration": 0.9251
+}

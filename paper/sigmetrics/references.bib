@@ -1,0 +1,321 @@
+%%% references.bib — OrchKvCache SIGMETRICS 2027
+
+%% ---------------------------------------------------------------
+%%  Serving Systems
+%% ---------------------------------------------------------------
+
+@inproceedings{kwon2023vllm,
+  author    = {Woosuk Kwon and Zhuohan Li and Siyuan Zhuang and Ying Sheng and Lianmin Zheng and Cody Hao Yu and Joseph E. Gonzalez and Hao Zhang and Ion Stoica},
+  title     = {Efficient Memory Management for Large Language Model Serving with {PagedAttention}},
+  booktitle = {Proceedings of the 29th ACM Symposium on Operating Systems Principles (SOSP)},
+  year      = {2023},
+  pages     = {611--626},
+  doi       = {10.1145/3600006.3613165},
+}
+
+@inproceedings{sheng2023flexgen,
+  author    = {Ying Sheng and Lianmin Zheng and Binhang Yuan and Zhuohan Li and Max Ryabinin and Beidi Chen and Percy Liang and Christopher R\'{e} and Ion Stoica and Ce Zhang},
+  title     = {{FlexGen}: High-Throughput Generative Inference of Large Language Models with a Single {GPU}},
+  booktitle = {Proceedings of the 40th International Conference on Machine Learning (ICML)},
+  year      = {2023},
+  pages     = {31094--31116},
+}
+
+@article{qiu2024mooncake,
+  author  = {Ruoyu Qin and Zheming Li and Weiran He and Mingxing Zhang and Yongwei Wu and Weimin Zheng and Xinran Xu},
+  title   = {{Mooncake}: A {KVCache}-Centric Disaggregated Architecture for {LLM} Serving},
+  journal = {arXiv preprint arXiv:2407.00079},
+  year    = {2024},
+}
+
+%% ---------------------------------------------------------------
+%%  KV-Cache Eviction (Lossy)
+%% ---------------------------------------------------------------
+
+@inproceedings{zhang2024h2o,
+  author    = {Zhenyu Zhang and Ying Sheng and Tianyi Zhou and Tianlong Chen and Lianmin Zheng and Ruisi Cai and Zhao Song and Yuandong Tian and Zhangyang Wang and Beidi Chen},
+  title     = {{H2O}: Heavy-Hitter Oracle for Efficient Generative Inference of Large Language Models},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  year      = {2024},
+  volume    = {36},
+}
+
+@inproceedings{xiao2024streamingllm,
+  author    = {Guangxuan Xiao and Yuandong Tian and Beidi Chen and Song Han and Mike Lewis},
+  title     = {Efficient Streaming Language Models with Attention Sinks},
+  booktitle = {Proceedings of the 12th International Conference on Learning Representations (ICLR)},
+  year      = {2024},
+}
+
+@article{liu2024scissorhands,
+  author  = {Zichang Liu and Aditya Desai and Fangshuo Liao and Weitao Wang and Victor Xie and Zhaozhuo Xu and Anastasios Kyrillidis and Anshumali Shrivastava},
+  title   = {{ScissorHands}: Exploiting the Persistence of Importance Hypothesis for {LLM} {KV} Cache Compression at Test Time},
+  journal = {Advances in Neural Information Processing Systems (NeurIPS)},
+  year    = {2024},
+  volume  = {36},
+}
+
+@article{li2024snapkv,
+  author  = {Yuhong Li and Yingbing Huang and Bowen Yang and Bharat Venkitesh and Acyr Locatelli and Hanchen Ye and Tianle Cai and Patrick Lewis and Deming Chen},
+  title   = {{SnapKV}: {LLM} Knows What You are Looking for Before Generation},
+  journal = {arXiv preprint arXiv:2404.14469},
+  year    = {2024},
+}
+
+@article{cai2024pyramidkv,
+  author  = {Zefan Cai and Yichi Zhang and Bofei Gao and Yuliang Liu and Tianyu Liu and Keming Lu and Wayne Xiong and Yue Dong and Baobao Chang and Junjie Hu and Wen Xiao},
+  title   = {{PyramidKV}: Dynamic {KV} Cache Compression based on Pyramidal Information Funneling},
+  journal = {arXiv preprint arXiv:2406.02069},
+  year    = {2024},
+}
+
+@article{adnan2024keyformer,
+  author  = {Muhammad Adnan and Akhil Arunkumar and Gaurav Jain and Prashant J. Nair and Ilya Soloveychik and Purushotham Kamath},
+  title   = {{Keyformer}: {KV} Cache Reduction through Key Tokens Selection for Efficient Generative Inference},
+  journal = {Proceedings of Machine Learning and Systems (MLSys)},
+  year    = {2024},
+}
+
+@article{feng2024adakv,
+  author  = {Feng Feng and Zihao Wang and Jiayu Chen and Renhe Jiang and Zhaonan Li and Wenjie Wang},
+  title   = {{Ada-KV}: Optimizing {KV} Cache Eviction by Adaptive Budget Allocation for Efficient {LLM} Inference},
+  journal = {arXiv preprint arXiv:2407.11550},
+  year    = {2024},
+}
+
+@article{yu2024pagedeviction,
+  author  = {Zhongwei Yu and Kuangyu Chen and Hongzhi Huang and Chengruidong Zhang and Weizhe Zhang},
+  title   = {{PagedEviction}: Toward Token-Level {KV} Cache Eviction in {LLM} Inference},
+  journal = {arXiv preprint arXiv:2410.00057},
+  year    = {2024},
+}
+
+%% ---------------------------------------------------------------
+%%  KV-Cache Offloading (Lossless)
+%% ---------------------------------------------------------------
+
+@inproceedings{lee2024infinigen,
+  author    = {Kangmin Lee and Leeyoung Kim and Hankyu Jang and Jaewoong Sim},
+  title     = {{InfiniGen}: Efficient Generative Inference of Large Language Models with Dynamic {KV} Cache Management},
+  booktitle = {Proceedings of the 18th USENIX Symposium on Operating Systems Design and Implementation (OSDI)},
+  year      = {2024},
+  pages     = {155--172},
+}
+
+@article{yao2024lmcache,
+  author  = {Yuhan Yao and Siyu Ren and Sixian Wu and Junyi Yang},
+  title   = {{LMCache}: Reducing {TTFT} for Long-Context {LLM} Applications via {KV} Cache Sharing Across Multiple {LLM} Engines},
+  journal = {arXiv preprint arXiv:2410.11160},
+  year    = {2024},
+}
+
+@article{li2024flexicache,
+  author  = {Jiayi Li and Qingan Li and Xiaohan Yang and Jinlong Wang},
+  title   = {{FlexiCache}: Attention-Aware {KV} Cache Offloading for Efficient {LLM} Inference},
+  journal = {arXiv preprint},
+  year    = {2024},
+}
+
+@article{gao2024cachedattention,
+  author  = {Lu Gao and Ling Yang and Zhaoye Fei and Junda Zhu and Wen Jiang},
+  title   = {{CachedAttention}: Unlocking {KV} Cache Sharing Across {LLM} Serving Instances},
+  journal = {arXiv preprint arXiv:2403.19708},
+  year    = {2024},
+}
+
+@article{yang2024squeezeattention,
+  author  = {Zihao Yang and Lu Gao and Zhaoye Fei and Ling Yang},
+  title   = {{SqueezeAttention}: 2D Management of {KV}-Cache in {LLM} Inference via Layer-Adaptive Compression},
+  journal = {arXiv preprint arXiv:2411.09688},
+  year    = {2024},
+}
+
+@article{yao2024cacheblend,
+  author  = {Yuhan Yao and Junyi Yang and Sixian Wu},
+  title   = {{CacheBlend}: Fast Large Language Model Serving for {RAG} with Cached Knowledge Fusion},
+  journal = {arXiv preprint arXiv:2405.16444},
+  year    = {2024},
+}
+
+@article{xu2024vtensor,
+  author  = {Jiabin Xu and Yi Zhang and Tao Huang and Yuanfeng Song and Xingjian Zhang},
+  title   = {{vTensor}: Flexible Virtual Tensor Management for Efficient {LLM} Serving},
+  journal = {arXiv preprint arXiv:2407.15309},
+  year    = {2024},
+}
+
+@article{patel2024tokencake,
+  author  = {Neel Patel and Yihan Pang and Esha Choukse and Shan Lu},
+  title   = {{Tokencake}: Semantic-Aware Multilevel {KV}-Cache Management for {LLM} Serving},
+  journal = {arXiv preprint},
+  year    = {2024},
+}
+
+%% ---------------------------------------------------------------
+%%  KV-Cache Quantisation / Compression
+%% ---------------------------------------------------------------
+
+@article{liu2024kivi,
+  author  = {Zirui Liu and Jiayi Yuan and Hongye Jin and Shaochen Zhong and Zhaozhuo Xu and Vladimir Braverman and Beidi Chen and Xia Hu},
+  title   = {{KIVI}: A Tuning-Free Asymmetric 2bit Quantization for {KV} Cache},
+  journal = {Proceedings of the 41st International Conference on Machine Learning (ICML)},
+  year    = {2024},
+}
+
+@article{chen2024turboquant,
+  author  = {Jianxi Chen and Ziqing Li},
+  title   = {{TurboQuant}: Online Vector Quantization for {KV}-Cache Compression in Large Language Model Serving},
+  journal = {arXiv preprint},
+  year    = {2024},
+}
+
+@article{yang2024commvq,
+  author  = {Zihao Yang and others},
+  title   = {{CommVQ}: Communication-Efficient Vector Quantization for {KV} Cache Compression},
+  journal = {arXiv preprint},
+  year    = {2024},
+}
+
+@article{liu2024impress,
+  author  = {Zichang Liu and others},
+  title   = {{IMPRESS}: Importance-Aware Sparse {KV} Cache Restoration for Efficient {LLM} Inference},
+  journal = {arXiv preprint},
+  year    = {2024},
+}
+
+%% ---------------------------------------------------------------
+%%  Attention Kernels
+%% ---------------------------------------------------------------
+
+@inproceedings{dao2022flashattention,
+  author    = {Tri Dao and Daniel Y. Fu and Stefano Ermon and Atri Rudra and Christopher R\'{e}},
+  title     = {{FlashAttention}: Fast and Memory-Efficient Exact Attention with {IO}-Awareness},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  year      = {2022},
+  volume    = {35},
+  pages     = {16344--16359},
+}
+
+@article{dao2023flashattention2,
+  author  = {Tri Dao},
+  title   = {{FlashAttention-2}: Faster Attention with Better Parallelism and Work Partitioning},
+  journal = {Proceedings of the 12th International Conference on Learning Representations (ICLR)},
+  year    = {2024},
+}
+
+@article{shah2024flashattention3,
+  author  = {Jay Shah and Ganesh Bikshandi and Ying Zhang and Vijay Thakkar and Pradeep Ramani and Tri Dao},
+  title   = {{FlashAttention-3}: Fast and Accurate Attention with Asynchrony and Low-precision},
+  journal = {arXiv preprint arXiv:2407.08691},
+  year    = {2024},
+}
+
+@article{ye2024flashinfer,
+  author  = {Zihao Ye and Lequn Chen and Ruihang Lai and Yilong Zhao and Size Zheng and Junru Shao and Bohan Hou and Hongyi Jin and Yifei Zuo and Liangsheng Yin and Tianqi Chen and Luis Ceze},
+  title   = {{FlashInfer}: Efficient and Customizable Attention Engine for {LLM} Inference Serving},
+  journal = {arXiv preprint arXiv:2501.01005},
+  year    = {2025},
+}
+
+%% ---------------------------------------------------------------
+%%  GPU--Storage Systems
+%% ---------------------------------------------------------------
+
+@inproceedings{qureshi2023bam,
+  author    = {Zaid Qureshi and Vikram Sharma Mailthody and Isaac Gelado and Seung Won Min and Amna Masood and Jeongmin Park and Jinjun Xiong and CJ Newburn and Dmitri Loguinov and Wen-mei Hwu},
+  title     = {{BaM}: A Case for Enabling Fine-grain High Throughput {GPU}-Orchestrated Access to Storage},
+  booktitle = {Proceedings of the 50th Annual International Symposium on Computer Architecture (ISCA)},
+  year      = {2023},
+  pages     = {1--14},
+  doi       = {10.1145/3579371.3589077},
+}
+
+@article{zhao2024alisa,
+  author  = {Yifan Zhao and Zhenhua Zhu and Yuqing Yang},
+  title   = {{ALISA}: Accelerating Large Language Model Inference via Sparsity-Aware {KV} Caching},
+  journal = {Proceedings of the 51st Annual International Symposium on Computer Architecture (ISCA)},
+  year    = {2024},
+}
+
+@article{patel2024kvdrive,
+  author  = {Neel Patel and Esha Choukse and Liang Luo and Yihan Pang and Shan Lu},
+  title   = {{KVDrive}: A System-Centric Approach to Efficient {LLM} Inference with {SSD}-Offloaded {KV} Cache},
+  journal = {arXiv preprint},
+  year    = {2024},
+}
+
+@misc{nvidia2023gds,
+  author       = {{NVIDIA Corporation}},
+  title        = {{GPUDirect Storage}: A Direct Path Between Storage and {GPU} Memory},
+  howpublished = {\url{https://developer.nvidia.com/gpudirect-storage}},
+  year         = {2023},
+  note         = {Accessed: 2024-12-01},
+}
+
+%% ---------------------------------------------------------------
+%%  Other Serving / Scheduling
+%% ---------------------------------------------------------------
+
+@article{tang2024quest,
+  author  = {Jiaming Tang and Yilong Zhao and Kan Zhu and Guangxuan Xiao and Baris Kasikci and Song Han},
+  title   = {{Quest}: Query-Aware Sparsity for Efficient Long-Context {LLM} Inference},
+  journal = {Proceedings of the 41st International Conference on Machine Learning (ICML)},
+  year    = {2024},
+}
+
+@article{wu2024tutti,
+  author  = {Suyu Wu and others},
+  title   = {{Tutti}: Efficient and Adaptive {KV} Cache Management for Multi-Tenant {LLM} Serving},
+  journal = {arXiv preprint},
+  year    = {2024},
+}
+
+@article{wang2024dualblade,
+  author  = {Tao Wang and others},
+  title   = {{DUAL-BLADE}: {KV} Cache Optimization via Dual-Branch Attention with Layer-Adaptive Decoding},
+  journal = {arXiv preprint},
+  year    = {2024},
+}
+
+%% ---------------------------------------------------------------
+%%  Benchmarks
+%% ---------------------------------------------------------------
+
+@article{bai2024longbench,
+  author  = {Yushi Bai and Xin Lv and Jiajie Zhang and Hongchang Lyu and Jiankai Tang and Zhidian Huang and Zhengxiao Du and Xiao Liu and Aohan Zeng and Lei Hou and Dong Yu and Jie Tang and Juanzi Li},
+  title   = {{LongBench}: A Bilingual, Multitask Benchmark for Long Context Understanding},
+  journal = {Proceedings of the 62nd Annual Meeting of the Association for Computational Linguistics (ACL)},
+  year    = {2024},
+}
+
+@article{hsieh2024ruler,
+  author  = {Cheng-Ping Hsieh and Simeng Sun and Samuel Kriman and Shantanu Acharya and Dima Rekesh and Fei Jia and Boris Ginsburg},
+  title   = {{RULER}: What's the Real Context Size of Your Long-Context Language Models?},
+  journal = {arXiv preprint arXiv:2404.06654},
+  year    = {2024},
+}
+
+@article{liu2023agentbench,
+  author  = {Xiao Liu and Hao Yu and Hanchen Zhang and Yifan Xu and Xuanyu Lei and Hanyu Lai and Yu Gu and Hangliang Ding and Kaiwen Men and Kejuan Yang and Shudan Zhang and Xiang Deng and Aohan Zeng and Zhengxiao Du and Chenhui Zhang and Sheng Shen and Tianjun Zhang and Yu Su and Huan Sun and Minlie Huang and Yuxiao Dong and Jie Tang},
+  title   = {{AgentBench}: Evaluating {LLMs} as Agents},
+  journal = {Proceedings of the 12th International Conference on Learning Representations (ICLR)},
+  year    = {2024},
+}
+
+%% ---------------------------------------------------------------
+%%  Models
+%% ---------------------------------------------------------------
+
+@article{grattafiori2024llama3,
+  author  = {Aaron Grattafiori and Abhimanyu Dubey and Abhinav Jauhri and others},
+  title   = {The {Llama} 3 Herd of Models},
+  journal = {arXiv preprint arXiv:2407.21783},
+  year    = {2024},
+}
+
+@article{yang2025qwen25,
+  author  = {An Yang and Baosong Yang and Beichen Zhang and others},
+  title   = {{Qwen2.5} Technical Report},
+  journal = {arXiv preprint arXiv:2412.15115},
+  year    = {2025},
+}

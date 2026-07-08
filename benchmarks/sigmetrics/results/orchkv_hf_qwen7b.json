@@ -1,0 +1,16 @@
+{
+  "model": "Qwen2.5-7B",
+  "engine": "OrchKvCache-HF-eager",
+  "prompt_tokens": 512,
+  "gen_tokens": 32,
+  "budget_bytes": 15597568,
+  "budget_pct": 50,
+  "throughput_tok_s": 10.95,
+  "tpot_ms": 91.33,
+  "evictions": 264,
+  "promotions": 256,
+  "ssd_spills": 132,
+  "promo_p50_us": 48.8,
+  "promo_p99_us": 250.1,
+  "decisions": 652
+}

@@ -1,0 +1,36 @@
+{
+  "model": "Qwen2.5-7B",
+  "engine": "vLLM-0.8.5-cpu-offload",
+  "gpu_util": 0.45,
+  "cpu_offload_gb": 8,
+  "configs": [
+    {
+      "config": "short_batch4",
+      "gen_tokens": 512,
+      "elapsed_s": 45.508,
+      "throughput_tok_s": 11.3,
+      "tpot_ms": 88.88
+    },
+    {
+      "config": "medium_batch4",
+      "gen_tokens": 1024,
+      "elapsed_s": 90.712,
+      "throughput_tok_s": 11.3,
+      "tpot_ms": 88.59
+    },
+    {
+      "config": "long_batch2",
+      "gen_tokens": 1024,
+      "elapsed_s": 181.201,
+      "throughput_tok_s": 5.7,
+      "tpot_ms": 176.95
+    },
+    {
+      "config": "pressure_batch8",
+      "gen_tokens": 1024,
+      "elapsed_s": 47.592,
+      "throughput_tok_s": 21.5,
+      "tpot_ms": 46.48
+    }
+  ]
+}

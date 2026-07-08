@@ -110,6 +110,9 @@ class KVCacheManager:
             "total_blocks": 0,
         }
 
+        self._promotion_latencies: list[float] = []
+        self._decision_log: list[dict] = []
+
         if ssd_dir:
             Path(ssd_dir).mkdir(parents=True, exist_ok=True)
 
@@ -118,13 +121,75 @@ class KVCacheManager:
     def _init_tiered_manager(self):
         if _C is None:
             return
-        self._tm_handle = _C.tm_create()
+        self._tm_handle = _C.tm_create(
+            tracker_cap=4096,
+            ema_lambda=0.9,
+            alpha=0.7,
+            beta=0.2,
+            gamma=0.1,
+            prefetch_budget=8,
+            schedule_interval_us=1000,
+            gpu_hwm=0.9,
+            gpu_lwm=0.7,
+            dram_hwm=0.9,
+            dram_lwm=0.7,
+            max_blocks=8192,
+            threshold_to_gpu=0.5,
+            threshold_to_dram=0.2,
+            recency_tau=50.0,
+            cooldown_sec=0.5,
+            adjust_step=0.02,
+        )
         logger.info("KVCacheManager: tiered_manager created (handle=%s)", self._tm_handle)
 
     def destroy(self):
         if self._tm_handle is not None and _C is not None:
             _C.tm_destroy(self._tm_handle)
             self._tm_handle = None
+
+    def _record_promotion_latency(self, blk: KVBlock, elapsed_us: float):
+        self._promotion_latencies.append(elapsed_us)
+        self._decision_log.append({
+            "step": self._step,
+            "block_id": blk.block_id,
+            "layer": blk.layer,
+            "token_start": blk.token_start,
+            "action": "promote",
+            "tier_before": "DRAM" if blk.tier == TIER_GPU else _TIER_NAMES.get(blk.tier, "?"),
+            "tier_after": "GPU",
+            "latency_us": elapsed_us,
+        })
+
+    def _record_decision(self, blk: KVBlock, action: str, tier_before: int, tier_after: int,
+                         score: float = 0.0, heat: int = -1):
+        self._decision_log.append({
+            "step": self._step,
+            "block_id": blk.block_id,
+            "layer": blk.layer,
+            "token_start": blk.token_start,
+            "action": action,
+            "score": score,
+            "heat": heat,
+            "tier_before": _TIER_NAMES.get(tier_before, "?"),
+            "tier_after": _TIER_NAMES.get(tier_after, "?"),
+        })
+
+    def get_promotion_latency_stats(self) -> dict:
+        """Return P50/P95/P99 promotion latencies in microseconds."""
+        import numpy as np
+        if not self._promotion_latencies:
+            return {"p50": 0, "p95": 0, "p99": 0, "count": 0}
+        arr = np.array(self._promotion_latencies)
+        return {
+            "p50": float(np.percentile(arr, 50)),
+            "p95": float(np.percentile(arr, 95)),
+            "p99": float(np.percentile(arr, 99)),
+            "count": len(arr),
+            "mean": float(arr.mean()),
+        }
+
+    def get_decision_log(self) -> list:
+        return self._decision_log
 
     @property
     def total_tokens(self) -> int:
@@ -158,7 +223,7 @@ class KVCacheManager:
 
         if self._tm_handle is not None and _C is not None:
             flags = 1 if is_sink else 0  # KV_FLAG_ATTN_SINK = 1
-            _C.tm_register_block_id(self._tm_handle, bid, flags, int(_C.GPU_HBM))
+            _C.tm_register_block_id(self._tm_handle, bid, int(_C.GPU_HBM), flags)
 
         return blk
 
@@ -397,47 +462,67 @@ class KVCacheManager:
         }
 
     def _evict_cold_blocks(self, max_evict: int = 8) -> int:
-        """Evict the coldest GPU-resident blocks to DRAM (or SSD)."""
+        """Evict the coldest GPU-resident blocks to DRAM (or SSD).
+
+        Uses orchkv_core's composite hotness score (alpha*attn + beta*recency
+        + gamma*frequency) for victim selection. Blocks classified as COLD by
+        the C scheduler are evicted first, sorted by ascending score.
+        """
         if _C is None:
             return 0
+
+        HEAT_COLD = 2
 
         candidates = []
         for layer_blocks in self._blocks:
             for blk in layer_blocks:
                 if blk.tier == TIER_GPU and not blk.is_sink and blk.gpu_data is not None:
-                    score = 0.0
                     if self._tm_handle:
-                        try:
-                            s = _C.tm_get_stats(self._tm_handle)
-                            score = s.get("n_cold", 0)
-                        except Exception:
-                            pass
-                    candidates.append((blk, blk.access_count))
+                        heat = _C.tm_get_block_heat(self._tm_handle, blk.block_id)
+                        score = _C.tm_get_block_score(self._tm_handle, blk.block_id)
+                    else:
+                        heat = HEAT_COLD
+                        score = 0.0
+                    candidates.append((blk, heat, score))
 
-        candidates.sort(key=lambda x: x[1])
+        candidates.sort(key=lambda x: (0 if x[1] == HEAT_COLD else 1, x[2]))
 
         evicted = 0
-        for blk, _ in candidates[:max_evict]:
+        for blk, heat_level, score_val in candidates[:max_evict]:
             gpu_bytes = self.gpu_kv_bytes()
             if self.gpu_budget_bytes > 0 and gpu_bytes <= self.gpu_budget_bytes * 0.7:
                 break
+            self._record_decision(blk, "evict_dram", TIER_GPU, TIER_DRAM,
+                                  score=score_val, heat=heat_level)
             self._demote_block(blk)
             evicted += 1
 
         return evicted
 
     def _promote_warm_blocks(self, max_promote: int = 4) -> int:
-        """Promote DRAM-resident blocks with high access counts back to GPU."""
+        """Promote DRAM-resident blocks predicted hot back to GPU.
+
+        Uses orchkv_core's composite hotness score; promotes highest-scoring
+        DRAM blocks that the classifier marks HOT or WARM.
+        """
+        HEAT_HOT = 0
+
         candidates = []
         for layer_blocks in self._blocks:
             for blk in layer_blocks:
                 if blk.tier == TIER_DRAM and blk.dram_data is not None:
-                    candidates.append((blk, blk.access_count))
+                    if self._tm_handle and _C is not None:
+                        heat = _C.tm_get_block_heat(self._tm_handle, blk.block_id)
+                        score = _C.tm_get_block_score(self._tm_handle, blk.block_id)
+                    else:
+                        heat = HEAT_HOT
+                        score = float(blk.access_count)
+                    candidates.append((blk, heat, score))
 
-        candidates.sort(key=lambda x: x[1], reverse=True)
+        candidates.sort(key=lambda x: (-1 if x[1] == HEAT_HOT else 0, -x[2]))
 
         promoted = 0
-        for blk, _ in candidates[:max_promote]:
+        for blk, _heat, _score in candidates[:max_promote]:
             self._promote_block(blk)
             promoted += 1
 
@@ -448,26 +533,32 @@ class KVCacheManager:
     # ------------------------------------------------------------------
 
     def _spill_dram_to_ssd(self, max_spill: int = 4):
-        """Move oldest DRAM blocks to SSD when DRAM has many blocks."""
+        """Move coldest DRAM blocks to SSD using hotness score."""
         dram_blocks = []
         for layer_blocks in self._blocks:
             for blk in layer_blocks:
                 if blk.tier == TIER_DRAM and blk.dram_data is not None and not blk.is_sink:
-                    dram_blocks.append(blk)
+                    if self._tm_handle and _C is not None:
+                        score = _C.tm_get_block_score(self._tm_handle, blk.block_id)
+                    else:
+                        score = float(blk.access_count)
+                    dram_blocks.append((blk, score))
 
         if len(dram_blocks) < 4:
             return
 
-        dram_blocks.sort(key=lambda b: b.access_count)
-        for blk in dram_blocks[:max_spill]:
+        dram_blocks.sort(key=lambda x: x[1])
+        for blk, _score in dram_blocks[:max_spill]:
+            self._record_decision(blk, "spill_ssd", TIER_DRAM, TIER_SSD, score=_score)
             self._save_to_ssd(blk)
 
     def _demote_block(self, blk: KVBlock):
-        """GPU -> DRAM (and optionally DRAM -> SSD)."""
+        """GPU -> pinned DRAM via async DMA (non_blocking + stream sync)."""
         if blk.tier == TIER_GPU and blk.gpu_data is not None:
             if blk.dram_data is None:
                 blk.dram_data = torch.empty_like(blk.gpu_data, device="cpu", pin_memory=True)
-            blk.dram_data.copy_(blk.gpu_data, non_blocking=False)
+            blk.dram_data.copy_(blk.gpu_data, non_blocking=True)
+            torch.cuda.current_stream().synchronize()
             blk.gpu_data = None
             blk.tier = TIER_DRAM
             self._stats["gpu_to_dram"] += 1
@@ -479,20 +570,25 @@ class KVCacheManager:
                          blk.block_id, blk.layer, blk.token_start)
 
     def _promote_block(self, blk: KVBlock):
-        """DRAM -> GPU (or SSD -> DRAM -> GPU)."""
+        """SSD -> DRAM -> GPU with async DMA. Records promotion latency."""
+        t0 = time.perf_counter_ns()
+
         if blk.tier == TIER_SSD:
             self._load_from_ssd(blk)
 
         if blk.tier == TIER_DRAM and blk.dram_data is not None:
-            blk.gpu_data = blk.dram_data.to("cuda", non_blocking=False)
+            blk.gpu_data = blk.dram_data.to("cuda", non_blocking=True)
+            torch.cuda.current_stream().synchronize()
             blk.tier = TIER_GPU
             self._stats["dram_to_gpu"] += 1
 
             if self._tm_handle and _C is not None:
                 _C.tm_set_block_tier(self._tm_handle, blk.block_id, int(_C.GPU_HBM))
 
-            logger.debug("Promoted block %d (layer=%d, start=%d) to GPU",
-                         blk.block_id, blk.layer, blk.token_start)
+        elapsed_us = (time.perf_counter_ns() - t0) / 1000.0
+        self._record_promotion_latency(blk, elapsed_us)
+        logger.debug("Promoted block %d (layer=%d, start=%d) to GPU [%.1f us]",
+                     blk.block_id, blk.layer, blk.token_start, elapsed_us)
 
     def _save_to_ssd(self, blk: KVBlock):
         """DRAM -> SSD file."""
