@@ -1,0 +1,14 @@
+\begin{table}[t]
+\centering
+\caption{Cross-model KV cache characterization and correctness.}
+\label{tab:cross-model}
+\begin{tabular}{lccccc}
+\toprule
+Model & Gini & Jaccard & Top-10\% & Exact Match & EMA Jaccard \\
+\midrule
+Qwen2.5-7B & 0.918 & 0.899 & 0.925 & 100.0% & 0.659 \\
+Llama-3.1-8B & 0.909 & 0.765 & 0.805 & 100.0% & 0.761 \\
+Mistral-7B & 0.912 & 0.825 & 0.817 & 100.0% & 0.806 \\
+\bottomrule
+\end{tabular}
+\end{table}
