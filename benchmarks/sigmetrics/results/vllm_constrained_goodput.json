@@ -1,0 +1,37 @@
+{
+  "model": "Qwen2.5-7B",
+  "engine": "vLLM-0.8.5-constrained",
+  "gpu_util": 0.3,
+  "runs": [
+    {
+      "batch_size": 1,
+      "throughput_tok_s": 84.1,
+      "tpot_ms": 11.89,
+      "status": "ok"
+    },
+    {
+      "batch_size": 2,
+      "throughput_tok_s": 174.0,
+      "tpot_ms": 11.5,
+      "status": "ok"
+    },
+    {
+      "batch_size": 4,
+      "throughput_tok_s": 342.2,
+      "tpot_ms": 11.69,
+      "status": "ok"
+    },
+    {
+      "batch_size": 8,
+      "throughput_tok_s": 662.4,
+      "tpot_ms": 12.08,
+      "status": "ok"
+    },
+    {
+      "batch_size": 16,
+      "throughput_tok_s": 1279.2,
+      "tpot_ms": 12.51,
+      "status": "ok"
+    }
+  ]
+}

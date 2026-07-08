@@ -1,0 +1,11 @@
+{
+  "prompt_tokens": 2048,
+  "n_blocks": 128,
+  "K": 8,
+  "gen_steps": 48,
+  "ema_jaccard_mean": 0.6585,
+  "infinigen_jaccard_mean": 0.4594,
+  "oracle_jaccard_mean": 1.0,
+  "ema_jaccard_std": 0.1224,
+  "infinigen_jaccard_std": 0.1287
+}

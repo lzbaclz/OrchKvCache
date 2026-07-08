@@ -1,0 +1,40 @@
+{
+  "model": "Qwen2.5-7B",
+  "engine": "vLLM-0.8.5",
+  "gpu_util": 0.4,
+  "scenario": "long_prompt_pressure",
+  "runs": [
+    {
+      "batch_size": 1,
+      "prompt_tokens": 4000,
+      "gen_tokens": 64,
+      "throughput_tok_s": 61.2,
+      "elapsed_s": 1.045,
+      "status": "ok"
+    },
+    {
+      "batch_size": 2,
+      "prompt_tokens": 4000,
+      "gen_tokens": 128,
+      "throughput_tok_s": 162.7,
+      "elapsed_s": 0.787,
+      "status": "ok"
+    },
+    {
+      "batch_size": 4,
+      "prompt_tokens": 4000,
+      "gen_tokens": 256,
+      "throughput_tok_s": 319.3,
+      "elapsed_s": 0.802,
+      "status": "ok"
+    },
+    {
+      "batch_size": 8,
+      "prompt_tokens": 4000,
+      "gen_tokens": 512,
+      "throughput_tok_s": 572.9,
+      "elapsed_s": 0.894,
+      "status": "ok"
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "model": "opt-1.3b",
+  "engine": "FlexGen",
+  "prompt_len": 512,
+  "gen_len": 64,
+  "batch_size": 1,
+  "total_gen_tokens": 64,
+  "elapsed_s": 0.555,
+  "throughput_tok_s": 115.34,
+  "tpot_ms": 8.67,
+  "load_time_s": 9.87,
+  "policy": {
+    "w_gpu_pct": 100,
+    "cache_gpu_pct": 100,
+    "act_gpu_pct": 100,
+    "overlap": false
+  }
+}

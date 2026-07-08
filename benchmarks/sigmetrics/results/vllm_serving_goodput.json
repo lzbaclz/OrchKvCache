@@ -1,0 +1,61 @@
+{
+  "model": "Qwen2.5-7B",
+  "engine": "vLLM-0.8.5",
+  "slo_tpot_ms": 50.0,
+  "runs": [
+    {
+      "batch_size": 1,
+      "total_tokens": 64,
+      "elapsed_s": 0.722,
+      "throughput_tok_s": 88.6,
+      "tpot_per_req_ms": 11.28,
+      "meets_slo": true,
+      "goodput_tok_s": 88.6
+    },
+    {
+      "batch_size": 2,
+      "total_tokens": 128,
+      "elapsed_s": 0.742,
+      "throughput_tok_s": 172.6,
+      "tpot_per_req_ms": 11.59,
+      "meets_slo": true,
+      "goodput_tok_s": 172.6
+    },
+    {
+      "batch_size": 4,
+      "total_tokens": 256,
+      "elapsed_s": 0.741,
+      "throughput_tok_s": 345.7,
+      "tpot_per_req_ms": 11.57,
+      "meets_slo": true,
+      "goodput_tok_s": 345.7
+    },
+    {
+      "batch_size": 8,
+      "total_tokens": 512,
+      "elapsed_s": 0.783,
+      "throughput_tok_s": 654.0,
+      "tpot_per_req_ms": 12.23,
+      "meets_slo": true,
+      "goodput_tok_s": 654.0
+    },
+    {
+      "batch_size": 16,
+      "total_tokens": 1024,
+      "elapsed_s": 0.819,
+      "throughput_tok_s": 1250.7,
+      "tpot_per_req_ms": 12.79,
+      "meets_slo": true,
+      "goodput_tok_s": 1250.7
+    },
+    {
+      "batch_size": 32,
+      "total_tokens": 2048,
+      "elapsed_s": 0.885,
+      "throughput_tok_s": 2315.0,
+      "tpot_per_req_ms": 13.82,
+      "meets_slo": true,
+      "goodput_tok_s": 2315.0
+    }
+  ]
+}
